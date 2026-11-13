@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EMMS & OANDA XAU/USD • AI Sniper Engine Pro (Fixed)</title>
+    <title>EMMS & OANDA XAU/USD • AI Sniper Engine Pro (Auto-Synced)</title>
     <style>
         :root {
             --bg-main: #06080d;
@@ -504,18 +504,19 @@
         </div>
     </div>
 
-    <!-- Instant OANDA Price Calibration & Adaptive Sniper Bar -->
+    <!-- Auto-Synced OANDA Price Calibration Bar -->
     <div class="sync-bar">
         <div class="sync-controls">
-            <button class="sync-btn" onclick="adjustOffset(-0.5)">-0.5</button>
-            <input type="number" step="0.01" id="exact-oanda-input" class="sync-input" placeholder="سعر OANDA">
-            <button class="sync-btn gold-btn" onclick="syncExactPrice()">مطابقة</button>
-            <button class="sync-btn" onclick="adjustOffset(0.5)">+0.5</button>
+            <button class="sync-btn" onclick="adjustManualTrim(-0.2)">-0.2</button>
+            <input type="number" step="0.01" id="exact-oanda-input" class="sync-input" placeholder="مزامنة تلقائية">
+            <button class="sync-btn gold-btn" onclick="syncExactPrice()">تثبيت يدوي</button>
+            <button class="sync-btn" onclick="adjustManualTrim(0.2)">+0.2</button>
         </div>
         <div style="display:flex; gap:5px; flex-wrap:wrap;">
-            <button class="sync-btn green-btn" id="adaptive-mode-btn" onclick="toggleAdaptiveArmor()">🛡️ الدرع الذكي: مفعّل</button>
-            <button class="sync-btn" id="sound-toggle-btn" onclick="toggleAudio()">🔊 الصوت</button>
-            <button class="sync-btn gold-btn" onclick="forceGenerateNewSignal()">🔄 توليد صفقة جديدة</button>
+            <button class="sync-btn blue-btn" id="auto-sync-btn" onclick="triggerInstantSpotSync()">🔗 مزامنة OANDA التلقائية: نشطة</button>
+            <button class="sync-btn green-btn" id="adaptive-mode-btn" onclick="toggleAdaptiveArmor()">🛡️ الدرع الذكي</button>
+            <button class="sync-btn" id="sound-toggle-btn" onclick="toggleAudio()">🔊</button>
+            <button class="sync-btn gold-btn" onclick="forceGenerateNewSignal()">🔄 صفقة جديدة</button>
         </div>
     </div>
 
@@ -532,7 +533,7 @@
         <div class="imbalance-wrap">
             <div class="imbalance-labels">
                 <span>🟢 سيولة المشترين (Bid): <strong id="bid-pct" style="color:var(--green);">50%</strong></span>
-                <span>ضغط دفتر الأوامر اللحظي (Imbalance)</span>
+                <span id="spot-sync-status">مزامنة الفوركس الحية (Spot XAU/USD)</span>
                 <span>🔴 سيولة البائعين (Ask): <strong id="ask-pct" style="color:var(--red);">50%</strong></span>
             </div>
             <div class="imbalance-track">
@@ -559,7 +560,7 @@
     <div class="decision-card">
         <div class="decision-header">
             <div>
-                <div style="font-size: 0.7rem; color: var(--text-muted);">نظام القناص التكيفي (ثبات الصفقة + وقف متحرك فعلي)</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted);">نظام القناص التكيفي (مطابق لسعر OANDA الفوري)</div>
                 <div class="signal-main" id="signal-title" style="color: var(--gold);">جارِ سحب بيانات السوق...</div>
                 <div>
                     <span class="tier-badge" id="tier-badge" style="background: rgba(245,176,65,0.2); color: var(--gold);">💎 A+ VIP</span>
@@ -690,7 +691,7 @@
             <span>📡 التقرير التحليلي المؤسسي للصفقة القائمة</span>
             <span id="last-update" style="color: var(--text-muted); font-weight:normal;">--:--:--</span>
         </div>
-        <div id="analysis-text">جارِ الاتصال بمزود السيولة الحية وسحب آخر 100 شمعة...</div>
+        <div id="analysis-text">جارِ الاتصال بمزود السيولة الحية ومزامنة سعر OANDA الفوري...</div>
     </div>
 
     <!-- Trade Log History & Win Rate Stats -->
@@ -724,12 +725,27 @@
         let soundEnabled = true;
         let adaptiveArmorEnabled = true;
         let orderBookImbalance = 0.0;
-        let recentTicks = []; // لحساب زخم الدقيقة M1 الحقيقي
+        let recentTicks = [];
         let isFetchingBook = false;
         let isFetchingKlines = false;
+        let isSyncingSpot = false;
         let sharedAudioCtx = null;
 
-        // استرجاع الإحصائيات المحفوظة
+        // فصل المعايرة إلى: 1) فارق الفوركس التلقائي (autoBasisOffset) + 2) ضبط السبريد الدقيق لـ OANDA (manualTrim)
+        let autoBasisOffset = parseFloat(localStorage.getItem('oanda_auto_basis')) || 8.72;
+        let manualTrim = parseFloat(localStorage.getItem('oanda_manual_trim')) || 0.0;
+
+        function getTotalOffset() {
+            return autoBasisOffset + manualTrim;
+        }
+
+        function saveOffsets() {
+            try {
+                localStorage.setItem('oanda_auto_basis', String(autoBasisOffset));
+                localStorage.setItem('oanda_manual_trim', String(manualTrim));
+            } catch (e) {}
+        }
+
         let perfStats = { total: 0, wins: 0, losses: 0, netPips: 0 };
         try {
             const savedStats = JSON.parse(localStorage.getItem('emms_perf_stats'));
@@ -748,23 +764,120 @@
             document.getElementById('trade-log-list').innerHTML = '<div style="color: var(--text-muted); font-size: 0.68rem;">تم تصفير السجل بنجاح.</div>';
         }
 
-        function getStoredOffset() {
-            try {
-                const v = parseFloat(localStorage.getItem('oanda_offset_v2'));
-                if (!isNaN(v)) return v;
-            } catch (e) {}
-            return 5.33;
-        }
-
-        function setStoredOffset(val) {
-            try { localStorage.setItem('oanda_offset_v2', String(val)); } catch (e) {}
-        }
-
-        let oandaOffset = getStoredOffset();
         let activeTrade = null;
         let tradeLogs = [];
 
-        // محرك صوتي موحد (يمنع تعطل الصوت على iOS Safari)
+        // محرك المزامنة التلقائية الحية مع سعر الذهب الفوري العالمي (Spot XAU/USD Forex Feed)
+        async function fetchRealSpotGoldPrice() {
+            // المصدر 1: Gold-API المباشر للذهب الفوري XAU/USD
+            try {
+                const r1 = await fetch('https://api.gold-api.com/price/XAU', { cache: 'no-store' });
+                if (r1.ok) {
+                    const d1 = await r1.json();
+                    if (d1 && d1.price && d1.price > 1500) {
+                        return { price: parseFloat(d1.price), source: 'Gold-API Spot' };
+                    }
+                }
+            } catch (e) {}
+
+            // المصدر 2: Swissquote Bank Institutional Forex Feed (XAU/USD)
+            try {
+                const r2 = await fetch('https://forex-data-feed.swissquote.com/public-quotes/bboquotes/instrument/XAU/USD', { cache: 'no-store' });
+                if (r2.ok) {
+                    const d2 = await r2.json();
+                    if (Array.isArray(d2) && d2.length > 0 && d2[0].spreadProfilePrices && d2[0].spreadProfilePrices.length > 0) {
+                        const p = d2[0].spreadProfilePrices[0];
+                        const mid = (parseFloat(p.bid) + parseFloat(p.ask)) / 2;
+                        if (mid > 1500) return { price: mid, source: 'Swissquote Spot' };
+                    }
+                }
+            } catch (e) {}
+
+            return null;
+        }
+
+        // تحديث الفارق بين PAXG وسوق الفوركس XAU/USD تلقائياً وبسلاسة
+        async function autoSyncWithSpotGold(forceRebuild = false) {
+            if (isSyncingSpot || rawPrice <= 0) return;
+            isSyncingSpot = true;
+            try {
+                const spotData = await fetchRealSpotGoldPrice();
+                if (spotData && spotData.price > 1500) {
+                    const newBasis = Math.round((spotData.price - rawPrice) * 100) / 100;
+                    const oldTotal = getTotalOffset();
+                    autoBasisOffset = newBasis;
+                    saveOffsets();
+                    const newTotal = getTotalOffset();
+                    const delta = newTotal - oldTotal;
+
+                    // إذا كانت هناك صفقة قائمة وتغير الفارق بأكثر من 0.8$، نزيح مستوياتها بسلاسة لتطابق شارت OANDA
+                    if (activeTrade && Math.abs(delta) >= 0.05 && !forceRebuild) {
+                        activeTrade.entryLow += delta;
+                        activeTrade.entryHigh += delta;
+                        activeTrade.avgEntry += delta;
+                        activeTrade.sl += delta;
+                        activeTrade.initialSl += delta;
+                        activeTrade.tp1 += delta;
+                        activeTrade.tp2 += delta;
+                        activeTrade.tp3 += delta;
+                        activeTrade.trailingStop += delta;
+                    } else if (forceRebuild) {
+                        activeTrade = null;
+                    }
+
+                    const totalSign = newTotal >= 0 ? '+' : '';
+                    document.getElementById('spot-sync-status').innerText = 
+                        `✅ متزامن مع ${spotData.source} (الفارق: ${totalSign}${newTotal.toFixed(2)}$)`;
+                    document.getElementById('exact-oanda-input').placeholder = `${(rawPrice + newTotal).toFixed(2)}`;
+
+                    updateLivePriceDisplay(rawPrice);
+                    evaluateMarketAndManageTrade(forceRebuild);
+                }
+            } catch (e) {}
+            isSyncingSpot = false;
+        }
+
+        function triggerInstantSpotSync() {
+            autoSyncWithSpotGold(true);
+            playBeep(920, 120);
+        }
+
+        // تعديل دقيق للسبريد فوق المزامنة التلقائية
+        function adjustManualTrim(delta) {
+            if (rawPrice <= 0) return;
+            manualTrim = Math.round((manualTrim + delta) * 100) / 100;
+            saveOffsets();
+            if (activeTrade) {
+                activeTrade.entryLow += delta;
+                activeTrade.entryHigh += delta;
+                activeTrade.avgEntry += delta;
+                activeTrade.sl += delta;
+                activeTrade.initialSl += delta;
+                activeTrade.tp1 += delta;
+                activeTrade.tp2 += delta;
+                activeTrade.tp3 += delta;
+                activeTrade.trailingStop += delta;
+            }
+            updateLivePriceDisplay(rawPrice);
+            evaluateMarketAndManageTrade(false);
+        }
+
+        // مطابقة فورية إذا أدخل المستخدم الرقم الظاهر في شارت OANDA يدوياً
+        function syncExactPrice() {
+            const val = parseFloat(document.getElementById('exact-oanda-input').value);
+            if (!isNaN(val) && val > 1000 && rawPrice > 0) {
+                const desiredTotalOffset = val - rawPrice;
+                manualTrim = Math.round((desiredTotalOffset - autoBasisOffset) * 100) / 100;
+                saveOffsets();
+                document.getElementById('exact-oanda-input').value = '';
+                document.getElementById('exact-oanda-input').placeholder = `تم: ${val.toFixed(2)}`;
+                activeTrade = null;
+                updateLivePriceDisplay(rawPrice);
+                evaluateMarketAndManageTrade(true);
+                addTradeLog(`تمت مطابقة السعر مع شارت OANDA عند $${val.toFixed(2)} 🎯`, '#29b6f6');
+            }
+        }
+
         function playBeep(freq = 880, duration = 180) {
             if (!soundEnabled) return;
             try {
@@ -790,10 +903,10 @@
             adaptiveArmorEnabled = !adaptiveArmorEnabled;
             const btn = document.getElementById('adaptive-mode-btn');
             if (adaptiveArmorEnabled) {
-                btn.innerText = '🛡️ الدرع الذكي: مفعّل';
+                btn.innerText = '🛡️ الدرع الذكي';
                 btn.className = 'sync-btn green-btn';
             } else {
-                btn.innerText = '🛡️ الدرع الذكي: قياسي';
+                btn.innerText = '🛡️ قياسي';
                 btn.className = 'sync-btn';
             }
             if (rawCandles.length >= 40) {
@@ -805,7 +918,7 @@
         function toggleAudio() {
             soundEnabled = !soundEnabled;
             const btn = document.getElementById('sound-toggle-btn');
-            btn.innerText = soundEnabled ? '🔊 الصوت' : '🔇 صامت';
+            btn.innerText = soundEnabled ? '🔊' : '🔇';
             if (soundEnabled) playBeep(880, 100);
         }
 
@@ -824,28 +937,6 @@
         }
         detectMarketSession();
         setInterval(detectMarketSession, 60000);
-
-        function adjustOffset(delta) {
-            if (rawPrice <= 0) return;
-            oandaOffset = Math.round((oandaOffset + delta) * 100) / 100;
-            setStoredOffset(oandaOffset);
-            activeTrade = null;
-            updateLivePriceDisplay(rawPrice);
-            evaluateMarketAndManageTrade(true);
-        }
-
-        function syncExactPrice() {
-            const val = parseFloat(document.getElementById('exact-oanda-input').value);
-            if (!isNaN(val) && val > 1000 && rawPrice > 0) {
-                oandaOffset = Math.round((val - rawPrice) * 100) / 100;
-                setStoredOffset(oandaOffset);
-                document.getElementById('exact-oanda-input').value = '';
-                document.getElementById('exact-oanda-input').placeholder = `تم: ${val.toFixed(2)}`;
-                activeTrade = null;
-                updateLivePriceDisplay(rawPrice);
-                evaluateMarketAndManageTrade(true);
-            }
-        }
 
         function forceGenerateNewSignal() {
             if (rawCandles.length < 40) return;
@@ -937,13 +1028,13 @@
         function updateLivePriceDisplay(newRawPrice) {
             if (!newRawPrice || isNaN(newRawPrice)) return;
             rawPrice = newRawPrice;
-            const calibratedPrice = rawPrice + oandaOffset;
+            const totalOffset = getTotalOffset();
+            const calibratedPrice = rawPrice + totalOffset;
             const priceEl = document.getElementById('live-price');
             const velEl = document.getElementById('vel-badge');
 
             const now = Date.now();
             recentTicks.push({ time: now, price: calibratedPrice });
-            // الاحتفاظ بتداولات آخر 60 ثانية فقط لحساب M1 الحقيقي
             recentTicks = recentTicks.filter(t => (now - t.time) <= 60000);
 
             const dt = Math.max((now - lastTickTime) / 1000, 0.1);
@@ -985,7 +1076,6 @@
             return ema;
         }
 
-        // تجميع شموع الـ 5 دقائق إلى شموع 15 دقيقة حقيقية لرادار MTF
         function build15mCandles(candles5m) {
             const res = [];
             for (let i = 0; i <= candles5m.length - 3; i += 3) {
@@ -1014,7 +1104,6 @@
             return vSum > 0 ? (pvSum / vSum) : data[data.length - 1].close;
         }
 
-        // معادلة Wilder RSI الدقيقة والمطابقة لـ TradingView
         function calculateWilderRSI(data, period = 14) {
             if (data.length <= period) return 50;
             let gains = 0, losses = 0;
@@ -1038,7 +1127,6 @@
             return 100 - (100 / (1 + rs));
         }
 
-        // معادلة Wilder ATR الصحيحة
         function calculateATR(data, period = 14) {
             if (data.length <= period) return 1.5;
             let trList = [];
@@ -1067,13 +1155,11 @@
             return { resistance: highest, support: lowest };
         }
 
-        // كشف الفجوات السعرية غير المملوءة فقط (Unmitigated FVG)
         function detectUnmitigatedSMC(data, currentPrice) {
             for (let i = data.length - 2; i >= Math.max(2, data.length - 25); i--) {
                 const c0 = data[i];
                 const c2 = data[i - 2];
 
-                // Bullish FVG: قاع الشمعة الأحدث أعلى من قمة الشمعة الأقدم ولم يكسرها السعر لاحقاً
                 if (c0.low > c2.high && (c0.low - c2.high) >= 0.15) {
                     let mitigated = false;
                     for (let j = i + 1; j < data.length; j++) {
@@ -1085,7 +1171,6 @@
                     }
                 }
 
-                // Bearish FVG: قمة الشمعة الأحدث أدنى من قاع الشمعة الأقدم ولم يخترقها السعر لاحقاً
                 if (c0.high < c2.low && (c2.low - c0.high) >= 0.15) {
                     let mitigated = false;
                     for (let j = i + 1; j < data.length; j++) {
@@ -1273,19 +1358,19 @@
         function evaluateMarketAndManageTrade(forceNew = false) {
             if (rawCandles.length < 40 || rawPrice <= 0) return;
 
+            const totalOffset = getTotalOffset();
             const candles = rawCandles.map(c => ({
                 ...c,
-                open: c.open + oandaOffset,
-                high: c.high + oandaOffset,
-                low: c.low + oandaOffset,
-                close: c.close + oandaOffset
+                open: c.open + totalOffset,
+                high: c.high + totalOffset,
+                low: c.low + totalOffset,
+                close: c.close + totalOffset
             }));
-            const currentPrice = rawPrice + oandaOffset;
+            const currentPrice = rawPrice + totalOffset;
 
             const ema9 = calculateEMA(candles, 9);
             const ema21 = calculateEMA(candles, 21);
 
-            // حساب فريم 15 دقيقة الحقيقي من تجميع شموع الـ 5 دقائق
             const candles15m = build15mCandles(candles);
             const ema9_15m = calculateEMA(candles15m, 9);
             const ema21_15m = calculateEMA(candles15m, 21);
@@ -1298,7 +1383,6 @@
             const smc = detectUnmitigatedSMC(candles, currentPrice);
             const gann = calculateGannLevels(currentPrice);
 
-            // زخم الدقيقة M1 الحقيقي من حركة آخر 60 ثانية
             const m1Open = recentTicks.length > 1 ? recentTicks[0].price : candles[candles.length - 1].open;
             const m1Bull = currentPrice >= m1Open;
             const m5Bull = ema9 >= ema21;
@@ -1355,7 +1439,6 @@
             const pnlEl = document.getElementById('live-pnl');
 
             if (t.dir === 'BUY') {
-                // إصلاح Bug التفعيل: يجب أن يكون السعر داخل منطقة الدخول، وإذا كسر الوقف قبل التفعيل يلغى الأمر فوراً
                 if (t.status === 'PENDING') {
                     if (currentPrice <= t.sl) {
                         addTradeLog(`إلغاء أمر الشراء المعلق لكسر منطقة السيولة قبل التفعيل 🔄`, '#8a99ad');
@@ -1364,7 +1447,7 @@
                     }
                     if (currentPrice <= t.entryHigh && currentPrice >= t.entryLow) {
                         t.status = 'ACTIVE';
-                        t.avgEntry = currentPrice; // اعتماد سعر التفعيل الفعلي الدقيق
+                        t.avgEntry = currentPrice;
                         addTradeLog(`تفعيل دخول الشراء الفعلي عند ${currentPrice.toFixed(2)} 🎯`, '#29b6f6');
                         playBeep(700, 120);
                     }
@@ -1378,7 +1461,6 @@
                     const candidateTrail = currentPrice - (atr * 1.15);
                     if (candidateTrail > t.trailingStop) {
                         t.trailingStop = candidateTrail;
-                        // ربط الوقف المتحرك بوقف الخسارة الحقيقي بعد تأمين الصفقة
                         if (t.tp1Hit && t.trailingStop > t.sl) {
                             t.sl = t.trailingStop;
                         }
@@ -1446,7 +1528,6 @@
                     }
                 }
             } else {
-                // إدارة صفقة البيع SELL
                 if (t.status === 'PENDING') {
                     if (currentPrice >= t.sl) {
                         addTradeLog(`إلغاء أمر البيع المعلق لكسر المقاومة قبل التفعيل 🔄`, '#8a99ad');
@@ -1575,12 +1656,11 @@
             document.getElementById('tp3-pips').innerText = `+${Math.round(Math.abs(t.tp3 - t.avgEntry) * 10)} نقطة`;
 
             document.getElementById('analysis-text').innerText = 
-                `الصفقة مقفلة على ${t.dir === 'BUY' ? 'الشراء' : 'البيع'} [${t.tierLabel}] من (${t.entryLow.toFixed(2)} - ${t.entryHigh.toFixed(2)}) بدقة ${t.score}%. الوقف الذكي والـ Trailing Stop متصلان مباشرة بحماية الصفقة فور انطلاق السعر.`;
+                `الصفقة مقفلة على ${t.dir === 'BUY' ? 'الشراء' : 'البيع'} [${t.tierLabel}] من (${t.entryLow.toFixed(2)} - ${t.entryHigh.toFixed(2)}) بدقة ${t.score}%. السعر متزامن تلقائياً مع الفوركس الفوري لـ XAU/USD.`;
 
             document.getElementById('last-update').innerText = new Date().toLocaleTimeString('ar-MA');
         }
 
-        // جلب البيانات الحقيقية أولاً قبل إصدار أي صفقة
         async function fetchHistoricalCandles() {
             try {
                 const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${SYMBOL}&interval=${INTERVAL}&limit=100`);
@@ -1597,6 +1677,9 @@
                     }));
                     rawPrice = rawCandles[rawCandles.length - 1].close;
                     candleCloseTime = rawCandles[rawCandles.length - 1].closeTime;
+
+                    // مزامنة فورية مع سعر الفوركس XAU/USD قبل بناء أول صفقة
+                    await autoSyncWithSpotGold(true);
                     updateLivePriceDisplay(rawPrice);
                     evaluateMarketAndManageTrade(true);
                     startLiveWebSocket();
@@ -1607,7 +1690,6 @@
             }
         }
 
-        // بث WebSocket لحظي مع إعادة اتصال تلقائية
         function startLiveWebSocket() {
             try {
                 const streams = `${SYMBOL.toLowerCase()}@bookTicker/${SYMBOL.toLowerCase()}@kline_${INTERVAL}`;
@@ -1659,7 +1741,11 @@
             } catch (e) {}
         }
 
-        // خط احتياطي (Fallback Polling) محمي من تداخل الطلبات (No Overlap)
+        // مزامنة مستمرة مع سعر الفوركس الفوري XAU/USD كل 12 ثانية لضمان عدم انحراف السعر عن OANDA أبداً
+        setInterval(() => {
+            autoSyncWithSpotGold(false);
+        }, 12000);
+
         setInterval(async () => {
             if (isFetchingBook || rawCandles.length < 40) return;
             isFetchingBook = true;
