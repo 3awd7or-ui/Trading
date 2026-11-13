@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>20S PROJECTION - Live Dashboard</title>
+    <title>20S PROJECTION: ABOUT TO MOVE</title>
     <style>
         * {
             box-sizing: border-box;
@@ -15,108 +15,202 @@
             background-color: #0b0e14;
             color: #ffffff;
             padding: 10px;
+            font-size: 13px;
         }
-        .header {
+        /* Top Header Banner */
+        .top-banner {
             background: #12161f;
             border: 1px solid #1e2636;
             border-radius: 12px;
-            padding: 15px;
+            padding: 12px;
+            margin-bottom: 10px;
             text-align: center;
-            margin-bottom: 12px;
         }
-        .header h1 {
+        .top-banner h1 {
             font-size: 1.1rem;
             color: #00ff66;
-            margin-bottom: 5px;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
         }
-        .price-big {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #ffffff;
-        }
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-        .card {
-            background: #12161f;
-            border: 1px solid #1e2636;
-            border-radius: 10px;
-            padding: 12px;
-            text-align: center;
-        }
-        .card h3 {
-            font-size: 0.8rem;
+        .top-banner .sub-info {
+            font-size: 0.75rem;
             color: #8a99ad;
-            margin-bottom: 5px;
         }
-        .card .val {
-            font-size: 1.1rem;
-            font-weight: bold;
-        }
-        .probabilities {
+
+        /* Live Ticks & Action Grid */
+        .metrics-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 12px;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
         }
-        .prob-box {
-            background: #12161f;
-            border-radius: 10px;
-            padding: 12px;
-            border-top: 4px solid;
-        }
-        .prob-long { border-color: #00ff66; }
-        .prob-short { border-color: #ff3333; }
-        .prob-box h4 { font-size: 0.85rem; margin-bottom: 5px; }
-        .prob-box .pct { font-size: 1.3rem; font-weight: bold; }
-        
-        .global-status {
+        .metric-card {
             background: #12161f;
             border: 1px solid #1e2636;
-            border-radius: 10px;
-            padding: 12px;
-            text-align: center;
-            font-size: 0.9rem;
-            color: #00ff66;
+            border-radius: 8px;
+            padding: 8px;
+        }
+        .metric-card label {
+            font-size: 0.65rem;
+            color: #8a99ad;
+            display: block;
+            margin-bottom: 2px;
+        }
+        .metric-card .val {
+            font-size: 0.95rem;
             font-weight: bold;
+        }
+
+        /* Probabilities Split */
+        .prob-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .prob-card {
+            background: #12161f;
+            border: 1px solid #1e2636;
+            border-radius: 8px;
+            padding: 10px;
+        }
+        .prob-card.long-side { border-top: 3px solid #00ff66; }
+        .prob-card.short-side { border-top: 3px solid #ff3333; }
+        
+        .prob-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+        .prob-bar-bg {
+            background: #1a2230;
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+        .prob-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+        }
+        .details-box {
+            font-size: 0.65rem;
+            color: #8a99ad;
+            line-height: 1.4;
+        }
+        .details-box span {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        /* Global Risk Status */
+        .global-box {
+            background: #12161f;
+            border: 1px solid #1e2636;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            color: #00ff66;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+        }
+
+        /* Wick Console Section */
+        .console-section {
+            background: #12161f;
+            border: 1px solid #1e2636;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .console-title {
+            font-size: 0.7rem;
+            color: #8a99ad;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+        .console-content {
+            font-size: 0.7rem;
+            color: #d1d5db;
+            line-height: 1.3;
         }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>20S PROJECTION: LIVE MARKET</h1>
-        <div class="price-big" id="live-price">Loading...</div>
-        <p style="font-size: 0.75rem; color: #8a99ad; margin-top: 4px;">BTC/USDT Real-time WebSocket</p>
+    <!-- Top Main Banner -->
+    <div class="top-banner">
+        <h1 id="main-title">20S PROJECTION: ABOUT TO MOVE</h1>
+        <div style="font-size: 1.5rem; font-weight: bold; margin: 4px 0;" id="live-price">$70,881.08</div>
+        <div class="sub-info">Velocity <span id="vel-txt" style="color:#00ff66;">+$1.33/s</span> • Real-time WebSocket Feed</div>
     </div>
 
-    <div class="stats-grid">
-        <div class="card">
-            <h3>TICK VELOCITY</h3>
-            <div class="val" id="velocity-val" style="color: #00ff66;">$0.00/s</div>
+    <!-- Metrics Row -->
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <label>T+20s PRICE</label>
+            <div class="val" id="proj-price">$70,915.20</div>
+            <div style="font-size: 0.65rem; color: #00ff66;" id="pct-change">(+0.04%)</div>
         </div>
-        <div class="card">
-            <h3>20S ACTION</h3>
-            <div class="val" id="action-val" style="color: #00ff66;">UP ↗</div>
+        <div class="metric-card">
+            <label>TICK VELOCITY</label>
+            <div class="val" id="vel-box" style="color: #00ff66;">+1.33/s</div>
         </div>
-    </div>
-
-    <div class="probabilities">
-        <div class="prob-box prob-long">
-            <h4 style="color: #00ff66;">GO LONG (64%)</h4>
-            <div class="pct" style="color: #00ff66;">64.2%</div>
-        </div>
-        <div class="prob-box prob-short">
-            <h4 style="color: #ff3333;">GO SHORT (36%)</h4>
-            <div class="pct" style="color: #ff3333;">35.8%</div>
+        <div class="metric-card">
+            <label>20S ACTION</label>
+            <div class="val" id="action-box" style="color: #00ff66;">UP ↗</div>
         </div>
     </div>
 
-    <div class="global-status">
+    <!-- Probabilities Cards (Long vs Short) -->
+    <div class="prob-container">
+        <!-- Long Side -->
+        <div class="prob-card long-side">
+            <div class="prob-header" style="color: #00ff66;">
+                <span>GO LONG</span>
+                <span id="long-pct">64.2%</span>
+            </div>
+            <div class="prob-bar-bg">
+                <div class="prob-bar-fill" id="long-bar" style="width: 64.2%; background: #00ff66;"></div>
+            </div>
+            <div class="details-box">
+                Entry: <span id="long-entry">--</span><br>
+                Target: <span id="long-target">--</span><br>
+                Stop: <span id="long-stop">--</span>
+            </div>
+        </div>
+
+        <!-- Short Side -->
+        <div class="prob-card short-side">
+            <div class="prob-header" style="color: #ff3333;">
+                <span>GO SHORT</span>
+                <span id="short-pct">35.8%</span>
+            </div>
+            <div class="prob-bar-bg">
+                <div class="prob-bar-fill" id="short-bar" style="width: 35.8%; background: #ff3333;"></div>
+            </div>
+            <div class="details-box">
+                Entry: <span id="short-entry">--</span><br>
+                Target: <span id="short-target">--</span><br>
+                Stop: <span id="short-stop">--</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Risk Status -->
+    <div class="global-box" id="global-status">
         GLOBAL: RISK-ON 🟢
+    </div>
+
+    <!-- Wick Console -->
+    <div class="console-section">
+        <div class="console-title">Wick Console - The Thin Lines Left Behind</div>
+        <div class="console-content">
+            The circled lines in your photo are wicks/shadows. A long lower wick means buyers pushed back up from the low. Real-time candle reading active.
+        </div>
     </div>
 
     <script>
@@ -136,20 +230,42 @@
                 const priceChange = currentPrice - lastPrice;
                 const velocity = priceChange / timeDelta;
                 
-                document.getElementById('live-price').innerText = `$${currentPrice.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+                // Format Price
+                const formattedPrice = `$${currentPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                document.getElementById('live-price').innerText = formattedPrice;
                 
-                const velElement = document.getElementById('velocity-val');
-                velElement.innerText = `${velocity >= 0 ? '+' : ''}${velocity.toFixed(2)}$/s`;
-                velElement.style.color = velocity >= 0 ? '#00ff66' : '#ff3333';
+                // Proj Price (estimated 20s forward based on velocity)
+                const proj = currentPrice + (velocity * 20);
+                document.getElementById('proj-price').innerText = `$${proj.toFixed(2)}`;
+
+                // Velocity & Action
+                const velStr = `${velocity >= 0 ? '+' : ''}${velocity.toFixed(2)}/s`;
+                document.getElementById('vel-txt').innerText = velStr;
+                document.getElementById('vel-box').innerText = velStr;
+                document.getElementById('vel-box').style.color = velocity >= 0 ? '#00ff66' : '#ff3333';
                 
-                const actionElement = document.getElementById('action-val');
-                if (priceChange >= 0) {
-                    actionElement.innerText = "UP ↗";
-                    actionElement.style.color = "#00ff66";
+                const actionBox = document.getElementById('action-box');
+                const mainTitle = document.getElementById('main-title');
+                if (velocity >= 0) {
+                    actionBox.innerText = "UP ↗";
+                    actionBox.style.color = "#00ff66";
+                    mainTitle.innerText = "20S PROJECTION: ABOUT TO MOVE UP";
+                    mainTitle.style.color = "#00ff66";
                 } else {
-                    actionElement.innerText = "SHORT ↘";
-                    actionElement.style.color = "#ff3333";
+                    actionBox.innerText = "SHORT ↘";
+                    actionBox.style.color = "#ff3333";
+                    mainTitle.innerText = "20S PROJECTION: ABOUT TO MOVE DOWN";
+                    mainTitle.style.color = "#ff3333";
                 }
+
+                // Dynamic Trade levels simulation based on current price
+                document.getElementById('long-entry').innerText = (currentPrice - 15).toFixed(1);
+                document.getElementById('long-target').innerText = (currentPrice + 45).toFixed(1);
+                document.getElementById('long-stop').innerText = (currentPrice - 30).toFixed(1);
+
+                document.getElementById('short-entry').innerText = (currentPrice + 15).toFixed(1);
+                document.getElementById('short-target').innerText = (currentPrice - 45).toFixed(1);
+                document.getElementById('short-stop').innerText = (currentPrice + 30).toFixed(1);
 
                 lastPrice = currentPrice;
                 lastTime = currentTime;
