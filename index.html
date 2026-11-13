@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>20S PROJECTION - Live Dashboard</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        body {
+            background-color: #0b0e14;
+            color: #ffffff;
+            padding: 10px;
+        }
+        .header {
+            background: #12161f;
+            border: 1px solid #1e2636;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+        .header h1 {
+            font-size: 1.1rem;
+            color: #00ff66;
+            margin-bottom: 5px;
+        }
+        .price-big {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ffffff;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .card {
+            background: #12161f;
+            border: 1px solid #1e2636;
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+        }
+        .card h3 {
+            font-size: 0.8rem;
+            color: #8a99ad;
+            margin-bottom: 5px;
+        }
+        .card .val {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+        .probabilities {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .prob-box {
+            background: #12161f;
+            border-radius: 10px;
+            padding: 12px;
+            border-top: 4px solid;
+        }
+        .prob-long { border-color: #00ff66; }
+        .prob-short { border-color: #ff3333; }
+        .prob-box h4 { font-size: 0.85rem; margin-bottom: 5px; }
+        .prob-box .pct { font-size: 1.3rem; font-weight: bold; }
+        
+        .global-status {
+            background: #12161f;
+            border: 1px solid #1e2636;
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #00ff66;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>20S PROJECTION: LIVE MARKET</h1>
+        <div class="price-big" id="live-price">Loading...</div>
+        <p style="font-size: 0.75rem; color: #8a99ad; margin-top: 4px;">BTC/USDT Real-time WebSocket</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="card">
+            <h3>TICK VELOCITY</h3>
+            <div class="val" id="velocity-val" style="color: #00ff66;">$0.00/s</div>
+        </div>
+        <div class="card">
+            <h3>20S ACTION</h3>
+            <div class="val" id="action-val" style="color: #00ff66;">UP ↗</div>
+        </div>
+    </div>
+
+    <div class="probabilities">
+        <div class="prob-box prob-long">
+            <h4 style="color: #00ff66;">GO LONG (64%)</h4>
+            <div class="pct" style="color: #00ff66;">64.2%</div>
+        </div>
+        <div class="prob-box prob-short">
+            <h4 style="color: #ff3333;">GO SHORT (36%)</h4>
+            <div class="pct" style="color: #ff3333;">35.8%</div>
+        </div>
+    </div>
+
+    <div class="global-status">
+        GLOBAL: RISK-ON 🟢
+    </div>
+
+    <script>
+        const ws = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@trade');
+
+        let lastPrice = 0;
+        let lastTime = Date.now();
+
+        ws.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            const currentPrice = parseFloat(data.p);
+            const currentTime = Date.now();
+            
+            const timeDelta = (currentTime - lastTime) / 1000;
+            
+            if (timeDelta >= 0.3) {
+                const priceChange = currentPrice - lastPrice;
+                const velocity = priceChange / timeDelta;
+                
+                document.getElementById('live-price').innerText = `$${currentPrice.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+                
+                const velElement = document.getElementById('velocity-val');
+                velElement.innerText = `${velocity >= 0 ? '+' : ''}${velocity.toFixed(2)}$/s`;
+                velElement.style.color = velocity >= 0 ? '#00ff66' : '#ff3333';
+                
+                const actionElement = document.getElementById('action-val');
+                if (priceChange >= 0) {
+                    actionElement.innerText = "UP ↗";
+                    actionElement.style.color = "#00ff66";
+                } else {
+                    actionElement.innerText = "SHORT ↘";
+                    actionElement.style.color = "#ff3333";
+                }
+
+                lastPrice = currentPrice;
+                lastTime = currentTime;
+            }
+        };
+    </script>
+</body>
+</html>
