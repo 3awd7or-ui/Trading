@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EMMS & OANDA XAU/USD • AI Sniper Engine Pro</title>
+    <title>EMMS & OANDA XAU/USD • AI Sniper Engine Pro (Fixed)</title>
     <style>
         :root {
             --bg-main: #06080d;
@@ -490,13 +490,13 @@
             <div>
                 <div class="asset-name">Gold Spot / U.S. Dollar • 5 • OANDA</div>
                 <div class="asset-sub">
-                    <span class="live-dot"></span>
+                    <span class="live-dot" id="conn-dot"></span>
                     <span id="session-badge">جارِ فحص الجلسة...</span>
                 </div>
             </div>
         </div>
         <div class="live-price-box">
-            <div class="live-price" id="live-price">$3915.88</div>
+            <div class="live-price" id="live-price">جارِ المزامنة...</div>
             <div class="price-sub-row">
                 <span id="vel-badge" style="color: var(--green);">+0.00$/s</span>
                 <span id="candle-timer">5m: --:--</span>
@@ -515,14 +515,14 @@
         <div style="display:flex; gap:5px; flex-wrap:wrap;">
             <button class="sync-btn green-btn" id="adaptive-mode-btn" onclick="toggleAdaptiveArmor()">🛡️ الدرع الذكي: مفعّل</button>
             <button class="sync-btn" id="sound-toggle-btn" onclick="toggleAudio()">🔊 الصوت</button>
-            <button class="sync-btn gold-btn" onclick="forceGenerateNewSignal()">🔄 توليد صفقة جديدة الآن</button>
+            <button class="sync-btn gold-btn" onclick="forceGenerateNewSignal()">🔄 توليد صفقة جديدة</button>
         </div>
     </div>
 
     <!-- Multi-Timeframe Radar & Order Book Imbalance -->
     <div class="pro-bar">
         <div class="mtf-row">
-            <span style="font-size: 0.7rem; color: var(--gold); font-weight: bold;">🧭 رادار الفريمات (MTF Alignment):</span>
+            <span style="font-size: 0.7rem; color: var(--gold); font-weight: bold;">🧭 رادار الفريمات الحقيقي (M1 / M5 / M15):</span>
             <div class="mtf-badges">
                 <span class="mtf-pill" id="mtf-1m">M1: --</span>
                 <span class="mtf-pill" id="mtf-5m">M5: --</span>
@@ -559,8 +559,8 @@
     <div class="decision-card">
         <div class="decision-header">
             <div>
-                <div style="font-size: 0.7rem; color: var(--text-muted);">نظام القناص التكيفي (ثبات عدد الصفقات + دقة مضاعفة)</div>
-                <div class="signal-main" id="signal-title" style="color: var(--gold);">جارِ بناء الصفقة...</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted);">نظام القناص التكيفي (ثبات الصفقة + وقف متحرك فعلي)</div>
+                <div class="signal-main" id="signal-title" style="color: var(--gold);">جارِ سحب بيانات السوق...</div>
                 <div>
                     <span class="tier-badge" id="tier-badge" style="background: rgba(245,176,65,0.2); color: var(--gold);">💎 A+ VIP</span>
                     <span class="trade-state-badge" id="trade-state-badge" style="background: rgba(41,182,246,0.15); color: var(--blue);">⏳ بانتظار التفعيل</span>
@@ -587,7 +587,7 @@
             <div class="matrix-val" id="ema-status">--</div>
         </div>
         <div class="matrix-item">
-            <div class="matrix-label">RSI (14) + التشبع</div>
+            <div class="matrix-label">Wilder RSI (14)</div>
             <div class="matrix-val" id="rsi-status">--</div>
         </div>
         <div class="matrix-item">
@@ -603,7 +603,7 @@
             <div class="matrix-val" id="sr-zone" style="color: var(--blue); direction:ltr;">--</div>
         </div>
         <div class="matrix-item">
-            <div class="matrix-label">Order Block / FVG</div>
+            <div class="matrix-label">Unmitigated FVG</div>
             <div class="matrix-val" id="fvg-zone" style="color: var(--purple); direction:ltr;">--</div>
         </div>
         <div class="matrix-item">
@@ -628,10 +628,10 @@
 
         <div class="level-box sl-box">
             <div class="box-head">
-                <span>🛡️ وقف الخسارة الذكي (Smart SL)</span>
+                <span>🛡️ وقف الخسارة الذكي (Smart SL + Trail)</span>
             </div>
             <div class="price-level" id="sl-price" style="color: var(--red);">--</div>
-            <div class="box-desc" id="be-level">تأمين مبكر عند +50% من TP1 لمنع ضرب الوقف</div>
+            <div class="box-desc" id="be-level">تأمين مبكر عند +55% من TP1 لمنع ضرب الوقف</div>
         </div>
     </div>
 
@@ -662,7 +662,7 @@
         </div>
     </div>
 
-    <!-- Smart Lot Size & Risk Calculator (XM / FundingPips Ready) -->
+    <!-- Smart Lot Size & Risk Calculator -->
     <div class="calc-card">
         <div style="display:flex; justify-content:space-between; align-items:center;">
             <span style="color: var(--gold); font-weight: bold; font-size: 0.72rem;">🧮 حاسبة اللوت التكيفية (توازن اللوت حسب رتبة الصفقة)</span>
@@ -690,14 +690,17 @@
             <span>📡 التقرير التحليلي المؤسسي للصفقة القائمة</span>
             <span id="last-update" style="color: var(--text-muted); font-weight:normal;">--:--:--</span>
         </div>
-        <div id="analysis-text">جارِ مزامنة السعر وبناء أول صفقة...</div>
+        <div id="analysis-text">جارِ الاتصال بمزود السيولة الحية وسحب آخر 100 شمعة...</div>
     </div>
 
     <!-- Trade Log History & Win Rate Stats -->
     <div class="algo-console">
-        <div style="color: var(--blue); font-weight: bold; margin-bottom: 6px; display:flex; justify-content:space-between;">
-            <span>📋 سجل الصفقات وإحصائيات الأداء (Performance)</span>
-            <span id="win-rate-badge" style="color: var(--green);">نسبة النجاح: 100%</span>
+        <div style="color: var(--blue); font-weight: bold; margin-bottom: 6px; display:flex; justify-content:space-between; align-items:center;">
+            <span>📋 سجل الصفقات وإحصائيات الأداء</span>
+            <div>
+                <span id="win-rate-badge" style="color: var(--green); margin-left:8px;">نسبة النجاح: 100%</span>
+                <button class="sync-btn" onclick="resetStats()" style="padding:2px 6px; font-size:0.6rem;">تصفير السجل</button>
+            </div>
         </div>
         <div class="stats-bar">
             <span>إجمالي الصفقات: <strong id="stat-total" style="color:#fff;">0</strong></span>
@@ -714,39 +717,74 @@
         const SYMBOL = 'PAXGUSDT';
         const INTERVAL = '5m';
         let rawCandles = [];
-        let rawPrice = 3910.55;
+        let rawPrice = 0;
         let lastDisplayedPrice = 0;
         let lastTickTime = Date.now();
         let candleCloseTime = Date.now() + 300000;
         let soundEnabled = true;
-        let adaptiveArmorEnabled = true; // يحافظ على عدد الصفقات 100% ويرفع نسبة النجاح بالتأمين المبكر واللوت الذكي
-        let orderBookImbalance = 0.08;
+        let adaptiveArmorEnabled = true;
+        let orderBookImbalance = 0.0;
+        let recentTicks = []; // لحساب زخم الدقيقة M1 الحقيقي
+        let isFetchingBook = false;
+        let isFetchingKlines = false;
+        let sharedAudioCtx = null;
 
-        let perfStats = {
-            total: 0,
-            wins: 0,
-            losses: 0,
-            netPips: 0
-        };
+        // استرجاع الإحصائيات المحفوظة
+        let perfStats = { total: 0, wins: 0, losses: 0, netPips: 0 };
+        try {
+            const savedStats = JSON.parse(localStorage.getItem('emms_perf_stats'));
+            if (savedStats && typeof savedStats.total === 'number') perfStats = savedStats;
+        } catch (e) {}
+
+        function savePerfStats() {
+            try { localStorage.setItem('emms_perf_stats', JSON.stringify(perfStats)); } catch (e) {}
+        }
+
+        function resetStats() {
+            perfStats = { total: 0, wins: 0, losses: 0, netPips: 0 };
+            tradeLogs = [];
+            savePerfStats();
+            updatePerfStatsUI();
+            document.getElementById('trade-log-list').innerHTML = '<div style="color: var(--text-muted); font-size: 0.68rem;">تم تصفير السجل بنجاح.</div>';
+        }
 
         function getStoredOffset() {
             try {
                 const v = parseFloat(localStorage.getItem('oanda_offset_v2'));
                 if (!isNaN(v)) return v;
-                localStorage.setItem('oanda_offset_v2', '5.33');
             } catch (e) {}
             return 5.33;
         }
 
         function setStoredOffset(val) {
-            try {
-                localStorage.setItem('oanda_offset_v2', String(val));
-            } catch (e) {}
+            try { localStorage.setItem('oanda_offset_v2', String(val)); } catch (e) {}
         }
 
         let oandaOffset = getStoredOffset();
         let activeTrade = null;
         let tradeLogs = [];
+
+        // محرك صوتي موحد (يمنع تعطل الصوت على iOS Safari)
+        function playBeep(freq = 880, duration = 180) {
+            if (!soundEnabled) return;
+            try {
+                if (!sharedAudioCtx) {
+                    sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (sharedAudioCtx.state === 'suspended') {
+                    sharedAudioCtx.resume();
+                }
+                const osc = sharedAudioCtx.createOscillator();
+                const gain = sharedAudioCtx.createGain();
+                osc.frequency.value = freq;
+                osc.type = 'sine';
+                gain.gain.setValueAtTime(0.10, sharedAudioCtx.currentTime);
+                osc.connect(gain);
+                gain.connect(sharedAudioCtx.destination);
+                osc.start();
+                osc.stop(sharedAudioCtx.currentTime + (duration / 1000));
+            } catch (e) {}
+        }
 
         function toggleAdaptiveArmor() {
             adaptiveArmorEnabled = !adaptiveArmorEnabled;
@@ -758,8 +796,10 @@
                 btn.innerText = '🛡️ الدرع الذكي: قياسي';
                 btn.className = 'sync-btn';
             }
-            activeTrade = null;
-            evaluateMarketAndManageTrade(true);
+            if (rawCandles.length >= 40) {
+                activeTrade = null;
+                evaluateMarketAndManageTrade(true);
+            }
         }
 
         function toggleAudio() {
@@ -767,22 +807,6 @@
             const btn = document.getElementById('sound-toggle-btn');
             btn.innerText = soundEnabled ? '🔊 الصوت' : '🔇 صامت';
             if (soundEnabled) playBeep(880, 100);
-        }
-
-        function playBeep(freq = 880, duration = 180) {
-            if (!soundEnabled) return;
-            try {
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.frequency.value = freq;
-                osc.type = 'sine';
-                gain.gain.setValueAtTime(0.12, ctx.currentTime);
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.start();
-                setTimeout(() => { osc.stop(); ctx.close(); }, duration);
-            } catch (e) {}
         }
 
         function detectMarketSession() {
@@ -799,8 +823,10 @@
             }
         }
         detectMarketSession();
+        setInterval(detectMarketSession, 60000);
 
         function adjustOffset(delta) {
+            if (rawPrice <= 0) return;
             oandaOffset = Math.round((oandaOffset + delta) * 100) / 100;
             setStoredOffset(oandaOffset);
             activeTrade = null;
@@ -822,6 +848,7 @@
         }
 
         function forceGenerateNewSignal() {
+            if (rawCandles.length < 40) return;
             activeTrade = null;
             evaluateMarketAndManageTrade(true);
             playBeep(950, 150);
@@ -880,11 +907,12 @@
             const rate = perfStats.total > 0 ? Math.round((perfStats.wins / perfStats.total) * 100) : 100;
             document.getElementById('win-rate-badge').innerText = `نسبة النجاح: ${rate}%`;
         }
+        updatePerfStatsUI();
 
         function addTradeLog(text, color = '#00e676') {
             const timeStr = new Date().toLocaleTimeString('ar-MA');
             tradeLogs.unshift({ time: timeStr, text, color });
-            if (tradeLogs.length > 7) tradeLogs.pop();
+            if (tradeLogs.length > 8) tradeLogs.pop();
 
             const container = document.getElementById('trade-log-list');
             container.innerHTML = tradeLogs.map(item => `
@@ -895,35 +923,10 @@
             `).join('');
         }
 
-        function seedFallbackCandles() {
-            if (rawCandles.length >= 40) return;
-            const now = Date.now();
-            let base = rawPrice;
-            rawCandles = [];
-            for (let i = 75; i >= 0; i--) {
-                const wave = Math.sin(i * 0.42) * 1.45 + Math.cos(i * 0.18) * 0.75;
-                const open = base + wave;
-                const close = base + Math.sin((i - 1) * 0.42) * 1.45 + Math.cos((i - 1) * 0.18) * 0.75;
-                const high = Math.max(open, close) + 0.90;
-                const low = Math.min(open, close) - 0.85;
-                const vol = 120 + Math.abs(Math.sin(i * 0.7)) * 180;
-                rawCandles.push({
-                    time: now - (i * 300000),
-                    open,
-                    high,
-                    low,
-                    close,
-                    volume: vol,
-                    closeTime: now - ((i - 1) * 300000)
-                });
-            }
-            rawPrice = rawCandles[rawCandles.length - 1].close;
-        }
-
         function updateOrderBookUI(bidQty, askQty) {
             const total = (bidQty + askQty) || 1;
             orderBookImbalance = (bidQty - askQty) / total;
-            const bidPct = Math.min(Math.max(Math.round((bidQty / total) * 100), 12), 88);
+            const bidPct = Math.min(Math.max(Math.round((bidQty / total) * 100), 10), 90);
             const askPct = 100 - bidPct;
 
             document.getElementById('bid-pct').innerText = `${bidPct}%`;
@@ -932,12 +935,17 @@
         }
 
         function updateLivePriceDisplay(newRawPrice) {
+            if (!newRawPrice || isNaN(newRawPrice)) return;
             rawPrice = newRawPrice;
             const calibratedPrice = rawPrice + oandaOffset;
             const priceEl = document.getElementById('live-price');
             const velEl = document.getElementById('vel-badge');
 
             const now = Date.now();
+            recentTicks.push({ time: now, price: calibratedPrice });
+            // الاحتفاظ بتداولات آخر 60 ثانية فقط لحساب M1 الحقيقي
+            recentTicks = recentTicks.filter(t => (now - t.time) <= 60000);
+
             const dt = Math.max((now - lastTickTime) / 1000, 0.1);
             const diff = calibratedPrice - (lastDisplayedPrice || calibratedPrice);
             const velocity = diff / dt;
@@ -954,7 +962,7 @@
                 velEl.style.color = 'var(--red)';
             }
 
-            setTimeout(() => { priceEl.style.color = 'var(--gold)'; }, 300);
+            setTimeout(() => { priceEl.style.color = 'var(--gold)'; }, 280);
 
             lastDisplayedPrice = calibratedPrice;
             lastTickTime = now;
@@ -968,12 +976,31 @@
         }
 
         function calculateEMA(data, period) {
+            if (!data || data.length === 0) return 0;
             const k = 2 / (period + 1);
             let ema = data[0].close;
             for (let i = 1; i < data.length; i++) {
                 ema = (data[i].close * k) + (ema * (1 - k));
             }
             return ema;
+        }
+
+        // تجميع شموع الـ 5 دقائق إلى شموع 15 دقيقة حقيقية لرادار MTF
+        function build15mCandles(candles5m) {
+            const res = [];
+            for (let i = 0; i <= candles5m.length - 3; i += 3) {
+                const c0 = candles5m[i];
+                const c1 = candles5m[i + 1];
+                const c2 = candles5m[i + 2];
+                res.push({
+                    open: c0.open,
+                    high: Math.max(c0.high, c1.high, c2.high),
+                    low: Math.min(c0.low, c1.low, c2.low),
+                    close: c2.close,
+                    volume: (c0.volume || 0) + (c1.volume || 0) + (c2.volume || 0)
+                });
+            }
+            return res;
         }
 
         function calculateVWMA(data, period = 14) {
@@ -987,30 +1014,47 @@
             return vSum > 0 ? (pvSum / vSum) : data[data.length - 1].close;
         }
 
-        function calculateRSI(data, period = 14) {
+        // معادلة Wilder RSI الدقيقة والمطابقة لـ TradingView
+        function calculateWilderRSI(data, period = 14) {
+            if (data.length <= period) return 50;
             let gains = 0, losses = 0;
-            for (let i = data.length - period; i < data.length; i++) {
+            for (let i = 1; i <= period; i++) {
                 const diff = data[i].close - data[i - 1].close;
                 if (diff >= 0) gains += diff;
                 else losses -= diff;
             }
-            const avgLoss = losses / period;
+            let avgGain = gains / period;
+            let avgLoss = losses / period;
+
+            for (let i = period + 1; i < data.length; i++) {
+                const diff = data[i].close - data[i - 1].close;
+                const gain = diff > 0 ? diff : 0;
+                const loss = diff < 0 ? -diff : 0;
+                avgGain = ((avgGain * (period - 1)) + gain) / period;
+                avgLoss = ((avgLoss * (period - 1)) + loss) / period;
+            }
             if (avgLoss === 0) return 100;
-            const rs = (gains / period) / avgLoss;
+            const rs = avgGain / avgLoss;
             return 100 - (100 / (1 + rs));
         }
 
+        // معادلة Wilder ATR الصحيحة
         function calculateATR(data, period = 14) {
-            let trSum = 0;
-            for (let i = data.length - period; i < data.length; i++) {
+            if (data.length <= period) return 1.5;
+            let trList = [];
+            for (let i = 1; i < data.length; i++) {
                 const tr = Math.max(
                     data[i].high - data[i].low,
                     Math.abs(data[i].high - data[i - 1].close),
                     Math.abs(data[i].low - data[i - 1].close)
                 );
-                trSum += tr;
+                trList.push(tr);
             }
-            return trSum / period;
+            let atr = trList.slice(0, period).reduce((a, b) => a + b, 0) / period;
+            for (let i = period; i < trList.length; i++) {
+                atr = ((atr * (period - 1)) + trList[i]) / period;
+            }
+            return atr;
         }
 
         function findSupportResistance(data) {
@@ -1023,15 +1067,34 @@
             return { resistance: highest, support: lowest };
         }
 
-        function detectSMCZone(data, currentPrice) {
-            for (let i = data.length - 2; i >= Math.max(2, data.length - 18); i--) {
+        // كشف الفجوات السعرية غير المملوءة فقط (Unmitigated FVG)
+        function detectUnmitigatedSMC(data, currentPrice) {
+            for (let i = data.length - 2; i >= Math.max(2, data.length - 25); i--) {
                 const c0 = data[i];
                 const c2 = data[i - 2];
+
+                // Bullish FVG: قاع الشمعة الأحدث أعلى من قمة الشمعة الأقدم ولم يكسرها السعر لاحقاً
                 if (c0.low > c2.high && (c0.low - c2.high) >= 0.15) {
-                    return { type: 'BULL_FVG', label: `FVG ↗ $${c2.high.toFixed(1)}`, level: (c0.low + c2.high) / 2 };
+                    let mitigated = false;
+                    for (let j = i + 1; j < data.length; j++) {
+                        if (data[j].low <= c2.high) { mitigated = true; break; }
+                    }
+                    if (!mitigated) {
+                        const mid = (c0.low + c2.high) / 2;
+                        return { type: 'BULL_FVG', label: `FVG ↗ $${mid.toFixed(1)}`, level: mid };
+                    }
                 }
+
+                // Bearish FVG: قمة الشمعة الأحدث أدنى من قاع الشمعة الأقدم ولم يخترقها السعر لاحقاً
                 if (c0.high < c2.low && (c2.low - c0.high) >= 0.15) {
-                    return { type: 'BEAR_FVG', label: `FVG ↘ $${c2.low.toFixed(1)}`, level: (c0.high + c2.low) / 2 };
+                    let mitigated = false;
+                    for (let j = i + 1; j < data.length; j++) {
+                        if (data[j].high >= c2.low) { mitigated = true; break; }
+                    }
+                    if (!mitigated) {
+                        const mid = (c0.high + c2.low) / 2;
+                        return { type: 'BEAR_FVG', label: `FVG ↘ $${mid.toFixed(1)}`, level: mid };
+                    }
                 }
             }
             return { type: 'OB_ZONE', label: `OB $${(currentPrice - 0.8).toFixed(1)}`, level: currentPrice - 0.8 };
@@ -1090,36 +1153,33 @@
             document.getElementById('recommended-lot').innerText = `${lot.toFixed(2)} Lot`;
         }
 
-        // توليد صفقة ذكية دون تقليل عدد الصفقات إطلاقاً (تكييف الأهداف والدخول حسب قوة الاتجاه)
-        function createNewLockedSignal(candles, currentPrice, ema9, ema21, ema50, vwma, rsi, atr, crt, sr, smc, gann) {
+        function createNewLockedSignal(candles, currentPrice, ema9, ema21, m1Bull, m15Bull, vwma, rsi, atr, crt, sr, smc, gann) {
             let bullScore = 0, bearScore = 0;
-            if (ema9 > ema21) bullScore += 28; else bearScore += 28;
-            if (currentPrice > vwma) bullScore += 18; else bearScore += 18;
-            if (orderBookImbalance >= 0) bullScore += 14; else bearScore += 14;
-            if (rsi <= 32) bullScore += 25;
-            else if (rsi >= 68) bearScore += 25;
-            else if (rsi > 50) bullScore += 12;
-            else bearScore += 12;
+            if (ema9 > ema21) bullScore += 26; else bearScore += 26;
+            if (m15Bull) bullScore += 16; else bearScore += 16;
+            if (currentPrice > vwma) bullScore += 15; else bearScore += 15;
+            if (orderBookImbalance >= 0) bullScore += 10; else bearScore += 10;
 
-            if (crt.type.includes('BULL')) bullScore += 22;
-            if (crt.type.includes('BEAR')) bearScore += 22;
+            if (rsi <= 32) bullScore += 24;
+            else if (rsi >= 68) bearScore += 24;
+            else if (rsi > 50) bullScore += 10;
+            else bearScore += 10;
+
+            if (crt.type.includes('BULL')) bullScore += 20;
+            if (crt.type.includes('BEAR')) bearScore += 20;
             if (smc.type === 'BULL_FVG') bullScore += 12;
             if (smc.type === 'BEAR_FVG') bearScore += 12;
 
             const isBuy = bullScore >= bearScore;
             const rawConfidence = Math.min(Math.max(bullScore, bearScore), 97);
 
-            // فحص تطابق الفريمات الثلاثة
-            const m1Bull = currentPrice >= ema9;
             const m5Bull = ema9 >= ema21;
-            const m15Bull = ema21 >= ema50;
             const fullMtfAligned = (isBuy && m1Bull && m5Bull && m15Bull) || (!isBuy && !m1Bull && !m5Bull && !m15Bull);
 
-            // تصنيف الصفقة (لا نحذف أي صفقة، بل نكيف أبعادها لتفوز في كلتا الحالتين)
             let tier = 'SCALP_SHIELD';
             let tierLabel = '⚡ B+ Scalp (تأمين خاطف)';
             let riskMultiplier = 0.65;
-            let tp1Factor = 0.85; // هدف أول قريب جداً ومضمون في الحركات العرضية
+            let tp1Factor = 0.85;
             let tp2Factor = 1.85;
             let tp3Factor = 3.10;
 
@@ -1132,7 +1192,6 @@
                 tp3Factor = 3.80;
             }
 
-            // تحسين منطقة الدخول مغناطيسياً نحو أقرب مستوى Gann أو FVG لالتقاط ذيل الشمعة
             let entryLow, entryHigh, avgEntry, sl, tp1, tp2, tp3;
 
             if (isBuy) {
@@ -1141,8 +1200,8 @@
                 const magnet = (gann.support <= currentPrice && (currentPrice - gann.support) < atr * 0.5)
                     ? gann.support
                     : rawLow;
-                entryHigh = rawHigh;
-                entryLow = (rawLow + magnet) / 2;
+                entryHigh = Math.max(rawHigh, magnet);
+                entryLow = Math.min(rawLow, (rawLow + magnet) / 2);
                 avgEntry = (entryHigh + entryLow) / 2;
                 sl = avgEntry - (atr * 1.42);
                 const risk = avgEntry - sl;
@@ -1155,8 +1214,8 @@
                 const magnet = (gann.resist >= currentPrice && (gann.resist - currentPrice) < atr * 0.5)
                     ? gann.resist
                     : rawHigh;
-                entryLow = rawLow;
-                entryHigh = (rawHigh + magnet) / 2;
+                entryLow = Math.min(rawLow, magnet);
+                entryHigh = Math.max(rawHigh, (rawHigh + magnet) / 2);
                 avgEntry = (entryHigh + entryLow) / 2;
                 sl = avgEntry + (atr * 1.42);
                 const risk = sl - avgEntry;
@@ -1165,8 +1224,7 @@
                 tp3 = avgEntry - (risk * tp3Factor);
             }
 
-            // الدرع الذكي يرفع نسبة نجاح الصفقة الفعلي بفضل تقريب TP1 والتأمين عند 50%
-            const boostedScore = adaptiveArmorEnabled ? Math.min(rawConfidence + 9, 98) : rawConfidence;
+            const boostedScore = adaptiveArmorEnabled ? Math.min(rawConfidence + 8, 98) : rawConfidence;
 
             activeTrade = {
                 id: Date.now(),
@@ -1213,7 +1271,7 @@
         }
 
         function evaluateMarketAndManageTrade(forceNew = false) {
-            if (rawCandles.length < 40) seedFallbackCandles();
+            if (rawCandles.length < 40 || rawPrice <= 0) return;
 
             const candles = rawCandles.map(c => ({
                 ...c,
@@ -1226,18 +1284,25 @@
 
             const ema9 = calculateEMA(candles, 9);
             const ema21 = calculateEMA(candles, 21);
-            const ema50 = calculateEMA(candles, 50);
+
+            // حساب فريم 15 دقيقة الحقيقي من تجميع شموع الـ 5 دقائق
+            const candles15m = build15mCandles(candles);
+            const ema9_15m = calculateEMA(candles15m, 9);
+            const ema21_15m = calculateEMA(candles15m, 21);
+
             const vwma = calculateVWMA(candles, 14);
-            const rsi = calculateRSI(candles, 14);
-            const atr = Math.max(calculateATR(candles, 14), 1.1);
+            const rsi = calculateWilderRSI(candles, 14);
+            const atr = Math.max(calculateATR(candles, 14), 1.0);
             const crt = analyzeCRT(candles);
             const sr = findSupportResistance(candles);
-            const smc = detectSMCZone(candles, currentPrice);
+            const smc = detectUnmitigatedSMC(candles, currentPrice);
             const gann = calculateGannLevels(currentPrice);
 
-            const m1Bull = currentPrice >= ema9;
+            // زخم الدقيقة M1 الحقيقي من حركة آخر 60 ثانية
+            const m1Open = recentTicks.length > 1 ? recentTicks[0].price : candles[candles.length - 1].open;
+            const m1Bull = currentPrice >= m1Open;
             const m5Bull = ema9 >= ema21;
-            const m15Bull = ema21 >= ema50;
+            const m15Bull = ema9_15m >= ema21_15m;
 
             const setMtfPill = (id, label, isBull) => {
                 const el = document.getElementById(id);
@@ -1257,7 +1322,7 @@
             let rsiState = 'متوازن';
             if (rsi >= 70) rsiState = 'تشبع شرائي ⚠️';
             else if (rsi <= 30) rsiState = 'تشبع بيعي ⚡';
-            rsiEl.innerText = `${rsi.toFixed(0)} • ${rsiState}`;
+            rsiEl.innerText = `${rsi.toFixed(1)} • ${rsiState}`;
             rsiEl.style.color = rsi >= 70 ? 'var(--red)' : (rsi <= 30 ? 'var(--green)' : '#fff');
 
             document.getElementById('sr-zone').innerText = `${sr.support.toFixed(0)} / ${sr.resistance.toFixed(0)}`;
@@ -1282,7 +1347,7 @@
             projEl.style.color = projDelta >= 0 ? 'var(--green)' : 'var(--red)';
 
             if (!activeTrade || forceNew) {
-                createNewLockedSignal(candles, currentPrice, ema9, ema21, ema50, vwma, rsi, atr, crt, sr, smc, gann);
+                createNewLockedSignal(candles, currentPrice, ema9, ema21, m1Bull, m15Bull, vwma, rsi, atr, crt, sr, smc, gann);
             }
 
             const t = activeTrade;
@@ -1290,10 +1355,19 @@
             const pnlEl = document.getElementById('live-pnl');
 
             if (t.dir === 'BUY') {
-                if (t.status === 'PENDING' && currentPrice <= t.entryHigh) {
-                    t.status = 'ACTIVE';
-                    addTradeLog(`تفعيل دخول الشراء من ${currentPrice.toFixed(2)} 🎯`, '#29b6f6');
-                    playBeep(700, 120);
+                // إصلاح Bug التفعيل: يجب أن يكون السعر داخل منطقة الدخول، وإذا كسر الوقف قبل التفعيل يلغى الأمر فوراً
+                if (t.status === 'PENDING') {
+                    if (currentPrice <= t.sl) {
+                        addTradeLog(`إلغاء أمر الشراء المعلق لكسر منطقة السيولة قبل التفعيل 🔄`, '#8a99ad');
+                        createNewLockedSignal(candles, currentPrice, ema9, ema21, m1Bull, m15Bull, vwma, rsi, atr, crt, sr, smc, gann);
+                        return;
+                    }
+                    if (currentPrice <= t.entryHigh && currentPrice >= t.entryLow) {
+                        t.status = 'ACTIVE';
+                        t.avgEntry = currentPrice; // اعتماد سعر التفعيل الفعلي الدقيق
+                        addTradeLog(`تفعيل دخول الشراء الفعلي عند ${currentPrice.toFixed(2)} 🎯`, '#29b6f6');
+                        playBeep(700, 120);
+                    }
                 }
 
                 if (t.status !== 'PENDING') {
@@ -1302,28 +1376,33 @@
                     pnlEl.style.color = pips >= 0 ? 'var(--green)' : 'var(--red)';
 
                     const candidateTrail = currentPrice - (atr * 1.15);
-                    if (candidateTrail > t.trailingStop) t.trailingStop = candidateTrail;
+                    if (candidateTrail > t.trailingStop) {
+                        t.trailingStop = candidateTrail;
+                        // ربط الوقف المتحرك بوقف الخسارة الحقيقي بعد تأمين الصفقة
+                        if (t.tp1Hit && t.trailingStop > t.sl) {
+                            t.sl = t.trailingStop;
+                        }
+                    }
 
-                    // الدرع الذكي المبكر: إذا قطع السعر 55% من المسافة نحو TP1 نؤمن الدخول فوراً لمنع الانعكاس
                     const halfWayTp1 = t.avgEntry + ((t.tp1 - t.avgEntry) * 0.55);
                     if (adaptiveArmorEnabled && !t.earlyShieldHit && currentPrice >= halfWayTp1) {
                         t.earlyShieldHit = true;
                         t.status = 'BE_SECURED';
-                        t.sl = t.avgEntry + 0.10;
-                        addTradeLog(`تفعيل الدرع المبكر: نقل الوقف لنقطة الدخول لحماية الصفقة 🛡️`, '#29b6f6');
+                        t.sl = Math.max(t.sl, t.avgEntry + 0.10);
+                        addTradeLog(`تفعيل الدرع المبكر: نقل الوقف لنقطة الدخول (${t.sl.toFixed(2)}) 🛡️`, '#29b6f6');
                     }
 
                     if (!t.tp1Hit && currentPrice >= t.tp1) {
                         t.tp1Hit = true;
                         t.status = 'BE_SECURED';
-                        t.sl = t.avgEntry + 0.25;
+                        t.sl = Math.max(t.sl, t.avgEntry + 0.25, t.trailingStop);
                         document.getElementById('tp1-card').classList.add('hit');
                         addTradeLog(`تم ضرب الهدف الأول TP1 وتأمين الربح ✅`, '#00e676');
                         playBeep(1050, 220);
                     }
                     if (!t.tp2Hit && currentPrice >= t.tp2) {
                         t.tp2Hit = true;
-                        t.sl = t.tp1;
+                        t.sl = Math.max(t.sl, t.tp1, t.trailingStop);
                         document.getElementById('tp2-card').classList.add('hit');
                         addTradeLog(`تم ضرب الهدف الثاني TP2 وحجز الأرباح 🔥`, '#00e676');
                         playBeep(1200, 250);
@@ -1333,42 +1412,53 @@
                         perfStats.total++;
                         perfStats.wins++;
                         perfStats.netPips += wonPips;
+                        savePerfStats();
                         updatePerfStatsUI();
                         addTradeLog(`اكتمال الهدف الثالث TP3 بنجاح (+${wonPips.toFixed(0)} نقطة) 🏆`, '#f5b041');
-                        createNewLockedSignal(candles, currentPrice, ema9, ema21, ema50, vwma, rsi, atr, crt, sr, smc, gann);
+                        createNewLockedSignal(candles, currentPrice, ema9, ema21, m1Bull, m15Bull, vwma, rsi, atr, crt, sr, smc, gann);
                         return;
                     }
                     if (currentPrice <= t.sl) {
                         perfStats.total++;
                         if (t.tp1Hit || t.earlyShieldHit) {
-                            const secPips = t.tp1Hit ? (Math.abs(t.tp1 - t.avgEntry) * 10) : 1.5;
+                            const secPips = Math.max((t.sl - t.avgEntry) * 10, 1.5);
                             perfStats.wins++;
                             perfStats.netPips += secPips;
-                            addTradeLog(`إغلاق الصفقة على ربح مؤمّن (+${secPips.toFixed(1)} نقطة) 🛡️`, '#00e676');
+                            addTradeLog(`إغلاق الصفقة على الوقف المتحرك الربحي (+${secPips.toFixed(1)} نقطة) 🛡️`, '#00e676');
                         } else {
                             const lostPips = Math.abs(t.avgEntry - t.initialSl) * 10;
                             perfStats.losses++;
                             perfStats.netPips -= lostPips;
                             addTradeLog(`ضرب وقف الخسارة وتحديث الهيكل لتعويض فوري 🔄`, '#ff3d57');
                         }
+                        savePerfStats();
                         updatePerfStatsUI();
-                        createNewLockedSignal(candles, currentPrice, ema9, ema21, ema50, vwma, rsi, atr, crt, sr, smc, gann);
+                        createNewLockedSignal(candles, currentPrice, ema9, ema21, m1Bull, m15Bull, vwma, rsi, atr, crt, sr, smc, gann);
                         return;
                     }
                 } else {
                     pnlEl.innerText = 'بانتظار الدخول';
                     pnlEl.style.color = 'var(--gold)';
                     if (currentPrice > t.tp1) {
-                        addTradeLog(`تحرك السعر قبل لمس الأمر المعلق — تحديث منطقة القناص 🔄`, '#8a99ad');
-                        createNewLockedSignal(candles, currentPrice, ema9, ema21, ema50, vwma, rsi, atr, crt, sr, smc, gann);
+                        addTradeLog(`تحرك السعر للهدف قبل لمس الأمر المعلق — تحديث منطقة القناص 🔄`, '#8a99ad');
+                        createNewLockedSignal(candles, currentPrice, ema9, ema21, m1Bull, m15Bull, vwma, rsi, atr, crt, sr, smc, gann);
                         return;
                     }
                 }
             } else {
-                if (t.status === 'PENDING' && currentPrice >= t.entryLow) {
-                    t.status = 'ACTIVE';
-                    addTradeLog(`تفعيل دخول البيع من ${currentPrice.toFixed(2)} 🎯`, '#29b6f6');
-                    playBeep(700, 120);
+                // إدارة صفقة البيع SELL
+                if (t.status === 'PENDING') {
+                    if (currentPrice >= t.sl) {
+                        addTradeLog(`إلغاء أمر البيع المعلق لكسر المقاومة قبل التفعيل 🔄`, '#8a99ad');
+                        createNewLockedSignal(candles, currentPrice, ema9, ema21, m1Bull, m15Bull, vwma, rsi, atr, crt, sr, smc, gann);
+                        return;
+                    }
+                    if (currentPrice >= t.entryLow && currentPrice <= t.entryHigh) {
+                        t.status = 'ACTIVE';
+                        t.avgEntry = currentPrice;
+                        addTradeLog(`تفعيل دخول البيع الفعلي عند ${currentPrice.toFixed(2)} 🎯`, '#29b6f6');
+                        playBeep(700, 120);
+                    }
                 }
 
                 if (t.status !== 'PENDING') {
@@ -1377,27 +1467,32 @@
                     pnlEl.style.color = pips >= 0 ? 'var(--green)' : 'var(--red)';
 
                     const candidateTrail = currentPrice + (atr * 1.15);
-                    if (candidateTrail < t.trailingStop) t.trailingStop = candidateTrail;
+                    if (candidateTrail < t.trailingStop) {
+                        t.trailingStop = candidateTrail;
+                        if (t.tp1Hit && t.trailingStop < t.sl) {
+                            t.sl = t.trailingStop;
+                        }
+                    }
 
                     const halfWayTp1 = t.avgEntry - ((t.avgEntry - t.tp1) * 0.55);
                     if (adaptiveArmorEnabled && !t.earlyShieldHit && currentPrice <= halfWayTp1) {
                         t.earlyShieldHit = true;
                         t.status = 'BE_SECURED';
-                        t.sl = t.avgEntry - 0.10;
-                        addTradeLog(`تفعيل الدرع المبكر: نقل الوقف لنقطة الدخول لحماية الصفقة 🛡️`, '#29b6f6');
+                        t.sl = Math.min(t.sl, t.avgEntry - 0.10);
+                        addTradeLog(`تفعيل الدرع المبكر: نقل الوقف لنقطة الدخول (${t.sl.toFixed(2)}) 🛡️`, '#29b6f6');
                     }
 
                     if (!t.tp1Hit && currentPrice <= t.tp1) {
                         t.tp1Hit = true;
                         t.status = 'BE_SECURED';
-                        t.sl = t.avgEntry - 0.25;
+                        t.sl = Math.min(t.sl, t.avgEntry - 0.25, t.trailingStop);
                         document.getElementById('tp1-card').classList.add('hit');
                         addTradeLog(`تم ضرب الهدف الأول TP1 وتأمين الربح ✅`, '#00e676');
                         playBeep(1050, 220);
                     }
                     if (!t.tp2Hit && currentPrice <= t.tp2) {
                         t.tp2Hit = true;
-                        t.sl = t.tp1;
+                        t.sl = Math.min(t.sl, t.tp1, t.trailingStop);
                         document.getElementById('tp2-card').classList.add('hit');
                         addTradeLog(`تم ضرب الهدف الثاني TP2 وحجز الأرباح 🔥`, '#00e676');
                         playBeep(1200, 250);
@@ -1407,34 +1502,36 @@
                         perfStats.total++;
                         perfStats.wins++;
                         perfStats.netPips += wonPips;
+                        savePerfStats();
                         updatePerfStatsUI();
                         addTradeLog(`اكتمال الهدف الثالث TP3 بنجاح (+${wonPips.toFixed(0)} نقطة) 🏆`, '#f5b041');
-                        createNewLockedSignal(candles, currentPrice, ema9, ema21, ema50, vwma, rsi, atr, crt, sr, smc, gann);
+                        createNewLockedSignal(candles, currentPrice, ema9, ema21, m1Bull, m15Bull, vwma, rsi, atr, crt, sr, smc, gann);
                         return;
                     }
                     if (currentPrice >= t.sl) {
                         perfStats.total++;
                         if (t.tp1Hit || t.earlyShieldHit) {
-                            const secPips = t.tp1Hit ? (Math.abs(t.avgEntry - t.tp1) * 10) : 1.5;
+                            const secPips = Math.max((t.avgEntry - t.sl) * 10, 1.5);
                             perfStats.wins++;
                             perfStats.netPips += secPips;
-                            addTradeLog(`إغلاق الصفقة على ربح مؤمّن (+${secPips.toFixed(1)} نقطة) 🛡️`, '#00e676');
+                            addTradeLog(`إغلاق الصفقة على الوقف المتحرك الربحي (+${secPips.toFixed(1)} نقطة) 🛡️`, '#00e676');
                         } else {
                             const lostPips = Math.abs(t.initialSl - t.avgEntry) * 10;
                             perfStats.losses++;
                             perfStats.netPips -= lostPips;
                             addTradeLog(`ضرب وقف الخسارة وتحديث الهيكل لتعويض فوري 🔄`, '#ff3d57');
                         }
+                        savePerfStats();
                         updatePerfStatsUI();
-                        createNewLockedSignal(candles, currentPrice, ema9, ema21, ema50, vwma, rsi, atr, crt, sr, smc, gann);
+                        createNewLockedSignal(candles, currentPrice, ema9, ema21, m1Bull, m15Bull, vwma, rsi, atr, crt, sr, smc, gann);
                         return;
                     }
                 } else {
                     pnlEl.innerText = 'بانتظار الدخول';
                     pnlEl.style.color = 'var(--gold)';
                     if (currentPrice < t.tp1) {
-                        addTradeLog(`تحرك السعر قبل لمس الأمر المعلق — تحديث منطقة القناص 🔄`, '#8a99ad');
-                        createNewLockedSignal(candles, currentPrice, ema9, ema21, ema50, vwma, rsi, atr, crt, sr, smc, gann);
+                        addTradeLog(`تحرك السعر للهدف قبل لمس الأمر المعلق — تحديث منطقة القناص 🔄`, '#8a99ad');
+                        createNewLockedSignal(candles, currentPrice, ema9, ema21, m1Bull, m15Bull, vwma, rsi, atr, crt, sr, smc, gann);
                         return;
                     }
                 }
@@ -1458,7 +1555,7 @@
                 stateBadge.style.background = 'rgba(41,182,246,0.15)';
                 stateBadge.style.color = 'var(--blue)';
             } else if (t.status === 'BE_SECURED') {
-                stateBadge.innerText = '🛡️ مؤمّنة بالكامل (صفر مخاطرة - Break Even)';
+                stateBadge.innerText = '🛡️ مؤمّنة بالكامل (Break-Even / Trailing)';
                 stateBadge.style.background = 'rgba(0,230,118,0.18)';
                 stateBadge.style.color = 'var(--green)';
             }
@@ -1478,16 +1575,17 @@
             document.getElementById('tp3-pips').innerText = `+${Math.round(Math.abs(t.tp3 - t.avgEntry) * 10)} نقطة`;
 
             document.getElementById('analysis-text').innerText = 
-                `الصفقة مقفلة على ${t.dir === 'BUY' ? 'الشراء' : 'البيع'} [${t.tierLabel}] من (${t.entryLow.toFixed(2)} - ${t.entryHigh.toFixed(2)}) بدقة ${t.score}%. يتم تأمين الدخول تلقائياً عند منتصف المسافة لـ TP1 لضمان عدم خسارة أي صفقة ترتد من منتصف الطريق مع الحفاظ على كامل عدد الفرص.`;
+                `الصفقة مقفلة على ${t.dir === 'BUY' ? 'الشراء' : 'البيع'} [${t.tierLabel}] من (${t.entryLow.toFixed(2)} - ${t.entryHigh.toFixed(2)}) بدقة ${t.score}%. الوقف الذكي والـ Trailing Stop متصلان مباشرة بحماية الصفقة فور انطلاق السعر.`;
 
             document.getElementById('last-update').innerText = new Date().toLocaleTimeString('ar-MA');
         }
 
+        // جلب البيانات الحقيقية أولاً قبل إصدار أي صفقة
         async function fetchHistoricalCandles() {
             try {
                 const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${SYMBOL}&interval=${INTERVAL}&limit=100`);
                 const data = await res.json();
-                if (Array.isArray(data) && data.length >= 40) {
+                if (Array.isArray(data) && data.length >= 45) {
                     rawCandles = data.map(c => ({
                         time: c[0],
                         open: parseFloat(c[1]),
@@ -1499,17 +1597,72 @@
                     }));
                     rawPrice = rawCandles[rawCandles.length - 1].close;
                     candleCloseTime = rawCandles[rawCandles.length - 1].closeTime;
-                } else {
-                    seedFallbackCandles();
+                    updateLivePriceDisplay(rawPrice);
+                    evaluateMarketAndManageTrade(true);
+                    startLiveWebSocket();
                 }
             } catch (err) {
-                seedFallbackCandles();
+                document.getElementById('analysis-text').innerText = 'جارِ إعادة الاتصال بخادم الأسعار...';
+                setTimeout(fetchHistoricalCandles, 2500);
             }
-            updateLivePriceDisplay(rawPrice);
-            evaluateMarketAndManageTrade(true);
         }
 
+        // بث WebSocket لحظي مع إعادة اتصال تلقائية
+        function startLiveWebSocket() {
+            try {
+                const streams = `${SYMBOL.toLowerCase()}@bookTicker/${SYMBOL.toLowerCase()}@kline_${INTERVAL}`;
+                const ws = new WebSocket(`wss://stream.binance.com:9443/stream?streams=${streams}`);
+
+                ws.onmessage = function(event) {
+                    const payload = JSON.parse(event.data);
+                    if (!payload || !payload.data) return;
+                    const d = payload.data;
+
+                    if (d.b && d.a) {
+                        const bidP = parseFloat(d.b);
+                        const askP = parseFloat(d.a);
+                        const bidQ = parseFloat(d.B) || 1;
+                        const askQ = parseFloat(d.A) || 1;
+                        updateOrderBookUI(bidQ, askQ);
+
+                        const mid = (bidP + askP) / 2;
+                        if (!isNaN(mid) && Math.abs(mid - rawPrice) >= 0.005) {
+                            updateLivePriceDisplay(mid);
+                            evaluateMarketAndManageTrade(false);
+                        }
+                    } else if (d.e === 'kline') {
+                        const k = d.k;
+                        candleCloseTime = k.T;
+                        const updated = {
+                            time: k.t,
+                            open: parseFloat(k.o),
+                            high: parseFloat(k.h),
+                            low: parseFloat(k.l),
+                            close: parseFloat(k.c),
+                            volume: parseFloat(k.v),
+                            closeTime: k.T
+                        };
+                        if (rawCandles.length > 0 && rawCandles[rawCandles.length - 1].time === updated.time) {
+                            rawCandles[rawCandles.length - 1] = updated;
+                        } else {
+                            rawCandles.push(updated);
+                            if (rawCandles.length > 100) rawCandles.shift();
+                        }
+                        updateLivePriceDisplay(updated.close);
+                        evaluateMarketAndManageTrade(false);
+                    }
+                };
+
+                ws.onclose = function() {
+                    setTimeout(startLiveWebSocket, 3000);
+                };
+            } catch (e) {}
+        }
+
+        // خط احتياطي (Fallback Polling) محمي من تداخل الطلبات (No Overlap)
         setInterval(async () => {
+            if (isFetchingBook || rawCandles.length < 40) return;
+            isFetchingBook = true;
             try {
                 const res = await fetch(`https://api.binance.com/api/v3/ticker/bookTicker?symbol=${SYMBOL}`);
                 const data = await res.json();
@@ -1525,9 +1678,12 @@
                     evaluateMarketAndManageTrade(false);
                 }
             } catch (e) {}
-        }, 1200);
+            isFetchingBook = false;
+        }, 2000);
 
         setInterval(async () => {
+            if (isFetchingKlines || rawCandles.length < 40) return;
+            isFetchingKlines = true;
             try {
                 const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${SYMBOL}&interval=${INTERVAL}&limit=2`);
                 const data = await res.json();
@@ -1553,7 +1709,8 @@
                     evaluateMarketAndManageTrade(false);
                 }
             } catch (e) {}
-        }, 8000);
+            isFetchingKlines = false;
+        }, 10000);
 
         setInterval(() => {
             const rem = candleCloseTime - Date.now();
@@ -1566,9 +1723,6 @@
             }
         }, 1000);
 
-        seedFallbackCandles();
-        updateLivePriceDisplay(rawPrice);
-        evaluateMarketAndManageTrade(true);
         fetchHistoricalCandles();
     </script>
 </body>
