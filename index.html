@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>OANDA XAU/USD • 5m AI Sniper</title>
+    <title>EMMS & OANDA XAU/USD • AI Sniper Engine</title>
     <style>
         :root {
             --bg-main: #06080d;
@@ -12,6 +12,7 @@
             --gold: #f5b041;
             --green: #00e676;
             --red: #ff3d57;
+            --blue: #29b6f6;
             --text-muted: #8a99ad;
         }
         * {
@@ -105,18 +106,18 @@
             justify-content: flex-end;
         }
 
-        /* Quick OANDA Exact Sync Bar */
+        /* Session & Sync Bar */
         .sync-bar {
             background: #0d121b;
             border: 1px dashed #2a364f;
             border-radius: 8px;
-            padding: 8px 10px;
-            margin-bottom: 10px;
+            padding: 7px 10px;
+            margin-bottom: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             gap: 6px;
-            font-size: 0.72rem;
+            font-size: 0.7rem;
             flex-wrap: wrap;
         }
         .sync-controls {
@@ -133,7 +134,7 @@
             padding: 4px 7px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 0.7rem;
+            font-size: 0.68rem;
         }
         .sync-btn.gold-btn {
             background: rgba(245, 176, 65, 0.2);
@@ -146,9 +147,9 @@
             color: var(--gold);
             border-radius: 5px;
             padding: 3px 6px;
-            width: 78px;
+            width: 75px;
             font-weight: bold;
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             text-align: center;
         }
 
@@ -166,24 +167,25 @@
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
-            font-size: 0.75rem;
+            font-size: 0.74rem;
             color: var(--gold);
             font-weight: bold;
             background: rgba(245,176,65,0.07);
         }
         .tv-iframe-wrap {
-            height: 250px;
+            height: 230px;
             width: 100%;
             display: block;
         }
 
-        /* Main Decision Card */
+        /* Locked Signal Card */
         .decision-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 14px;
+            padding: 13px;
             margin-bottom: 10px;
+            position: relative;
         }
         .decision-header {
             display: flex;
@@ -192,25 +194,24 @@
             margin-bottom: 10px;
         }
         .signal-main {
-            font-size: 1.35rem;
+            font-size: 1.3rem;
             font-weight: 900;
         }
-        .signal-icon-box {
-            width: 42px;
-            height: 42px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.3rem;
+        .trade-state-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.68rem;
             font-weight: bold;
+            margin-top: 4px;
         }
         .decision-meta {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             border-top: 1px solid var(--border);
             padding-top: 9px;
-            font-size: 0.76rem;
+            font-size: 0.74rem;
             color: var(--text-muted);
         }
 
@@ -229,12 +230,12 @@
             text-align: center;
         }
         .matrix-label {
-            font-size: 0.62rem;
+            font-size: 0.6rem;
             color: var(--text-muted);
             margin-bottom: 3px;
         }
         .matrix-val {
-            font-size: 0.75rem;
+            font-size: 0.73rem;
             font-weight: bold;
         }
 
@@ -276,7 +277,7 @@
             font-variant-numeric: tabular-nums;
         }
         .box-desc {
-            font-size: 0.65rem;
+            font-size: 0.64rem;
             color: var(--text-muted);
             line-height: 1.35;
         }
@@ -294,6 +295,11 @@
             border-right: 3px solid var(--green);
             border-radius: 10px;
             padding: 10px 12px;
+            transition: all 0.3s ease;
+        }
+        .tp-card.hit {
+            background: rgba(0, 230, 118, 0.14);
+            border-color: var(--green);
         }
         .tp-card.tp3-full {
             grid-column: span 2;
@@ -321,15 +327,23 @@
             font-weight: bold;
         }
 
-        /* Console */
+        /* Console & History */
         .algo-console {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 10px;
             padding: 10px 12px;
-            font-size: 0.72rem;
+            font-size: 0.71rem;
             line-height: 1.5;
             color: #cbd5e1;
+            margin-bottom: 10px;
+        }
+        .log-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #192130;
+            font-size: 0.68rem;
         }
     </style>
 </head>
@@ -343,7 +357,7 @@
                 <div class="asset-name">Gold Spot / U.S. Dollar • 5 • OANDA</div>
                 <div class="asset-sub">
                     <span class="live-dot"></span>
-                    <span id="tick-status">تدفق لحظي نشط (Tick-by-Tick)</span>
+                    <span id="session-badge">جارِ فحص الجلسة...</span>
                 </div>
             </div>
         </div>
@@ -356,21 +370,21 @@
         </div>
     </div>
 
-    <!-- Instant OANDA Price Calibration Bar -->
+    <!-- Instant OANDA Price Calibration & Force Scan Bar -->
     <div class="sync-bar">
-        <span style="color: var(--text-muted);">🎯 مطابقة سعر شارت OANDA:</span>
         <div class="sync-controls">
             <button class="sync-btn" onclick="adjustOffset(-0.5)">-0.5</button>
             <input type="number" step="0.01" id="exact-oanda-input" class="sync-input" placeholder="سعر OANDA">
-            <button class="sync-btn gold-btn" onclick="syncExactPrice()">تثبيت</button>
+            <button class="sync-btn gold-btn" onclick="syncExactPrice()">مطابقة</button>
             <button class="sync-btn" onclick="adjustOffset(0.5)">+0.5</button>
         </div>
+        <button class="sync-btn gold-btn" onclick="forceGenerateNewSignal()">🔄 توليد صفقة جديدة الآن</button>
     </div>
 
     <!-- Live Official OANDA TradingView 5m Chart -->
     <div class="tv-box">
         <div class="tv-header" onclick="toggleChart()">
-            <span>📊 شارت OANDA:XAUUSD المباشر (فريم 5 دقائق)</span>
+            <span>📊 شارت OANDA:XAUUSD الرسمي (فريم 5 دقائق)</span>
             <span id="chart-toggle-lbl">إخفاء / إظهار ▲</span>
         </div>
         <div class="tv-iframe-wrap" id="tv-wrap">
@@ -381,49 +395,54 @@
         </div>
     </div>
 
-    <!-- Main Signal Card -->
+    <!-- Main Locked Signal Card -->
     <div class="decision-card">
         <div class="decision-header">
             <div>
-                <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 2px;">قرار التداول المقترح (OANDA 5m)</div>
-                <div class="signal-main" id="signal-title" style="color: var(--gold);">جارِ سحب السيولة...</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted);">نظام EMMS + CRT + ATR المتجدد</div>
+                <div class="signal-main" id="signal-title" style="color: var(--gold);">جارِ بناء الصفقة...</div>
+                <div class="trade-state-badge" id="trade-state-badge" style="background: rgba(41,182,246,0.15); color: var(--blue);">⏳ بانتظار التفعيل</div>
             </div>
-            <div class="signal-icon-box" id="signal-icon" style="background: rgba(245,176,65,0.15); color: var(--gold);">⏳</div>
+            <div style="text-align: left;">
+                <div style="font-size: 0.68rem; color: var(--text-muted);">الربح/النتيجة الحالية</div>
+                <div id="live-pnl" style="font-size: 1.15rem; font-weight: 900; color: var(--gold); direction: ltr;">0.0 Pips</div>
+            </div>
         </div>
         <div class="decision-meta">
-            <div>نسبة العائد للمخاطرة (R:R): <span style="color:var(--gold); font-weight:800;">1 : 3.5</span></div>
-            <div>توافق الشروط: <span id="win-prob" style="color:#fff; font-weight:bold;">--%</span></div>
+            <div>العائد للمخاطرة: <span style="color:var(--gold); font-weight:800;">1 : 3.5</span></div>
+            <div>وقف ATR المتحرك: <span id="trailing-val" style="color:var(--green); font-weight:bold; direction:ltr;">--</span></div>
+            <div>قوة التوافق: <span id="win-prob" style="color:#fff; font-weight:bold;">--%</span></div>
         </div>
     </div>
 
-    <!-- Indicators Matrix -->
+    <!-- Real-Time Indicators & EMMS Zones Matrix -->
     <div class="matrix-grid">
         <div class="matrix-item">
             <div class="matrix-label">EMA 9 / 21</div>
             <div class="matrix-val" id="ema-status">--</div>
         </div>
         <div class="matrix-item">
-            <div class="matrix-label">RSI (14)</div>
-            <div class="matrix-val" id="rsi-val">--</div>
+            <div class="matrix-label">دعم / مقاومة EMMS</div>
+            <div class="matrix-val" id="sr-zone" style="color: var(--blue); direction:ltr;">--</div>
         </div>
         <div class="matrix-item">
             <div class="matrix-label">ATR (5m)</div>
             <div class="matrix-val" id="atr-val" style="color: var(--gold);">--</div>
         </div>
         <div class="matrix-item">
-            <div class="matrix-label">سلوك الشمعة CRT</div>
+            <div class="matrix-label">سحب السيولة CRT</div>
             <div class="matrix-val" id="crt-status">--</div>
         </div>
     </div>
 
-    <!-- Sniper Entry & Stop Loss -->
+    <!-- Sniper Entry & Stop Loss (Locked per trade) -->
     <div class="levels-grid">
         <div class="level-box entry-box">
             <div class="box-head">
-                <span>🎯 دخول قناص (صفر انعكاس)</span>
+                <span>🎯 منطقة دخول القناص (ثابتة)</span>
             </div>
             <div class="price-level" id="entry-zone" style="color: var(--gold);">--</div>
-            <div class="box-desc" id="order-type-desc">انتظار السعر عند طرف السيولة</div>
+            <div class="box-desc" id="order-type-desc">تبقى الأرقام ثابتة حتى انتهاء الصفقة</div>
         </div>
 
         <div class="level-box sl-box">
@@ -431,21 +450,21 @@
                 <span>🛡️ وقف الخسارة (SL)</span>
             </div>
             <div class="price-level" id="sl-price" style="color: var(--red);">--</div>
-            <div class="box-desc" id="be-level">محمي ضد الضرب (تأمين عند TP1)</div>
+            <div class="box-desc" id="be-level">ينتقل للدخول تلقائياً فور ضرب TP1</div>
         </div>
     </div>
 
     <!-- Targets (TP1, TP2, TP3) -->
     <div class="tp-grid">
-        <div class="tp-card">
+        <div class="tp-card" id="tp1-card">
             <div class="tp-top">
-                <span>الهدف الأول (TP1)</span>
+                <span>الهدف الأول (TP1 - تأمين)</span>
                 <span class="tp-pips" id="tp1-pips">+0 نقطة</span>
             </div>
             <div class="tp-price" id="tp1-price">--</div>
         </div>
 
-        <div class="tp-card">
+        <div class="tp-card" id="tp2-card">
             <div class="tp-top">
                 <span>الهدف الثاني (TP2)</span>
                 <span class="tp-pips" id="tp2-pips">+0 نقطة</span>
@@ -453,7 +472,7 @@
             <div class="tp-price" id="tp2-price">--</div>
         </div>
 
-        <div class="tp-card tp3-full">
+        <div class="tp-card tp3-full" id="tp3-card">
             <div class="tp-top">
                 <span>🏆 الهدف الثالث (TP3) - هدف السيولة الكبرى</span>
                 <span class="tp-pips" id="tp3-pips" style="color: var(--gold);">+0 نقطة</span>
@@ -465,10 +484,18 @@
     <!-- Analysis Console -->
     <div class="algo-console">
         <div style="color: var(--gold); font-weight: bold; margin-bottom: 4px; display: flex; justify-content: space-between;">
-            <span>📡 القراءة الفنية اللحظية (Gold Spot • 5m)</span>
+            <span>📡 التقرير التحليلي للصفقة القائمة</span>
             <span id="last-update" style="color: var(--text-muted); font-weight:normal;">--:--:--</span>
         </div>
-        <div id="analysis-text">جارِ مزامنة السعر الفوري وحساب مستويات الدخول...</div>
+        <div id="analysis-text">جارِ مزامنة السعر وبناء أول صفقة...</div>
+    </div>
+
+    <!-- Trade Log History -->
+    <div class="algo-console">
+        <div style="color: var(--blue); font-weight: bold; margin-bottom: 6px;">📋 سجل الصفقات المتجددة (Trade Log)</div>
+        <div id="trade-log-list">
+            <div style="color: var(--text-muted); font-size: 0.68rem;">سيظهر هنا سجل الصفقات التي تم اقتناصها وتأمينها...</div>
+        </div>
     </div>
 
     <script>
@@ -480,31 +507,72 @@
         let lastTickTime = Date.now();
         let candleCloseTime = Date.now() + 300000;
 
-        // ضبط المعايرة الافتراضية على +5.33 لتطابق شارت OANDA (3915.88) بدلاً من -12.5 القديمة
         let oandaOffset = parseFloat(localStorage.getItem('oanda_offset_v2'));
         if (isNaN(oandaOffset)) {
             oandaOffset = 5.33;
             localStorage.setItem('oanda_offset_v2', oandaOffset);
         }
 
+        // كائن الصفقة النشطة (تثبيت الأرقام وعدم تحريكها عشوائياً مع كل Tick)
+        let activeTrade = null;
+        let tradeLogs = [];
+
+        // تنبيه صوتي نقي عند صدور صفقة جديدة أو ضرب هدف
+        function playBeep(freq = 880, duration = 180) {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.frequency.value = freq;
+                osc.type = 'sine';
+                gain.gain.setValueAtTime(0.12, ctx.currentTime);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                setTimeout(() => { osc.stop(); ctx.close(); }, duration);
+            } catch (e) {}
+        }
+
+        function detectMarketSession() {
+            const hourUTC = new Date().getUTCHours();
+            const badge = document.getElementById('session-badge');
+            if (hourUTC >= 13 && hourUTC < 17) {
+                badge.innerText = '🔥 تقاطع لندن ونيويورك (سيولة عالية)';
+            } else if (hourUTC >= 7 && hourUTC < 16) {
+                badge.innerText = '🇬🇧 جلسة لندن نشطة';
+            } else if (hourUTC >= 12 && hourUTC < 21) {
+                badge.innerText = '🇺🇸 جلسة نيويورك نشطة';
+            } else {
+                badge.innerText = '🌏 الجلسة الآسيوية (تداول نطاقي)';
+            }
+        }
+        detectMarketSession();
+
         function adjustOffset(delta) {
             oandaOffset = Math.round((oandaOffset + delta) * 100) / 100;
             localStorage.setItem('oanda_offset_v2', oandaOffset);
+            activeTrade = null; // إعادة بناء الصفقة على التسعير الجديد
             updateLivePriceDisplay(rawPrice);
-            runQuantitativeEngine();
+            evaluateMarketAndManageTrade(true);
         }
 
-        // ميزة مطابقة رقم OANDA المباشر بضغطة زر
         function syncExactPrice() {
             const val = parseFloat(document.getElementById('exact-oanda-input').value);
             if (!isNaN(val) && val > 1000 && rawPrice > 0) {
                 oandaOffset = Math.round((val - rawPrice) * 100) / 100;
                 localStorage.setItem('oanda_offset_v2', oandaOffset);
                 document.getElementById('exact-oanda-input').value = '';
-                document.getElementById('exact-oanda-input').placeholder = `تم التثبيت: ${val.toFixed(2)}`;
+                document.getElementById('exact-oanda-input').placeholder = `تم: ${val.toFixed(2)}`;
+                activeTrade = null;
                 updateLivePriceDisplay(rawPrice);
-                runQuantitativeEngine();
+                evaluateMarketAndManageTrade(true);
             }
+        }
+
+        function forceGenerateNewSignal() {
+            activeTrade = null;
+            evaluateMarketAndManageTrade(true);
+            playBeep(950, 150);
         }
 
         function toggleChart() {
@@ -519,7 +587,20 @@
             }
         }
 
-        // تحديث السعر العلوي بسرعة فائقة مع وميض أخضر/أحمر
+        function addTradeLog(text, color = '#00e676') {
+            const timeStr = new Date().toLocaleTimeString('ar-MA');
+            tradeLogs.unshift({ time: timeStr, text, color });
+            if (tradeLogs.length > 6) tradeLogs.pop();
+
+            const container = document.getElementById('trade-log-list');
+            container.innerHTML = tradeLogs.map(item => `
+                <div class="log-item">
+                    <span style="color:${item.color}; font-weight:bold;">${item.text}</span>
+                    <span style="color:var(--text-muted);">${item.time}</span>
+                </div>
+            `).join('');
+        }
+
         function updateLivePriceDisplay(newRawPrice) {
             rawPrice = newRawPrice;
             const calibratedPrice = rawPrice + oandaOffset;
@@ -543,9 +624,7 @@
                 velEl.style.color = 'var(--red)';
             }
 
-            setTimeout(() => {
-                priceEl.style.color = 'var(--gold)';
-            }, 350);
+            setTimeout(() => { priceEl.style.color = 'var(--gold)'; }, 300);
 
             lastDisplayedPrice = calibratedPrice;
             lastTickTime = now;
@@ -557,54 +636,6 @@
                 if (rawPrice < lastC.low) lastC.low = rawPrice;
             }
         }
-
-        async function fetchHistoricalCandles() {
-            try {
-                const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${SYMBOL}&interval=${INTERVAL}&limit=100`);
-                const data = await res.json();
-                rawCandles = data.map(c => ({
-                    time: c[0],
-                    open: parseFloat(c[1]),
-                    high: parseFloat(c[2]),
-                    low: parseFloat(c[3]),
-                    close: parseFloat(c[4]),
-                    closeTime: c[6]
-                }));
-                rawPrice = rawCandles[rawCandles.length - 1].close;
-                candleCloseTime = rawCandles[rawCandles.length - 1].closeTime;
-                updateLivePriceDisplay(rawPrice);
-                runQuantitativeEngine();
-                startMultiStreamWebSocket();
-            } catch (err) {
-                setTimeout(fetchHistoricalCandles, 2500);
-            }
-        }
-
-        // جلب السعر الفوري كل ثانيتين كخط احتياطي لضمان عدم توقف السعر أبداً
-        setInterval(async () => {
-            try {
-                const res = await fetch(`https://api.binance.com/api/v3/ticker/bookTicker?symbol=${SYMBOL}`);
-                const data = await res.json();
-                // حساب متوسط أفضل عرض وطلب (Mid-Price) لأنه يتحرك كل جزء من الثانية
-                const midPrice = (parseFloat(data.bidPrice) + parseFloat(data.askPrice)) / 2;
-                if (!isNaN(midPrice) && Math.abs(midPrice - rawPrice) >= 0.005) {
-                    updateLivePriceDisplay(midPrice);
-                    runQuantitativeEngine();
-                }
-            } catch (e) {}
-        }, 1500);
-
-        // عداد تنازلي حي كل ثانية
-        setInterval(() => {
-            const rem = candleCloseTime - Date.now();
-            if (rem > 0) {
-                const m = Math.floor(rem / 60000);
-                const s = Math.floor((rem % 60000) / 1000);
-                document.getElementById('candle-timer').innerText = `5m: ${m}:${s < 10 ? '0' : ''}${s}`;
-            } else {
-                candleCloseTime = Date.now() + 300000;
-            }
-        }, 1000);
 
         function calculateEMA(data, period) {
             const k = 2 / (period + 1);
@@ -641,6 +672,17 @@
             return trSum / period;
         }
 
+        // خوارزمية EMMS لحساب أقرب دعم ومقاومة حقيقيين من آخر 30 شمعة
+        function findSupportResistance(data) {
+            const slice = data.slice(-30, -1);
+            let highest = -Infinity, lowest = Infinity;
+            slice.forEach(c => {
+                if (c.high > highest) highest = c.high;
+                if (c.low < lowest) lowest = c.low;
+            });
+            return { resistance: highest, support: lowest };
+        }
+
         function analyzeCRT(data) {
             const curr = data[data.length - 1];
             const prev = data[data.length - 2];
@@ -648,23 +690,87 @@
             const upperWick = curr.high - Math.max(curr.open, curr.close);
             const lowerWick = Math.min(curr.open, curr.close) - curr.low;
 
-            if (curr.low < prev.low && curr.close > prev.low && (lowerWick / range) > 0.35) {
+            if (curr.low < prev.low && curr.close > prev.low && (lowerWick / range) > 0.32) {
                 return { type: 'BULL_SWEEP', label: 'سحب سفلي ↗', color: 'var(--green)' };
             }
-            if (curr.high > prev.high && curr.close < prev.high && (upperWick / range) > 0.35) {
+            if (curr.high > prev.high && curr.close < prev.high && (upperWick / range) > 0.32) {
                 return { type: 'BEAR_SWEEP', label: 'سحب علوي ↘', color: 'var(--red)' };
             }
-            if ((lowerWick / range) > 0.45) {
+            if ((lowerWick / range) > 0.42) {
                 return { type: 'BULL_WICK', label: 'رفض شرائي ↗', color: 'var(--green)' };
             }
-            if ((upperWick / range) > 0.45) {
+            if ((upperWick / range) > 0.42) {
                 return { type: 'BEAR_WICK', label: 'رفض بيعي ↘', color: 'var(--red)' };
             }
             return { type: 'NEUTRAL', label: 'تجميع نطاقي', color: 'var(--text-muted)' };
         }
 
-        function runQuantitativeEngine() {
-            if (rawCandles.length < 30) return;
+        // توليد صفقة جديدة وقفل أرقامها حتى تنتهي
+        function createNewLockedSignal(candles, currentPrice, ema9, ema21, rsi, atr, crt, sr) {
+            let bullScore = 0, bearScore = 0;
+            if (ema9 > ema21) bullScore += 35; else bearScore += 35;
+            if (currentPrice > ema9) bullScore += 15; else bearScore += 15;
+            if (rsi > 45 && rsi < 68) bullScore += 20;
+            if (rsi < 55 && rsi > 32) bearScore += 20;
+            if (rsi <= 32) bullScore += 30;
+            if (rsi >= 68) bearScore += 30;
+            if (crt.type.includes('BULL')) bullScore += 30;
+            if (crt.type.includes('BEAR')) bearScore += 30;
+
+            const isBuy = bullScore >= bearScore;
+            const score = Math.min(Math.max(bullScore, bearScore), 96);
+
+            let entryLow, entryHigh, avgEntry, sl, tp1, tp2, tp3;
+
+            if (isBuy) {
+                entryHigh = currentPrice - (atr * 0.12);
+                entryLow = currentPrice - (atr * 0.40);
+                avgEntry = (entryHigh + entryLow) / 2;
+                sl = avgEntry - (atr * 1.45);
+                const risk = avgEntry - sl;
+                tp1 = avgEntry + (risk * 1.4);
+                tp2 = avgEntry + (risk * 2.5);
+                tp3 = avgEntry + (risk * 3.8);
+            } else {
+                entryLow = currentPrice + (atr * 0.12);
+                entryHigh = currentPrice + (atr * 0.40);
+                avgEntry = (entryHigh + entryLow) / 2;
+                sl = avgEntry + (atr * 1.45);
+                const risk = sl - avgEntry;
+                tp1 = avgEntry - (risk * 1.4);
+                tp2 = avgEntry - (risk * 2.5);
+                tp3 = avgEntry - (risk * 3.8);
+            }
+
+            activeTrade = {
+                id: Date.now(),
+                dir: isBuy ? 'BUY' : 'SELL',
+                score,
+                entryLow,
+                entryHigh,
+                avgEntry,
+                sl,
+                initialSl: sl,
+                tp1,
+                tp2,
+                tp3,
+                status: 'PENDING', // PENDING -> ACTIVE -> BE_SECURED
+                tp1Hit: false,
+                tp2Hit: false,
+                trailingStop: sl
+            };
+
+            // إعادة ضبط بطاقات الأهداف
+            document.getElementById('tp1-card').classList.remove('hit');
+            document.getElementById('tp2-card').classList.remove('hit');
+            document.getElementById('tp3-card').classList.remove('hit');
+
+            addTradeLog(`إصدار صفقة ${isBuy ? 'شراء BUY' : 'بيع SELL'} جديدة حول ${avgEntry.toFixed(2)}`, '#f5b041');
+        }
+
+        // إدارة الصفقة الحية ومراقبة ضرب الأهداف أو تأمين الدخول
+        function evaluateMarketAndManageTrade(forceNew = false) {
+            if (rawCandles.length < 35) return;
 
             const candles = rawCandles.map(c => ({
                 ...c,
@@ -680,106 +786,227 @@
             const rsi = calculateRSI(candles, 14);
             const atr = Math.max(calculateATR(candles, 14), 1.1);
             const crt = analyzeCRT(candles);
+            const sr = findSupportResistance(candles);
 
+            // تحديث المؤشرات اللحظية
             const emaEl = document.getElementById('ema-status');
-            if (ema9 > ema21) {
-                emaEl.innerText = 'صاعد ↗';
-                emaEl.style.color = 'var(--green)';
-            } else {
-                emaEl.innerText = 'هابط ↘';
-                emaEl.style.color = 'var(--red)';
-            }
+            emaEl.innerText = ema9 > ema21 ? 'صاعد ↗' : 'هابط ↘';
+            emaEl.style.color = ema9 > ema21 ? 'var(--green)' : 'var(--red)';
 
-            const rsiEl = document.getElementById('rsi-val');
-            rsiEl.innerText = rsi.toFixed(1);
-            rsiEl.style.color = rsi > 70 ? 'var(--red)' : (rsi < 30 ? 'var(--green)' : '#fff');
-
+            document.getElementById('sr-zone').innerText = `${sr.support.toFixed(0)} / ${sr.resistance.toFixed(0)}`;
             document.getElementById('atr-val').innerText = `$${atr.toFixed(2)}`;
 
             const crtEl = document.getElementById('crt-status');
             crtEl.innerText = crt.label;
             crtEl.style.color = crt.color;
 
-            let bullScore = 0, bearScore = 0;
-            if (ema9 > ema21) bullScore += 35; else bearScore += 35;
-            if (currentPrice > ema9) bullScore += 15; else bearScore += 15;
-            if (rsi > 45 && rsi < 68) bullScore += 20;
-            if (rsi < 55 && rsi > 32) bearScore += 20;
-            if (rsi <= 32) bullScore += 30;
-            if (rsi >= 68) bearScore += 30;
-            if (crt.type.includes('BULL')) bullScore += 30;
-            if (crt.type.includes('BEAR')) bearScore += 30;
+            // إذا لم توجد صفقة نشطة أو طلب المستخدم توليد صفقة جديدة
+            if (!activeTrade || forceNew) {
+                createNewLockedSignal(candles, currentPrice, ema9, ema21, rsi, atr, crt, sr);
+            }
 
-            const isBuy = bullScore >= bearScore;
-            const maxScore = Math.min(Math.max(bullScore, bearScore), 96);
-            document.getElementById('win-prob').innerText = `${maxScore}%`;
+            // متابعة حالة الصفقة المقفلة مع السعر الحي
+            const t = activeTrade;
+            const stateBadge = document.getElementById('trade-state-badge');
+            const pnlEl = document.getElementById('live-pnl');
 
+            if (t.dir === 'BUY') {
+                // تفعيل الصفقة إذا لامس السعر منطقة الدخول
+                if (t.status === 'PENDING' && currentPrice <= t.entryHigh) {
+                    t.status = 'ACTIVE';
+                    addTradeLog(`تفعيل دخول الشراء من ${currentPrice.toFixed(2)} 🎯`, '#29b6f6');
+                    playBeep(700, 120);
+                }
+
+                if (t.status !== 'PENDING') {
+                    const pips = (currentPrice - t.avgEntry) * 10;
+                    pnlEl.innerText = `${pips >= 0 ? '+' : ''}${pips.toFixed(1)} Pips`;
+                    pnlEl.style.color = pips >= 0 ? 'var(--green)' : 'var(--red)';
+
+                    // حساب ATR Trailing Stop
+                    const candidateTrail = currentPrice - (atr * 1.2);
+                    if (candidateTrail > t.trailingStop) t.trailingStop = candidateTrail;
+
+                    // فحص ضرب TP1 وتأمين الصفقة (Break-Even)
+                    if (!t.tp1Hit && currentPrice >= t.tp1) {
+                        t.tp1Hit = true;
+                        t.status = 'BE_SECURED';
+                        t.sl = t.avgEntry + 0.2; // نقل الوقف لنقطة الدخول + ربح بسيط
+                        document.getElementById('tp1-card').classList.add('hit');
+                        addTradeLog(`تم ضرب الهدف الأول TP1 وتأمين الصفقة ✅`, '#00e676');
+                        playBeep(1050, 220);
+                    }
+                    if (!t.tp2Hit && currentPrice >= t.tp2) {
+                        t.tp2Hit = true;
+                        t.sl = t.tp1; // حجز ربح الهدف الأول
+                        document.getElementById('tp2-card').classList.add('hit');
+                        addTradeLog(`تم ضرب الهدف الثاني TP2 وحجز الأرباح 🔥`, '#00e676');
+                        playBeep(1200, 250);
+                    }
+                    // إذا ضربت الهدف الثالث بالكامل أو ضربت الوقف، نفتح دورة صفقة جديدة
+                    if (currentPrice >= t.tp3) {
+                        addTradeLog(`اكتمال الهدف الثالث TP3 بنجاح 🏆 جاري اقتناص فرصة جديدة`, '#f5b041');
+                        createNewLockedSignal(candles, currentPrice, ema9, ema21, rsi, atr, crt, sr);
+                        return;
+                    }
+                    if (currentPrice <= t.sl) {
+                        const msg = t.tp1Hit ? 'إغلاق الصفقة على ربح مؤمّن (Break-Even) 🛡️' : 'انتهاء الصفقة وتحديث الهيكل لتعويض فوري 🔄';
+                        addTradeLog(msg, t.tp1Hit ? '#00e676' : '#ff3d57');
+                        createNewLockedSignal(candles, currentPrice, ema9, ema21, rsi, atr, crt, sr);
+                        return;
+                    }
+                } else {
+                    pnlEl.innerText = 'بانتظار الدخول';
+                    pnlEl.style.color = 'var(--gold)';
+                    // إذا ابتعد السعر كثيراً قبل التفعيل، نحدث منطقة القناص مع الهيكل الجديد
+                    if (currentPrice > t.tp1) {
+                        addTradeLog(`تحرك السعر قبل لمس الأمر المعلق — تحديث منطقة القناص 🔄`, '#8a99ad');
+                        createNewLockedSignal(candles, currentPrice, ema9, ema21, rsi, atr, crt, sr);
+                        return;
+                    }
+                }
+            } else {
+                // حالة البيع SELL
+                if (t.status === 'PENDING' && currentPrice >= t.entryLow) {
+                    t.status = 'ACTIVE';
+                    addTradeLog(`تفعيل دخول البيع من ${currentPrice.toFixed(2)} 🎯`, '#29b6f6');
+                    playBeep(700, 120);
+                }
+
+                if (t.status !== 'PENDING') {
+                    const pips = (t.avgEntry - currentPrice) * 10;
+                    pnlEl.innerText = `${pips >= 0 ? '+' : ''}${pips.toFixed(1)} Pips`;
+                    pnlEl.style.color = pips >= 0 ? 'var(--green)' : 'var(--red)';
+
+                    const candidateTrail = currentPrice + (atr * 1.2);
+                    if (candidateTrail < t.trailingStop) t.trailingStop = candidateTrail;
+
+                    if (!t.tp1Hit && currentPrice <= t.tp1) {
+                        t.tp1Hit = true;
+                        t.status = 'BE_SECURED';
+                        t.sl = t.avgEntry - 0.2;
+                        document.getElementById('tp1-card').classList.add('hit');
+                        addTradeLog(`تم ضرب الهدف الأول TP1 وتأمين الصفقة ✅`, '#00e676');
+                        playBeep(1050, 220);
+                    }
+                    if (!t.tp2Hit && currentPrice <= t.tp2) {
+                        t.tp2Hit = true;
+                        t.sl = t.tp1;
+                        document.getElementById('tp2-card').classList.add('hit');
+                        addTradeLog(`تم ضرب الهدف الثاني TP2 وحجز الأرباح 🔥`, '#00e676');
+                        playBeep(1200, 250);
+                    }
+                    if (currentPrice <= t.tp3) {
+                        addTradeLog(`اكتمال الهدف الثالث TP3 بنجاح 🏆 جاري اقتناص فرصة جديدة`, '#f5b041');
+                        createNewLockedSignal(candles, currentPrice, ema9, ema21, rsi, atr, crt, sr);
+                        return;
+                    }
+                    if (currentPrice >= t.sl) {
+                        const msg = t.tp1Hit ? 'إغلاق الصفقة على ربح مؤمّن (Break-Even) 🛡️' : 'انتهاء الصفقة وتحديث الهيكل لتعويض فوري 🔄';
+                        addTradeLog(msg, t.tp1Hit ? '#00e676' : '#ff3d57');
+                        createNewLockedSignal(candles, currentPrice, ema9, ema21, rsi, atr, crt, sr);
+                        return;
+                    }
+                } else {
+                    pnlEl.innerText = 'بانتظار الدخول';
+                    pnlEl.style.color = 'var(--gold)';
+                    if (currentPrice < t.tp1) {
+                        addTradeLog(`تحرك السعر قبل لمس الأمر المعلق — تحديث منطقة القناص 🔄`, '#8a99ad');
+                        createNewLockedSignal(candles, currentPrice, ema9, ema21, rsi, atr, crt, sr);
+                        return;
+                    }
+                }
+            }
+
+            // تحديث واجهة الصفقة المقفلة
             const titleEl = document.getElementById('signal-title');
-            const iconEl = document.getElementById('signal-icon');
-
-            let entryLow, entryHigh, sl, tp1, tp2, tp3;
-
-            if (isBuy) {
+            if (t.dir === 'BUY') {
                 titleEl.innerText = 'صفقة شراء (BUY)';
                 titleEl.style.color = 'var(--green)';
-                iconEl.innerText = '↗';
-                iconEl.style.background = 'rgba(0, 230, 118, 0.15)';
-                iconEl.style.color = 'var(--green)';
-
-                entryHigh = currentPrice - (atr * 0.15);
-                entryLow = currentPrice - (atr * 0.45);
-                const avgEntry = (entryHigh + entryLow) / 2;
-
-                sl = avgEntry - (atr * 1.45);
-                const risk = avgEntry - sl;
-
-                tp1 = avgEntry + (risk * 1.4);
-                tp2 = avgEntry + (risk * 2.5);
-                tp3 = avgEntry + (risk * 3.8);
-
-                document.getElementById('order-type-desc').innerText = `أمر معلق قناص (Buy Limit) عند طرف السيولة`;
-                document.getElementById('analysis-text').innerText = 
-                    `السعر الفوري على OANDA يتحرك عند $${currentPrice.toFixed(2)} بزخم شرائي (EMA9 > EMA21). منطقة القناص الشرائية تتمركز بين ${entryLow.toFixed(2)} و ${entryHigh.toFixed(2)} مع وقف خسارة محمي بالـ ATR عند ${sl.toFixed(2)}.`;
             } else {
                 titleEl.innerText = 'صفقة بيع (SELL)';
                 titleEl.style.color = 'var(--red)';
-                iconEl.innerText = '↘';
-                iconEl.style.background = 'rgba(255, 61, 87, 0.15)';
-                iconEl.style.color = 'var(--red)';
-
-                entryLow = currentPrice + (atr * 0.15);
-                entryHigh = currentPrice + (atr * 0.45);
-                const avgEntry = (entryHigh + entryLow) / 2;
-
-                sl = avgEntry + (atr * 1.45);
-                const risk = sl - avgEntry;
-
-                tp1 = avgEntry - (risk * 1.4);
-                tp2 = avgEntry - (risk * 2.5);
-                tp3 = avgEntry - (risk * 3.8);
-
-                document.getElementById('order-type-desc').innerText = `أمر معلق قناص (Sell Limit) عند طرف السيولة`;
-                document.getElementById('analysis-text').innerText = 
-                    `السعر الفوري على OANDA يتحرك عند $${currentPrice.toFixed(2)} بضغط بيعي (EMA9 < EMA21). منطقة القناص البيعية تتمركز بين ${entryLow.toFixed(2)} و ${entryHigh.toFixed(2)} مع وقف خسارة محمي بالـ ATR عند ${sl.toFixed(2)}.`;
             }
 
-            document.getElementById('entry-zone').innerText = `${entryLow.toFixed(2)} - ${entryHigh.toFixed(2)}`;
-            document.getElementById('sl-price').innerText = sl.toFixed(2);
+            if (t.status === 'PENDING') {
+                stateBadge.innerText = '⏳ أمر قناص معلق (بانتظار السعر)';
+                stateBadge.style.background = 'rgba(245,176,65,0.15)';
+                stateBadge.style.color = 'var(--gold)';
+            } else if (t.status === 'ACTIVE') {
+                stateBadge.innerText = '⚡ صفقة جارية الآن (ACTIVE)';
+                stateBadge.style.background = 'rgba(41,182,246,0.15)';
+                stateBadge.style.color = 'var(--blue)';
+            } else if (t.status === 'BE_SECURED') {
+                stateBadge.innerText = '🛡️ مؤمّنة بالكامل (صفر مخاطرة - Break Even)';
+                stateBadge.style.background = 'rgba(0,230,118,0.18)';
+                stateBadge.style.color = 'var(--green)';
+            }
 
-            const refEntry = (entryLow + entryHigh) / 2;
-            document.getElementById('tp1-price').innerText = tp1.toFixed(2);
-            document.getElementById('tp1-pips').innerText = `+${Math.round(Math.abs(tp1 - refEntry) * 10)} نقطة`;
+            document.getElementById('win-prob').innerText = `${t.score}%`;
+            document.getElementById('trailing-val').innerText = `$${t.trailingStop.toFixed(2)}`;
+            document.getElementById('entry-zone').innerText = `${t.entryLow.toFixed(2)} - ${t.entryHigh.toFixed(2)}`;
+            document.getElementById('sl-price').innerText = t.sl.toFixed(2);
 
-            document.getElementById('tp2-price').innerText = tp2.toFixed(2);
-            document.getElementById('tp2-pips').innerText = `+${Math.round(Math.abs(tp2 - refEntry) * 10)} نقطة`;
+            document.getElementById('tp1-price').innerText = t.tp1.toFixed(2);
+            document.getElementById('tp1-pips').innerText = `+${Math.round(Math.abs(t.tp1 - t.avgEntry) * 10)} نقطة`;
 
-            document.getElementById('tp3-price').innerText = tp3.toFixed(2);
-            document.getElementById('tp3-pips').innerText = `+${Math.round(Math.abs(tp3 - refEntry) * 10)} نقطة`;
+            document.getElementById('tp2-price').innerText = t.tp2.toFixed(2);
+            document.getElementById('tp2-pips').innerText = `+${Math.round(Math.abs(t.tp2 - t.avgEntry) * 10)} نقطة`;
+
+            document.getElementById('tp3-price').innerText = t.tp3.toFixed(2);
+            document.getElementById('tp3-pips').innerText = `+${Math.round(Math.abs(t.tp3 - t.avgEntry) * 10)} نقطة`;
+
+            document.getElementById('analysis-text').innerText = 
+                `الصفقة الحالية مقفلة على ${t.dir === 'BUY' ? 'الشراء' : 'البيع'} من منطقة (${t.entryLow.toFixed(2)} - ${t.entryHigh.toFixed(2)}). أقرب دعم EMMS عند $${sr.support.toFixed(2)} وأقرب مقاومة عند $${sr.resistance.toFixed(2)}. يتم توليد صفقة جديدة تلقائياً فور ضرب الهدف أو تغير هيكل الـ 5 دقائق.`;
 
             document.getElementById('last-update').innerText = new Date().toLocaleTimeString('ar-MA');
         }
 
-        // اتصال متعدد القنوات (BookTicker + AggTrade + Kline) لضمان حركة فورية لا تتوقف
+        async function fetchHistoricalCandles() {
+            try {
+                const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${SYMBOL}&interval=${INTERVAL}&limit=100`);
+                const data = await res.json();
+                rawCandles = data.map(c => ({
+                    time: c[0],
+                    open: parseFloat(c[1]),
+                    high: parseFloat(c[2]),
+                    low: parseFloat(c[3]),
+                    close: parseFloat(c[4]),
+                    closeTime: c[6]
+                }));
+                rawPrice = rawCandles[rawCandles.length - 1].close;
+                candleCloseTime = rawCandles[rawCandles.length - 1].closeTime;
+                updateLivePriceDisplay(rawPrice);
+                evaluateMarketAndManageTrade(true);
+                startMultiStreamWebSocket();
+            } catch (err) {
+                setTimeout(fetchHistoricalCandles, 2500);
+            }
+        }
+
+        setInterval(async () => {
+            try {
+                const res = await fetch(`https://api.binance.com/api/v3/ticker/bookTicker?symbol=${SYMBOL}`);
+                const data = await res.json();
+                const midPrice = (parseFloat(data.bidPrice) + parseFloat(data.askPrice)) / 2;
+                if (!isNaN(midPrice) && Math.abs(midPrice - rawPrice) >= 0.005) {
+                    updateLivePriceDisplay(midPrice);
+                    evaluateMarketAndManageTrade(false);
+                }
+            } catch (e) {}
+        }, 1500);
+
+        setInterval(() => {
+            const rem = candleCloseTime - Date.now();
+            if (rem > 0) {
+                const m = Math.floor(rem / 60000);
+                const s = Math.floor((rem % 60000) / 1000);
+                document.getElementById('candle-timer').innerText = `5m: ${m}:${s < 10 ? '0' : ''}${s}`;
+            } else {
+                candleCloseTime = Date.now() + 300000;
+            }
+        }, 1000);
+
         function startMultiStreamWebSocket() {
             const streams = `${SYMBOL.toLowerCase()}@bookTicker/${SYMBOL.toLowerCase()}@aggTrade/${SYMBOL.toLowerCase()}@kline_${INTERVAL}`;
             const ws = new WebSocket(`wss://stream.binance.com:9443/stream?streams=${streams}`);
@@ -789,21 +1016,16 @@
                 if (!payload || !payload.data) return;
                 const d = payload.data;
 
-                // 1. تحديث فوري مع أي تغير في العرض والطلب (BookTicker)
                 if (d.b && d.a) {
                     const mid = (parseFloat(d.b) + parseFloat(d.a)) / 2;
                     if (Math.abs(mid - rawPrice) >= 0.005) {
                         updateLivePriceDisplay(mid);
-                        runQuantitativeEngine();
+                        evaluateMarketAndManageTrade(false);
                     }
-                }
-                // 2. تحديث فوري مع كل صفقة منفذة (AggTrade)
-                else if (d.e === 'aggTrade') {
+                } else if (d.e === 'aggTrade') {
                     updateLivePriceDisplay(parseFloat(d.p));
-                    runQuantitativeEngine();
-                }
-                // 3. تحديث هيكل الشمعة كل 5 دقائق
-                else if (d.e === 'kline') {
+                    evaluateMarketAndManageTrade(false);
+                } else if (d.e === 'kline') {
                     const k = d.k;
                     candleCloseTime = k.T;
                     updateLivePriceDisplay(parseFloat(k.c));
@@ -823,7 +1045,7 @@
                         rawCandles.push(updated);
                         if (rawCandles.length > 100) rawCandles.shift();
                     }
-                    runQuantitativeEngine();
+                    evaluateMarketAndManageTrade(false);
                 }
             };
 
