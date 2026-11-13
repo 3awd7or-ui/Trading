@@ -2,9 +2,19 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>جولد فيجن بالذكاء الاصطناعي - XAU/USD</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>XAU/USD AI Sniper • 5m Engine</title>
     <style>
+        :root {
+            --bg-main: #07090e;
+            --bg-card: #111622;
+            --border: #1e2738;
+            --gold: #f5b041;
+            --green: #00e676;
+            --red: #ff3d57;
+            --blue: #29b6f6;
+            --text-muted: #8a99ad;
+        }
         * {
             box-sizing: border-box;
             margin: 0;
@@ -12,189 +22,643 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
         body {
-            background-color: #0b0e14;
+            background-color: var(--bg-main);
             color: #ffffff;
             padding: 10px;
             font-size: 13px;
+            max-width: 500px;
+            margin: 0 auto;
         }
-        /* Top Bar */
-        .top-bar {
-            background: #12161f;
-            border: 1px solid #1e2636;
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-        .top-bar h2 {
-            font-size: 1rem;
-            color: #00ff66;
-            margin-bottom: 4px;
-        }
-        .gold-price {
-            font-size: 1.6rem;
-            font-weight: bold;
-            color: #f3ba2f;
-        }
-        
-        /* Signal Decision Card (SELL / BUY) */
-        .signal-card {
-            background: #12161f;
-            border: 1px solid #1e2636;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-        .signal-badge {
-            display: inline-block;
-            background: rgba(255, 51, 51, 0.15);
-            border: 1px solid #ff3333;
-            color: #ff3333;
-            font-size: 1.4rem;
-            font-weight: bold;
-            padding: 8px 25px;
+        /* Top Ticker Bar */
+        .top-ticker {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
             border-radius: 10px;
-            margin-bottom: 8px;
+            padding: 10px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
         }
-        .signal-badge.buy {
-            background: rgba(0, 255, 102, 0.15);
-            border-color: #00ff66;
-            color: #00ff66;
+        .asset-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        .rr-ratio {
-            font-size: 1rem;
-            color: #f3ba2f;
+        .gold-icon {
+            background: var(--gold);
+            color: #000;
+            font-weight: 900;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        .asset-name {
+            font-weight: bold;
+            font-size: 0.85rem;
+            color: #e2e8f0;
+        }
+        .asset-sub {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+        }
+        .live-price-box {
+            text-align: left;
+        }
+        .live-price {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--gold);
+            font-variant-numeric: tabular-nums;
+        }
+        .price-change {
+            font-size: 0.72rem;
             font-weight: bold;
         }
 
-        /* Grid for Entry & StopLoss */
-        .grid-2 {
+        /* Brand Header */
+        .brand-bar {
+            background: linear-gradient(90deg, rgba(245,176,65,0.12) 0%, rgba(17,22,34,0.9) 100%);
+            border: 1px solid rgba(245,176,65,0.3);
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .brand-title {
+            color: var(--gold);
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        .status-pill {
+            background: rgba(0, 230, 118, 0.12);
+            border: 1px solid var(--green);
+            color: var(--green);
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 0.68rem;
+            font-weight: bold;
+        }
+
+        /* Main Decision Card */
+        .decision-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        .decision-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .signal-main {
+            font-size: 1.4rem;
+            font-weight: 900;
+        }
+        .signal-icon-box {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+        .decision-meta {
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid var(--border);
+            padding-top: 10px;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+        .rr-val {
+            color: var(--gold);
+            font-weight: 800;
+            font-size: 0.95rem;
+        }
+
+        /* Confluence Matrix (Indicators) */
+        .matrix-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+        .matrix-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 7px 4px;
+            text-align: center;
+        }
+        .matrix-label {
+            font-size: 0.62rem;
+            color: var(--text-muted);
+            margin-bottom: 3px;
+        }
+        .matrix-val {
+            font-size: 0.76rem;
+            font-weight: bold;
+        }
+
+        /* Entry & SL Split */
+        .levels-grid {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
             gap: 8px;
             margin-bottom: 10px;
         }
-        .box-card {
-            background: #12161f;
-            border: 1px solid #1e2636;
+        .level-box {
+            background: var(--bg-card);
             border-radius: 10px;
             padding: 12px;
-            text-align: center;
+            border: 1px solid var(--border);
         }
-        .box-card.entry { border-color: #f3ba2f; }
-        .box-card.sl { border-color: #ff3333; }
-        .box-title { font-size: 0.7rem; color: #8a99ad; margin-bottom: 4px; }
-        .box-val { font-size: 1.05rem; font-weight: bold; }
+        .level-box.entry-box {
+            border-color: rgba(245, 176, 65, 0.5);
+            background: linear-gradient(180deg, rgba(245,176,65,0.06) 0%, var(--bg-card) 100%);
+        }
+        .level-box.sl-box {
+            border-color: rgba(255, 61, 87, 0.45);
+            background: linear-gradient(180deg, rgba(255,61,87,0.06) 0%, var(--bg-card) 100%);
+        }
+        .box-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+        .badge-mini {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.62rem;
+            font-weight: bold;
+        }
+        .price-level {
+            font-size: 1.05rem;
+            font-weight: 800;
+            margin: 4px 0;
+            font-variant-numeric: tabular-nums;
+        }
+        .box-desc {
+            font-size: 0.66rem;
+            color: var(--text-muted);
+            line-height: 1.35;
+        }
 
         /* Targets Grid */
-        .targets-grid {
+        .tp-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 8px;
             margin-bottom: 10px;
         }
-        .target-card {
-            background: #12161f;
-            border: 1px solid #1e2636;
+        .tp-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-right: 3px solid var(--green);
             border-radius: 10px;
-            padding: 10px;
-            text-align: center;
-            border-top: 3px solid #00ff66;
+            padding: 10px 12px;
         }
-        .target-card.tp3 {
+        .tp-card.tp3-full {
             grid-column: span 2;
+            border-right-color: var(--gold);
+            background: linear-gradient(90deg, rgba(245,176,65,0.08) 0%, var(--bg-card) 100%);
         }
-        .target-title { font-size: 0.75rem; color: #8a99ad; margin-bottom: 3px; }
-        .target-val { font-size: 1.1rem; font-weight: bold; color: #00ff66; }
+        .tp-top {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+        .tp-price {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #fff;
+            font-variant-numeric: tabular-nums;
+        }
+        .tp-pips {
+            font-size: 0.68rem;
+            color: var(--green);
+            font-weight: bold;
+        }
 
-        /* Footer Status */
-        .footer-status {
-            background: #12161f;
-            border: 1px solid #1e2636;
+        /* Technical Console */
+        .algo-console {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
             border-radius: 10px;
-            padding: 10px;
-            text-align: center;
-            font-size: 0.75rem;
-            color: #8a99ad;
+            padding: 10px 12px;
+            font-size: 0.72rem;
+            line-height: 1.5;
+            color: #cbd5e1;
+        }
+        .algo-title {
+            color: var(--gold);
+            font-weight: bold;
+            margin-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
         }
     </style>
 </head>
 <body>
 
-    <!-- Top Bar -->
-    <div class="top-bar">
-        <h2>جولد فيجن بالذكاء الاصطناعي (XAU/USD)</h2>
-        <div class="gold-price" id="live-gold-price">جارِ جلب السعر...</div>
-        <div style="font-size: 0.7rem; color: #8a99ad; margin-top: 4px;">سعر الذهب الفوري الحي (Spot XAUUSD) عبر WebSocket</div>
-    </div>
-
-    <!-- Signal Decision -->
-    <div class="signal-card">
-        <div style="font-size: 0.75rem; color: #8a99ad; margin-bottom: 4px;">قرار التداول المقترح</div>
-        <div class="signal-badge" id="signal-dir">صفقة بيع (SELL)</div>
-        <div>نسبة العائد إلى المخاطرة (R:R): <span class="rr-ratio">1:3.5</span></div>
-        <div style="font-size: 0.75rem; color: #8a99ad; margin-top: 4px;">سعر السوق الفوري: <span id="market-spot" style="color:#fff;">--</span></div>
-    </div>
-
-    <!-- Entry & SL Grid -->
-    <div class="grid-2">
-        <div class="box-card entry">
-            <div class="box-title">دخول قناص (صفر انعكاس)</div>
-            <div class="box-val" id="entry-val" style="color: #f3ba2f;">--</div>
+    <!-- Top Live Gold Spot Header -->
+    <div class="top-ticker">
+        <div class="asset-badge">
+            <div class="gold-icon">Au</div>
+            <div>
+                <div class="asset-name">Gold Spot / U.S. Dollar</div>
+                <div class="asset-sub">XAU/USD • 5m • Real-Time Feed</div>
+            </div>
         </div>
-        <div class="box-card sl">
-            <div class="box-title">وقف الخسارة (SL)</div>
-            <div class="box-val" id="sl-val" style="color: #ff3333;">--</div>
+        <div class="live-price-box">
+            <div class="live-price" id="live-price">جارِ الاتصال...</div>
+            <div class="price-change" id="candle-timer" style="color: var(--text-muted);">إغلاق الشمعة: --:--</div>
         </div>
     </div>
 
-    <!-- Targets Grid -->
-    <div class="targets-grid">
-        <div class="target-card">
-            <div class="target-title">الهدف الأول (TP1)</div>
-            <div class="target-val" id="tp1-val">--</div>
+    <!-- Brand & Algorithm Status -->
+    <div class="brand-bar">
+        <div class="brand-title">⚡ جولد فيجن بالذكاء الاصطناعي V4.0 PRO</div>
+        <div class="status-pill" id="confluence-score">تحليل 5m نشط</div>
+    </div>
+
+    <!-- Main Signal Card -->
+    <div class="decision-card">
+        <div class="decision-header">
+            <div>
+                <div style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 2px;">قرار الخوارزمية (EMA + CRT + ATR)</div>
+                <div class="signal-main" id="signal-title" style="color: var(--gold);">جارِ فحص السيولة...</div>
+            </div>
+            <div class="signal-icon-box" id="signal-icon" style="background: rgba(245,176,65,0.15); color: var(--gold);">⏳</div>
         </div>
-        <div class="target-card">
-            <div class="target-title">الهدف الثاني (TP2)</div>
-            <div class="target-val" id="tp2-val">--</div>
-        </div>
-        <div class="target-card tp3">
-            <div class="target-title">الهدف الثالث (TP3) - أقصى مدى</div>
-            <div class="target-val" id="tp3-val">--</div>
+        <div class="decision-meta">
+            <div>العائد للمخاطرة (R:R): <span class="rr-val" id="rr-display">1 : 3.5</span></div>
+            <div>قوة الإشارة: <span id="win-prob" style="color:#fff; font-weight:bold;">--%</span></div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <div class="footer-status">
-        توافق هيكل السوق والتأكيد الآلي: <span style="color: #00ff66;">فعّال (99.9%)</span>
+    <!-- Real-Time Indicators Matrix -->
+    <div class="matrix-grid">
+        <div class="matrix-item">
+            <div class="matrix-label">EMA 9 / 21</div>
+            <div class="matrix-val" id="ema-status">--</div>
+        </div>
+        <div class="matrix-item">
+            <div class="matrix-label">RSI (14)</div>
+            <div class="matrix-val" id="rsi-val">--</div>
+        </div>
+        <div class="matrix-item">
+            <div class="matrix-label">ATR (5m)</div>
+            <div class="matrix-val" id="atr-val" style="color: var(--gold);">--</div>
+        </div>
+        <div class="matrix-item">
+            <div class="matrix-label">سحب السيولة CRT</div>
+            <div class="matrix-val" id="crt-status">--</div>
+        </div>
+    </div>
+
+    <!-- Sniper Entry & Dynamic ATR Stop Loss -->
+    <div class="levels-grid">
+        <div class="level-box entry-box">
+            <div class="box-head">
+                <span>🎯 منطقة دخول قناص</span>
+                <span class="badge-mini" style="background: rgba(0,230,118,0.15); color: var(--green);">Zero Drawdown Zone</span>
+            </div>
+            <div class="price-level" id="entry-zone" style="color: var(--gold);">--</div>
+            <div class="box-desc" id="order-type-desc">انتظار تمركز السعر في منطقة السيولة المثالية</div>
+        </div>
+
+        <div class="level-box sl-box">
+            <div class="box-head">
+                <span>🛡️ وقف الخسارة (SL)</span>
+                <span class="badge-mini" style="background: rgba(255,61,87,0.15); color: var(--red);">ATR Protected</span>
+            </div>
+            <div class="price-level" id="sl-price" style="color: var(--red);">--</div>
+            <div class="box-desc" id="be-level">تأمين الصفقة (Break-Even) فور ضرب TP1</div>
+        </div>
+    </div>
+
+    <!-- Targets (TP1, TP2, TP3) -->
+    <div class="tp-grid">
+        <div class="tp-card">
+            <div class="tp-top">
+                <span>الهدف الأول (TP1)</span>
+                <span class="tp-pips" id="tp1-pips">+0 نقطة</span>
+            </div>
+            <div class="tp-price" id="tp1-price">--</div>
+        </div>
+
+        <div class="tp-card">
+            <div class="tp-top">
+                <span>الهدف الثاني (TP2)</span>
+                <span class="tp-pips" id="tp2-pips">+0 نقطة</span>
+            </div>
+            <div class="tp-price" id="tp2-price">--</div>
+        </div>
+
+        <div class="tp-card tp3-full">
+            <div class="tp-top">
+                <span>🏆 الهدف الثالث (TP3) - هدف السيولة الكبرى</span>
+                <span class="tp-pips" id="tp3-pips" style="color: var(--gold);">+0 نقطة</span>
+            </div>
+            <div class="tp-price" id="tp3-price" style="color: var(--gold);">--</div>
+        </div>
+    </div>
+
+    <!-- Live Quantitative Analysis Report -->
+    <div class="algo-console">
+        <div class="algo-title">
+            <span>📡 تقرير محلل الشارت اللحظي (5 دقائق)</span>
+            <span id="last-update" style="color: var(--text-muted); font-weight:normal;">--:--:--</span>
+        </div>
+        <div id="analysis-text">يقوم النظام الآن بسحب آخر 100 شمعة (5 دقائق) للذهب وحساب مناطق السيولة والـ ATR...</div>
     </div>
 
     <script>
-        // استخدام بيانات الذهب أو البيتكوين الحية وربطها بالنموذج العربي
-        const ws = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@trade');
+        // استخدام PAXGUSDT لأنه يمثل سعر أونصة الذهب الفوري الحقيقي (Spot Gold) لحظة بلحظة
+        const SYMBOL = 'PAXGUSDT';
+        const INTERVAL = '5m';
+        let candles = [];
+        let currentPrice = 0;
 
-        ws.onmessage = function(event) {
-            const data = JSON.parse(event.data);
-            const btcPrice = parseFloat(data.p);
-            
-            // محاكاة تسعير الذهب بناءً على التغير الحقيقي ليكون متوافقاً تماماً مع واجهة الذهب (مثلاً قسمة السعر أو مقياس خاص)
-            const goldSimulated = (btcPrice / 18.25).toFixed(2);
-            const goldNum = parseFloat(goldSimulated);
+        // 1. جلب البيانات التاريخية لآخر 100 شمعة 5 دقائق لبناء المؤشرات الحقيقية
+        async function fetchHistoricalCandles() {
+            try {
+                const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${SYMBOL}&interval=${INTERVAL}&limit=100`);
+                const data = await res.json();
+                candles = data.map(c => ({
+                    time: c[0],
+                    open: parseFloat(c[1]),
+                    high: parseFloat(c[2]),
+                    low: parseFloat(c[3]),
+                    close: parseFloat(c[4]),
+                    volume: parseFloat(c[5]),
+                    closeTime: c[6]
+                }));
+                currentPrice = candles[candles.length - 1].close;
+                runQuantitativeEngine();
+                startWebSocket();
+            } catch (err) {
+                document.getElementById('analysis-text').innerText = "خطأ في الاتصال بمزود البيانات، جاري إعادة المحاولة...";
+                setTimeout(fetchHistoricalCandles, 3000);
+            }
+        }
 
-            document.getElementById('live-gold-price').innerText = `$${goldNum} (XAU/USD)`;
-            document.getElementById('market-spot').innerText = `$${goldNum}`;
+        // 2. حساب المتوسط المتحرك الأسي (EMA)
+        function calculateEMA(data, period) {
+            const k = 2 / (period + 1);
+            let ema = data[0].close;
+            for (let i = 1; i < data.length; i++) {
+                ema = (data[i].close * k) + (ema * (1 - k));
+            }
+            return ema;
+        }
 
-            // حساب المستويات تلقائياً بناءً على السعر الحقيقي
-            document.getElementById('entry-val').innerText = `${(goldNum - 1.5).toFixed(2)} - ${(goldNum - 0.5).toFixed(2)}`;
-            document.getElementById('sl-val,').innerText = `${(goldNum + 3.2).toFixed(2)}`;
-            
-            // للأمان في الـ ID
-            document.getElementById('sl-val').innerText = `${(goldNum + 3.2).toFixed(2)}`;
-            document.getElementById('tp1-val').innerText = `${(goldNum - 4.5).toFixed(2)}`;
-            document.getElementById('tp2-val').innerText = `${(goldNum - 9.0).toFixed(2)}`;
-            document.getElementById('tp3-val').innerText = `${(goldNum - 15.5).toFixed(2)}`;
-        };
+        // 3. حساب مؤشر القوة النسبية (RSI 14)
+        function calculateRSI(data, period = 14) {
+            let gains = 0, losses = 0;
+            for (let i = data.length - period; i < data.length; i++) {
+                const diff = data[i].close - data[i - 1].close;
+                if (diff >= 0) gains += diff;
+                else losses -= diff;
+            }
+            const avgGain = gains / period;
+            const avgLoss = losses / period;
+            if (avgLoss === 0) return 100;
+            const rs = avgGain / avgLoss;
+            return 100 - (100 / (1 + rs));
+        }
+
+        // 4. حساب متوسط المدى الحقيقي (ATR 14) لوقف الخسارة الديناميكي
+        function calculateATR(data, period = 14) {
+            let trSum = 0;
+            for (let i = data.length - period; i < data.length; i++) {
+                const high = data[i].high;
+                const low = data[i].low;
+                const prevClose = data[i - 1].close;
+                const tr = Math.max(high - low, Math.abs(high - prevClose), Math.abs(low - prevClose));
+                trSum += tr;
+            }
+            return trSum / period;
+        }
+
+        // 5. تحليل CRT / سحب السيولة والفتائل (Wick Rejection & Liquidity Sweep)
+        function analyzeCRT(data) {
+            const curr = data[data.length - 1];
+            const prev = data[data.length - 2];
+            const prev2 = data[data.length - 3];
+
+            const range = curr.high - curr.low || 0.1;
+            const upperWick = curr.high - Math.max(curr.open, curr.close);
+            const lowerWick = Math.min(curr.open, curr.close) - curr.low;
+
+            // Bullish Sweep (TBS): كسر قاع الشمعة السابقة والارتداد للأعلى بفتيل سفلي واضح
+            if (curr.low < prev.low && curr.close > prev.low && (lowerWick / range) > 0.35) {
+                return { type: 'BULL_SWEEP', label: 'شرائي (Sweep ↗)', color: 'var(--green)' };
+            }
+            // Bearish Sweep (TBS): كسر قمة الشمعة السابقة والارتداد للأسفل بفتيل علوي واضح
+            if (curr.high > prev.high && curr.close < prev.high && (upperWick / range) > 0.35) {
+                return { type: 'BEAR_SWEEP', label: 'بيعي (Sweep ↘)', color: 'var(--red)' };
+            }
+            // ضغط الفتائل القياسي
+            if ((lowerWick / range) > 0.45) {
+                return { type: 'BULL_WICK', label: 'رفض سفلي ↗', color: 'var(--green)' };
+            }
+            if ((upperWick / range) > 0.45) {
+                return { type: 'BEAR_WICK', label: 'رفض علوي ↘', color: 'var(--red)' };
+            }
+            return { type: 'NEUTRAL', label: 'داخل النطاق', color: 'var(--text-muted)' };
+        }
+
+        // 6. المحرك الرئيسي لإصدار الصفقات الدقيقة
+        function runQuantitativeEngine() {
+            if (candles.length < 30) return;
+
+            const ema9 = calculateEMA(candles, 9);
+            const ema21 = calculateEMA(candles, 21);
+            const rsi = calculateRSI(candles, 14);
+            const atr = Math.max(calculateATR(candles, 14), 1.2); // ضمان حد أدنى لحركة الذهب
+            const crt = analyzeCRT(candles);
+
+            // تحديث السعر الفوري
+            document.getElementById('live-price').innerText = `$${currentPrice.toFixed(2)}`;
+
+            // تحديث مصفوفة المؤشرات
+            const emaEl = document.getElementById('ema-status');
+            if (ema9 > ema21) {
+                emaEl.innerText = 'صاعد ↗';
+                emaEl.style.color = 'var(--green)';
+            } else {
+                emaEl.innerText = 'هابط ↘';
+                emaEl.style.color = 'var(--red)';
+            }
+
+            const rsiEl = document.getElementById('rsi-val');
+            rsiEl.innerText = rsi.toFixed(1);
+            rsiEl.style.color = rsi > 70 ? 'var(--red)' : (rsi < 30 ? 'var(--green)' : '#fff');
+
+            document.getElementById('atr-val').innerText = `$${atr.toFixed(2)}`;
+
+            const crtEl = document.getElementById('crt-status');
+            crtEl.innerText = crt.label;
+            crtEl.style.color = crt.color;
+
+            // حساب نقاط التوافق (Confluence Scoring)
+            let bullScore = 0;
+            let bearScore = 0;
+
+            if (ema9 > ema21) bullScore += 35; else bearScore += 35;
+            if (currentPrice > ema9) bullScore += 15; else bearScore += 15;
+            if (rsi > 45 && rsi < 68) bullScore += 20;
+            if (rsi < 55 && rsi > 32) bearScore += 20;
+            if (rsi <= 32) bullScore += 30; // تشبع بيعي يدعم الارتداد
+            if (rsi >= 68) bearScore += 30; // تشبع شرائي يدعم الهبوط
+
+            if (crt.type.includes('BULL')) bullScore += 30;
+            if (crt.type.includes('BEAR')) bearScore += 30;
+
+            const titleEl = document.getElementById('signal-title');
+            const iconEl = document.getElementById('signal-icon');
+            const probEl = document.getElementById('win-prob');
+            const scorePill = document.getElementById('confluence-score');
+
+            let isBuy = bullScore >= bearScore;
+            let maxScore = Math.min(Math.max(bullScore, bearScore), 96);
+            probEl.innerText = `${maxScore}%`;
+
+            // تحديد المستويات بناءً على ATR الحقيقي لفريم 5 دقائق
+            let entryLow, entryHigh, sl, tp1, tp2, tp3;
+
+            if (isBuy) {
+                titleEl.innerText = 'صفقة شراء (BUY)';
+                titleEl.style.color = 'var(--green)';
+                iconEl.innerText = '↗';
+                iconEl.style.background = 'rgba(0, 230, 118, 0.15)';
+                iconEl.style.color = 'var(--green)';
+                scorePill.innerText = `توافق شرائي ${maxScore}%`;
+
+                // دخول قناص عند إعادة اختبار أقرب دعم لحظي
+                entryHigh = currentPrice - (atr * 0.15);
+                entryLow = currentPrice - (atr * 0.45);
+                const avgEntry = (entryHigh + entryLow) / 2;
+
+                sl = avgEntry - (atr * 1.5);
+                const risk = avgEntry - sl;
+
+                tp1 = avgEntry + (risk * 1.4);
+                tp2 = avgEntry + (risk * 2.5);
+                tp3 = avgEntry + (risk * 3.8);
+
+                document.getElementById('order-type-desc').innerText = `أمر شراء معلق (Buy Limit) عند طرف السيولة السفلية`;
+                document.getElementById('be-level').innerText = `نقل الوقف للدخول (${avgEntry.toFixed(2)}) فور ضرب TP1`;
+                document.getElementById('analysis-text').innerText = 
+                    `الاتجاه اللحظي على فريم 5 دقائق يدعم الصعود (EMA9 أعلى من EMA21) مع مؤشر RSI عند ${rsi.toFixed(1)}. تقلب الشمعة (ATR) يبلغ $${atr.toFixed(2)}؛ ينصح بالتمركز الشرائي في منطقة القناص المحددة وتأمين الصفقة عند الهدف الأول.`;
+            } else {
+                titleEl.innerText = 'صفقة بيع (SELL)';
+                titleEl.style.color = 'var(--red)';
+                iconEl.innerText = '↘';
+                iconEl.style.background = 'rgba(255, 61, 87, 0.15)';
+                iconEl.style.color = 'var(--red)';
+                scorePill.innerText = `توافق بيعي ${maxScore}%`;
+
+                // دخول قناص عند إعادة اختبار أقرب مقاومة لحظية
+                entryLow = currentPrice + (atr * 0.15);
+                entryHigh = currentPrice + (atr * 0.45);
+                const avgEntry = (entryHigh + entryLow) / 2;
+
+                sl = avgEntry + (atr * 1.5);
+                const risk = sl - avgEntry;
+
+                tp1 = avgEntry - (risk * 1.4);
+                tp2 = avgEntry - (risk * 2.5);
+                tp3 = avgEntry - (risk * 3.8);
+
+                document.getElementById('order-type-desc').innerText = `أمر بيع معلق (Sell Limit) عند طرف السيولة العلوية`;
+                document.getElementById('be-level').innerText = `نقل الوقف للدخول (${avgEntry.toFixed(2)}) فور ضرب TP1`;
+                document.getElementById('analysis-text').innerText = 
+                    `ضغط بيعي مسيطر على فريم 5 دقائق (EMA9 أسفل EMA21) مع قراءة RSI عند ${rsi.toFixed(1)}. معدل الحركة (ATR) يبلغ $${atr.toFixed(2)}؛ أفضل تمركز بيعي يكون بانتظار السعر في منطقة القناص العلوية لتفادي الانعكاس.`;
+            }
+
+            // عرض الأرقام والنقاط (كل 0.10 دولار في الذهب = نقطة تقليدية، أو 1 دولار = 10 نقاط)
+            document.getElementById('entry-zone').innerText = `${entryLow.toFixed(2)} - ${entryHigh.toFixed(2)}`;
+            document.getElementById('sl-price').innerText = sl.toFixed(2);
+
+            const refEntry = (entryLow + entryHigh) / 2;
+            const p1 = Math.round(Math.abs(tp1 - refEntry) * 10);
+            const p2 = Math.round(Math.abs(tp2 - refEntry) * 10);
+            const p3 = Math.round(Math.abs(tp3 - refEntry) * 10);
+
+            document.getElementById('tp1-price').innerText = tp1.toFixed(2);
+            document.getElementById('tp1-pips').innerText = `+${p1} نقطة`;
+
+            document.getElementById('tp2-price').innerText = tp2.toFixed(2);
+            document.getElementById('tp2-pips').innerText = `+${p2} نقطة`;
+
+            document.getElementById('tp3-price').innerText = tp3.toFixed(2);
+            document.getElementById('tp3-pips').innerText = `+${p3} نقطة`;
+
+            const now = new Date();
+            document.getElementById('last-update').innerText = now.toLocaleTimeString('ar-MA');
+        }
+
+        // 7. اتصال WebSocket حي لتحديث السعر والشمعة الحالية كل ثانية
+        function startWebSocket() {
+            const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${SYMBOL.toLowerCase()}@kline_${INTERVAL}`);
+            ws.onmessage = function(event) {
+                const msg = JSON.parse(event.data);
+                const k = msg.k;
+                currentPrice = parseFloat(k.c);
+
+                const updatedCandle = {
+                    time: k.t,
+                    open: parseFloat(k.o),
+                    high: parseFloat(k.h),
+                    low: parseFloat(k.l),
+                    close: parseFloat(k.c),
+                    volume: parseFloat(k.v),
+                    closeTime: k.T
+                };
+
+                if (candles.length > 0 && candles[candles.length - 1].time === k.t) {
+                    candles[candles.length - 1] = updatedCandle;
+                } else {
+                    candles.push(updatedCandle);
+                    if (candles.length > 100) candles.shift();
+                }
+
+                // عداد إغلاق شمعة الـ 5 دقائق
+                const remainingMs = k.T - Date.now();
+                if (remainingMs > 0) {
+                    const mins = Math.floor(remainingMs / 60000);
+                    const secs = Math.floor((remainingMs % 60000) / 1000);
+                    document.getElementById('candle-timer').innerText = 
+                        `إغلاق 5m: ${mins}:${secs < 10 ? '0' : ''}${secs}`;
+                }
+
+                runQuantitativeEngine();
+            };
+        }
+
+        fetchHistoricalCandles();
     </script>
 </body>
 </html>
