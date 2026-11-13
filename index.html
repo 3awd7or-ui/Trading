@@ -3,16 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>XAU/USD AI Sniper • 5m Engine</title>
+    <title>OANDA XAU/USD • 5m AI Sniper</title>
     <style>
         :root {
-            --bg-main: #07090e;
-            --bg-card: #111622;
+            --bg-main: #06080d;
+            --bg-card: #101520;
             --border: #1e2738;
             --gold: #f5b041;
             --green: #00e676;
             --red: #ff3d57;
-            --blue: #29b6f6;
             --text-muted: #8a99ad;
         }
         * {
@@ -26,10 +25,10 @@
             color: #ffffff;
             padding: 10px;
             font-size: 13px;
-            max-width: 500px;
+            max-width: 520px;
             margin: 0 auto;
         }
-        /* Top Ticker Bar */
+        /* Top OANDA Ticker Bar */
         .top-ticker {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -38,7 +37,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         .asset-badge {
             display: flex;
@@ -46,64 +45,107 @@
             gap: 8px;
         }
         .gold-icon {
-            background: var(--gold);
-            color: #000;
+            background: #d49a2a;
+            color: #fff;
             font-weight: 900;
-            width: 26px;
-            height: 26px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
+            font-size: 11px;
+            box-shadow: 0 0 8px rgba(245,176,65,0.4);
         }
         .asset-name {
-            font-weight: bold;
-            font-size: 0.85rem;
-            color: #e2e8f0;
+            font-weight: 700;
+            font-size: 0.82rem;
+            color: #d1d5db;
+            direction: ltr;
+            text-align: left;
         }
         .asset-sub {
             font-size: 0.68rem;
-            color: var(--text-muted);
+            color: var(--gold);
+            font-weight: bold;
         }
         .live-price-box {
             text-align: left;
+            direction: ltr;
         }
         .live-price {
-            font-size: 1.35rem;
-            font-weight: 800;
+            font-size: 1.4rem;
+            font-weight: 900;
             color: var(--gold);
             font-variant-numeric: tabular-nums;
         }
         .price-change {
-            font-size: 0.72rem;
-            font-weight: bold;
+            font-size: 0.7rem;
+            color: var(--text-muted);
         }
 
-        /* Brand Header */
-        .brand-bar {
-            background: linear-gradient(90deg, rgba(245,176,65,0.12) 0%, rgba(17,22,34,0.9) 100%);
-            border: 1px solid rgba(245,176,65,0.3);
-            border-radius: 10px;
-            padding: 10px 12px;
+        /* OANDA Sync Calibration Bar */
+        .sync-bar {
+            background: #0d121b;
+            border: 1px dashed #2a364f;
+            border-radius: 8px;
+            padding: 7px 10px;
             margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            font-size: 0.72rem;
         }
-        .brand-title {
+        .sync-controls {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            direction: ltr;
+        }
+        .sync-btn {
+            background: #1a2333;
+            border: 1px solid #2e3d59;
+            color: #fff;
+            border-radius: 5px;
+            padding: 3px 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.72rem;
+        }
+        .sync-btn:active {
+            background: var(--gold);
+            color: #000;
+        }
+        .sync-val {
             color: var(--gold);
             font-weight: bold;
-            font-size: 0.9rem;
+            min-width: 48px;
+            text-align: center;
         }
-        .status-pill {
-            background: rgba(0, 230, 118, 0.12);
-            border: 1px solid var(--green);
-            color: var(--green);
-            padding: 3px 8px;
-            border-radius: 20px;
-            font-size: 0.68rem;
+
+        /* TradingView OANDA Chart Collapsible */
+        .tv-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        .tv-header {
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-size: 0.75rem;
+            color: var(--gold);
             font-weight: bold;
+            background: rgba(245,176,65,0.07);
+        }
+        .tv-iframe-wrap {
+            height: 240px;
+            width: 100%;
+            display: block;
         }
 
         /* Main Decision Card */
@@ -113,8 +155,6 @@
             border-radius: 12px;
             padding: 14px;
             margin-bottom: 10px;
-            position: relative;
-            overflow: hidden;
         }
         .decision-header {
             display: flex;
@@ -123,12 +163,12 @@
             margin-bottom: 10px;
         }
         .signal-main {
-            font-size: 1.4rem;
+            font-size: 1.35rem;
             font-weight: 900;
         }
         .signal-icon-box {
-            width: 44px;
-            height: 44px;
+            width: 42px;
+            height: 42px;
             border-radius: 10px;
             display: flex;
             align-items: center;
@@ -140,17 +180,12 @@
             display: flex;
             justify-content: space-between;
             border-top: 1px solid var(--border);
-            padding-top: 10px;
-            font-size: 0.78rem;
+            padding-top: 9px;
+            font-size: 0.76rem;
             color: var(--text-muted);
         }
-        .rr-val {
-            color: var(--gold);
-            font-weight: 800;
-            font-size: 0.95rem;
-        }
 
-        /* Confluence Matrix (Indicators) */
+        /* Matrix Grid */
         .matrix-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -170,7 +205,7 @@
             margin-bottom: 3px;
         }
         .matrix-val {
-            font-size: 0.76rem;
+            font-size: 0.75rem;
             font-weight: bold;
         }
 
@@ -184,7 +219,7 @@
         .level-box {
             background: var(--bg-card);
             border-radius: 10px;
-            padding: 12px;
+            padding: 11px;
             border: 1px solid var(--border);
         }
         .level-box.entry-box {
@@ -199,24 +234,20 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.7rem;
+            font-size: 0.68rem;
             color: var(--text-muted);
-            margin-bottom: 6px;
-        }
-        .badge-mini {
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.62rem;
-            font-weight: bold;
+            margin-bottom: 5px;
         }
         .price-level {
             font-size: 1.05rem;
             font-weight: 800;
             margin: 4px 0;
+            direction: ltr;
+            text-align: right;
             font-variant-numeric: tabular-nums;
         }
         .box-desc {
-            font-size: 0.66rem;
+            font-size: 0.65rem;
             color: var(--text-muted);
             line-height: 1.35;
         }
@@ -251,6 +282,8 @@
             font-size: 1.1rem;
             font-weight: 800;
             color: #fff;
+            direction: ltr;
+            text-align: right;
             font-variant-numeric: tabular-nums;
         }
         .tp-pips {
@@ -259,7 +292,7 @@
             font-weight: bold;
         }
 
-        /* Technical Console */
+        /* Console */
         .algo-console {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -269,54 +302,67 @@
             line-height: 1.5;
             color: #cbd5e1;
         }
-        .algo-title {
-            color: var(--gold);
-            font-weight: bold;
-            margin-bottom: 4px;
-            display: flex;
-            justify-content: space-between;
-        }
     </style>
 </head>
 <body>
 
-    <!-- Top Live Gold Spot Header -->
+    <!-- Top Live OANDA Gold Spot Header -->
     <div class="top-ticker">
         <div class="asset-badge">
             <div class="gold-icon">Au</div>
             <div>
-                <div class="asset-name">Gold Spot / U.S. Dollar</div>
-                <div class="asset-sub">XAU/USD • 5m • Real-Time Feed</div>
+                <div class="asset-name">Gold Spot / U.S. Dollar • 5 • OANDA</div>
+                <div class="asset-sub">XAU/USD Live Spot Engine</div>
             </div>
         </div>
         <div class="live-price-box">
-            <div class="live-price" id="live-price">جارِ الاتصال...</div>
-            <div class="price-change" id="candle-timer" style="color: var(--text-muted);">إغلاق الشمعة: --:--</div>
+            <div class="live-price" id="live-price">Loading...</div>
+            <div class="price-change" id="candle-timer">5m Close: --:--</div>
         </div>
     </div>
 
-    <!-- Brand & Algorithm Status -->
-    <div class="brand-bar">
-        <div class="brand-title">⚡ جولد فيجن بالذكاء الاصطناعي V4.0 PRO</div>
-        <div class="status-pill" id="confluence-score">تحليل 5m نشط</div>
+    <!-- OANDA Price Calibration Bar -->
+    <div class="sync-bar">
+        <span style="color: var(--text-muted);">⚙️ معايرة فرق سبريد OANDA اللحظي:</span>
+        <div class="sync-controls">
+            <button class="sync-btn" onclick="adjustOffset(-1)">-1$</button>
+            <button class="sync-btn" onclick="adjustOffset(-0.2)">-0.2</button>
+            <span class="sync-val" id="offset-display">+0.0$</span>
+            <button class="sync-btn" onclick="adjustOffset(0.2)">+0.2</button>
+            <button class="sync-btn" onclick="adjustOffset(1)">+1$</button>
+        </div>
+    </div>
+
+    <!-- Live Official OANDA TradingView 5m Chart -->
+    <div class="tv-box">
+        <div class="tv-header" onclick="toggleChart()">
+            <span>📊 شارت OANDA:XAUUSD المباشر (فريم 5 دقائق)</span>
+            <span id="chart-toggle-lbl">إخفاء / إظهار ▲</span>
+        </div>
+        <div class="tv-iframe-wrap" id="tv-wrap">
+            <iframe 
+                src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_oanda&symbol=OANDA%3AXAUUSD&interval=5&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=f1f3f6&studies=%5B%5D&theme=dark&style=1&timezone=Etc%2FUTC"
+                style="width:100%; height:100%; border:none;">
+            </iframe>
+        </div>
     </div>
 
     <!-- Main Signal Card -->
     <div class="decision-card">
         <div class="decision-header">
             <div>
-                <div style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 2px;">قرار الخوارزمية (EMA + CRT + ATR)</div>
-                <div class="signal-main" id="signal-title" style="color: var(--gold);">جارِ فحص السيولة...</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 2px;">قرار التداول المقترح (OANDA 5m)</div>
+                <div class="signal-main" id="signal-title" style="color: var(--gold);">جارِ سحب السيولة...</div>
             </div>
             <div class="signal-icon-box" id="signal-icon" style="background: rgba(245,176,65,0.15); color: var(--gold);">⏳</div>
         </div>
         <div class="decision-meta">
-            <div>العائد للمخاطرة (R:R): <span class="rr-val" id="rr-display">1 : 3.5</span></div>
-            <div>قوة الإشارة: <span id="win-prob" style="color:#fff; font-weight:bold;">--%</span></div>
+            <div>نسبة العائد للمخاطرة (R:R): <span style="color:var(--gold); font-weight:800;">1 : 3.5</span></div>
+            <div>توافق الشروط: <span id="win-prob" style="color:#fff; font-weight:bold;">--%</span></div>
         </div>
     </div>
 
-    <!-- Real-Time Indicators Matrix -->
+    <!-- Indicators Matrix -->
     <div class="matrix-grid">
         <div class="matrix-item">
             <div class="matrix-label">EMA 9 / 21</div>
@@ -331,29 +377,27 @@
             <div class="matrix-val" id="atr-val" style="color: var(--gold);">--</div>
         </div>
         <div class="matrix-item">
-            <div class="matrix-label">سحب السيولة CRT</div>
+            <div class="matrix-label">سلوك الشمعة CRT</div>
             <div class="matrix-val" id="crt-status">--</div>
         </div>
     </div>
 
-    <!-- Sniper Entry & Dynamic ATR Stop Loss -->
+    <!-- Sniper Entry & Stop Loss -->
     <div class="levels-grid">
         <div class="level-box entry-box">
             <div class="box-head">
-                <span>🎯 منطقة دخول قناص</span>
-                <span class="badge-mini" style="background: rgba(0,230,118,0.15); color: var(--green);">Zero Drawdown Zone</span>
+                <span>🎯 دخول قناص (صفر انعكاس)</span>
             </div>
             <div class="price-level" id="entry-zone" style="color: var(--gold);">--</div>
-            <div class="box-desc" id="order-type-desc">انتظار تمركز السعر في منطقة السيولة المثالية</div>
+            <div class="box-desc" id="order-type-desc">انتظار السعر عند طرف السيولة</div>
         </div>
 
         <div class="level-box sl-box">
             <div class="box-head">
                 <span>🛡️ وقف الخسارة (SL)</span>
-                <span class="badge-mini" style="background: rgba(255,61,87,0.15); color: var(--red);">ATR Protected</span>
             </div>
             <div class="price-level" id="sl-price" style="color: var(--red);">--</div>
-            <div class="box-desc" id="be-level">تأمين الصفقة (Break-Even) فور ضرب TP1</div>
+            <div class="box-desc" id="be-level">محمي ضد الضرب (تأمين عند TP1)</div>
         </div>
     </div>
 
@@ -384,46 +428,68 @@
         </div>
     </div>
 
-    <!-- Live Quantitative Analysis Report -->
+    <!-- Analysis Console -->
     <div class="algo-console">
-        <div class="algo-title">
-            <span>📡 تقرير محلل الشارت اللحظي (5 دقائق)</span>
+        <div style="color: var(--gold); font-weight: bold; margin-bottom: 4px; display: flex; justify-content: space-between;">
+            <span>📡 القراءة الفنية اللحظية (Gold Spot • 5m)</span>
             <span id="last-update" style="color: var(--text-muted); font-weight:normal;">--:--:--</span>
         </div>
-        <div id="analysis-text">يقوم النظام الآن بسحب آخر 100 شمعة (5 دقائق) للذهب وحساب مناطق السيولة والـ ATR...</div>
+        <div id="analysis-text">جارِ مزامنة السعر الفوري وحساب مستويات الدخول...</div>
     </div>
 
     <script>
-        // استخدام PAXGUSDT لأنه يمثل سعر أونصة الذهب الفوري الحقيقي (Spot Gold) لحظة بلحظة
         const SYMBOL = 'PAXGUSDT';
         const INTERVAL = '5m';
-        let candles = [];
-        let currentPrice = 0;
+        let rawCandles = [];
+        let rawPrice = 0;
+        // حفظ معايرة فرق سعر OANDA في ذاكرة المتصفح
+        let oandaOffset = parseFloat(localStorage.getItem('oanda_offset') || '-12.5');
 
-        // 1. جلب البيانات التاريخية لآخر 100 شمعة 5 دقائق لبناء المؤشرات الحقيقية
+        function updateOffsetUI() {
+            const sign = oandaOffset >= 0 ? '+' : '';
+            document.getElementById('offset-display').innerText = `${sign}${oandaOffset.toFixed(1)}$`;
+        }
+        updateOffsetUI();
+
+        function adjustOffset(delta) {
+            oandaOffset = Math.round((oandaOffset + delta) * 10) / 10;
+            localStorage.setItem('oanda_offset', oandaOffset);
+            updateOffsetUI();
+            runQuantitativeEngine();
+        }
+
+        function toggleChart() {
+            const wrap = document.getElementById('tv-wrap');
+            const lbl = document.getElementById('chart-toggle-lbl');
+            if (wrap.style.display === 'none') {
+                wrap.style.display = 'block';
+                lbl.innerText = 'إخفاء ▲';
+            } else {
+                wrap.style.display = 'none';
+                lbl.innerText = 'إظهار الشارت ▼';
+            }
+        }
+
         async function fetchHistoricalCandles() {
             try {
                 const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${SYMBOL}&interval=${INTERVAL}&limit=100`);
                 const data = await res.json();
-                candles = data.map(c => ({
+                rawCandles = data.map(c => ({
                     time: c[0],
                     open: parseFloat(c[1]),
                     high: parseFloat(c[2]),
                     low: parseFloat(c[3]),
                     close: parseFloat(c[4]),
-                    volume: parseFloat(c[5]),
                     closeTime: c[6]
                 }));
-                currentPrice = candles[candles.length - 1].close;
+                rawPrice = rawCandles[rawCandles.length - 1].close;
                 runQuantitativeEngine();
                 startWebSocket();
             } catch (err) {
-                document.getElementById('analysis-text').innerText = "خطأ في الاتصال بمزود البيانات، جاري إعادة المحاولة...";
                 setTimeout(fetchHistoricalCandles, 3000);
             }
         }
 
-        // 2. حساب المتوسط المتحرك الأسي (EMA)
         function calculateEMA(data, period) {
             const k = 2 / (period + 1);
             let ema = data[0].close;
@@ -433,7 +499,6 @@
             return ema;
         }
 
-        // 3. حساب مؤشر القوة النسبية (RSI 14)
         function calculateRSI(data, period = 14) {
             let gains = 0, losses = 0;
             for (let i = data.length - period; i < data.length; i++) {
@@ -441,68 +506,69 @@
                 if (diff >= 0) gains += diff;
                 else losses -= diff;
             }
-            const avgGain = gains / period;
             const avgLoss = losses / period;
             if (avgLoss === 0) return 100;
-            const rs = avgGain / avgLoss;
+            const rs = (gains / period) / avgLoss;
             return 100 - (100 / (1 + rs));
         }
 
-        // 4. حساب متوسط المدى الحقيقي (ATR 14) لوقف الخسارة الديناميكي
         function calculateATR(data, period = 14) {
             let trSum = 0;
             for (let i = data.length - period; i < data.length; i++) {
-                const high = data[i].high;
-                const low = data[i].low;
-                const prevClose = data[i - 1].close;
-                const tr = Math.max(high - low, Math.abs(high - prevClose), Math.abs(low - prevClose));
+                const tr = Math.max(
+                    data[i].high - data[i].low,
+                    Math.abs(data[i].high - data[i - 1].close),
+                    Math.abs(data[i].low - data[i - 1].close)
+                );
                 trSum += tr;
             }
             return trSum / period;
         }
 
-        // 5. تحليل CRT / سحب السيولة والفتائل (Wick Rejection & Liquidity Sweep)
         function analyzeCRT(data) {
             const curr = data[data.length - 1];
             const prev = data[data.length - 2];
-            const prev2 = data[data.length - 3];
-
-            const range = curr.high - curr.low || 0.1;
+            const range = (curr.high - curr.low) || 0.1;
             const upperWick = curr.high - Math.max(curr.open, curr.close);
             const lowerWick = Math.min(curr.open, curr.close) - curr.low;
 
-            // Bullish Sweep (TBS): كسر قاع الشمعة السابقة والارتداد للأعلى بفتيل سفلي واضح
             if (curr.low < prev.low && curr.close > prev.low && (lowerWick / range) > 0.35) {
-                return { type: 'BULL_SWEEP', label: 'شرائي (Sweep ↗)', color: 'var(--green)' };
+                return { type: 'BULL_SWEEP', label: 'سحب سفلي ↗', color: 'var(--green)' };
             }
-            // Bearish Sweep (TBS): كسر قمة الشمعة السابقة والارتداد للأسفل بفتيل علوي واضح
             if (curr.high > prev.high && curr.close < prev.high && (upperWick / range) > 0.35) {
-                return { type: 'BEAR_SWEEP', label: 'بيعي (Sweep ↘)', color: 'var(--red)' };
+                return { type: 'BEAR_SWEEP', label: 'سحب علوي ↘', color: 'var(--red)' };
             }
-            // ضغط الفتائل القياسي
             if ((lowerWick / range) > 0.45) {
-                return { type: 'BULL_WICK', label: 'رفض سفلي ↗', color: 'var(--green)' };
+                return { type: 'BULL_WICK', label: 'رفض شرائي ↗', color: 'var(--green)' };
             }
             if ((upperWick / range) > 0.45) {
-                return { type: 'BEAR_WICK', label: 'رفض علوي ↘', color: 'var(--red)' };
+                return { type: 'BEAR_WICK', label: 'رفض بيعي ↘', color: 'var(--red)' };
             }
-            return { type: 'NEUTRAL', label: 'داخل النطاق', color: 'var(--text-muted)' };
+            return { type: 'NEUTRAL', label: 'تجميع نطاقي', color: 'var(--text-muted)' };
         }
 
-        // 6. المحرك الرئيسي لإصدار الصفقات الدقيقة
         function runQuantitativeEngine() {
-            if (candles.length < 30) return;
+            if (rawCandles.length < 30) return;
+
+            // تطبيق معايرة OANDA على جميع الشموع
+            const candles = rawCandles.map(c => ({
+                ...c,
+                open: c.open + oandaOffset,
+                high: c.high + oandaOffset,
+                low: c.low + oandaOffset,
+                close: c.close + oandaOffset
+            }));
+            const currentPrice = rawPrice + oandaOffset;
 
             const ema9 = calculateEMA(candles, 9);
             const ema21 = calculateEMA(candles, 21);
             const rsi = calculateRSI(candles, 14);
-            const atr = Math.max(calculateATR(candles, 14), 1.2); // ضمان حد أدنى لحركة الذهب
+            const atr = Math.max(calculateATR(candles, 14), 1.1);
             const crt = analyzeCRT(candles);
 
-            // تحديث السعر الفوري
+            // عرض السعر الفوري المعاير مع OANDA
             document.getElementById('live-price').innerText = `$${currentPrice.toFixed(2)}`;
 
-            // تحديث مصفوفة المؤشرات
             const emaEl = document.getElementById('ema-status');
             if (ema9 > ema21) {
                 emaEl.innerText = 'صاعد ↗';
@@ -522,30 +588,23 @@
             crtEl.innerText = crt.label;
             crtEl.style.color = crt.color;
 
-            // حساب نقاط التوافق (Confluence Scoring)
-            let bullScore = 0;
-            let bearScore = 0;
-
+            let bullScore = 0, bearScore = 0;
             if (ema9 > ema21) bullScore += 35; else bearScore += 35;
             if (currentPrice > ema9) bullScore += 15; else bearScore += 15;
             if (rsi > 45 && rsi < 68) bullScore += 20;
             if (rsi < 55 && rsi > 32) bearScore += 20;
-            if (rsi <= 32) bullScore += 30; // تشبع بيعي يدعم الارتداد
-            if (rsi >= 68) bearScore += 30; // تشبع شرائي يدعم الهبوط
-
+            if (rsi <= 32) bullScore += 30;
+            if (rsi >= 68) bearScore += 30;
             if (crt.type.includes('BULL')) bullScore += 30;
             if (crt.type.includes('BEAR')) bearScore += 30;
 
+            const isBuy = bullScore >= bearScore;
+            const maxScore = Math.min(Math.max(bullScore, bearScore), 96);
+            document.getElementById('win-prob').innerText = `${maxScore}%`;
+
             const titleEl = document.getElementById('signal-title');
             const iconEl = document.getElementById('signal-icon');
-            const probEl = document.getElementById('win-prob');
-            const scorePill = document.getElementById('confluence-score');
 
-            let isBuy = bullScore >= bearScore;
-            let maxScore = Math.min(Math.max(bullScore, bearScore), 96);
-            probEl.innerText = `${maxScore}%`;
-
-            // تحديد المستويات بناءً على ATR الحقيقي لفريم 5 دقائق
             let entryLow, entryHigh, sl, tp1, tp2, tp3;
 
             if (isBuy) {
@@ -554,104 +613,87 @@
                 iconEl.innerText = '↗';
                 iconEl.style.background = 'rgba(0, 230, 118, 0.15)';
                 iconEl.style.color = 'var(--green)';
-                scorePill.innerText = `توافق شرائي ${maxScore}%`;
 
-                // دخول قناص عند إعادة اختبار أقرب دعم لحظي
                 entryHigh = currentPrice - (atr * 0.15);
                 entryLow = currentPrice - (atr * 0.45);
                 const avgEntry = (entryHigh + entryLow) / 2;
 
-                sl = avgEntry - (atr * 1.5);
+                sl = avgEntry - (atr * 1.45);
                 const risk = avgEntry - sl;
 
                 tp1 = avgEntry + (risk * 1.4);
                 tp2 = avgEntry + (risk * 2.5);
                 tp3 = avgEntry + (risk * 3.8);
 
-                document.getElementById('order-type-desc').innerText = `أمر شراء معلق (Buy Limit) عند طرف السيولة السفلية`;
-                document.getElementById('be-level').innerText = `نقل الوقف للدخول (${avgEntry.toFixed(2)}) فور ضرب TP1`;
+                document.getElementById('order-type-desc').innerText = `أمر معلق قناص (Buy Limit) عند طرف السيولة`;
                 document.getElementById('analysis-text').innerText = 
-                    `الاتجاه اللحظي على فريم 5 دقائق يدعم الصعود (EMA9 أعلى من EMA21) مع مؤشر RSI عند ${rsi.toFixed(1)}. تقلب الشمعة (ATR) يبلغ $${atr.toFixed(2)}؛ ينصح بالتمركز الشرائي في منطقة القناص المحددة وتأمين الصفقة عند الهدف الأول.`;
+                    `السعر الفوري على OANDA يتحرك عند $${currentPrice.toFixed(2)} بزخم شرائي (EMA9 > EMA21). منطقة القناص الشرائية تتمركز بين ${entryLow.toFixed(2)} و ${entryHigh.toFixed(2)} مع وقف خسارة محمي بالـ ATR عند ${sl.toFixed(2)}.`;
             } else {
                 titleEl.innerText = 'صفقة بيع (SELL)';
                 titleEl.style.color = 'var(--red)';
                 iconEl.innerText = '↘';
                 iconEl.style.background = 'rgba(255, 61, 87, 0.15)';
                 iconEl.style.color = 'var(--red)';
-                scorePill.innerText = `توافق بيعي ${maxScore}%`;
 
-                // دخول قناص عند إعادة اختبار أقرب مقاومة لحظية
                 entryLow = currentPrice + (atr * 0.15);
                 entryHigh = currentPrice + (atr * 0.45);
                 const avgEntry = (entryHigh + entryLow) / 2;
 
-                sl = avgEntry + (atr * 1.5);
+                sl = avgEntry + (atr * 1.45);
                 const risk = sl - avgEntry;
 
                 tp1 = avgEntry - (risk * 1.4);
                 tp2 = avgEntry - (risk * 2.5);
                 tp3 = avgEntry - (risk * 3.8);
 
-                document.getElementById('order-type-desc').innerText = `أمر بيع معلق (Sell Limit) عند طرف السيولة العلوية`;
-                document.getElementById('be-level').innerText = `نقل الوقف للدخول (${avgEntry.toFixed(2)}) فور ضرب TP1`;
+                document.getElementById('order-type-desc').innerText = `أمر معلق قناص (Sell Limit) عند طرف السيولة`;
                 document.getElementById('analysis-text').innerText = 
-                    `ضغط بيعي مسيطر على فريم 5 دقائق (EMA9 أسفل EMA21) مع قراءة RSI عند ${rsi.toFixed(1)}. معدل الحركة (ATR) يبلغ $${atr.toFixed(2)}؛ أفضل تمركز بيعي يكون بانتظار السعر في منطقة القناص العلوية لتفادي الانعكاس.`;
+                    `السعر الفوري على OANDA يتحرك عند $${currentPrice.toFixed(2)} بضغط بيعي (EMA9 < EMA21). منطقة القناص البيعية تتمركز بين ${entryLow.toFixed(2)} و ${entryHigh.toFixed(2)} مع وقف خسارة محمي بالـ ATR عند ${sl.toFixed(2)}.`;
             }
 
-            // عرض الأرقام والنقاط (كل 0.10 دولار في الذهب = نقطة تقليدية، أو 1 دولار = 10 نقاط)
             document.getElementById('entry-zone').innerText = `${entryLow.toFixed(2)} - ${entryHigh.toFixed(2)}`;
             document.getElementById('sl-price').innerText = sl.toFixed(2);
 
             const refEntry = (entryLow + entryHigh) / 2;
-            const p1 = Math.round(Math.abs(tp1 - refEntry) * 10);
-            const p2 = Math.round(Math.abs(tp2 - refEntry) * 10);
-            const p3 = Math.round(Math.abs(tp3 - refEntry) * 10);
-
             document.getElementById('tp1-price').innerText = tp1.toFixed(2);
-            document.getElementById('tp1-pips').innerText = `+${p1} نقطة`;
+            document.getElementById('tp1-pips').innerText = `+${Math.round(Math.abs(tp1 - refEntry) * 10)} نقطة`;
 
             document.getElementById('tp2-price').innerText = tp2.toFixed(2);
-            document.getElementById('tp2-pips').innerText = `+${p2} نقطة`;
+            document.getElementById('tp2-pips').innerText = `+${Math.round(Math.abs(tp2 - refEntry) * 10)} نقطة`;
 
             document.getElementById('tp3-price').innerText = tp3.toFixed(2);
-            document.getElementById('tp3-pips').innerText = `+${p3} نقطة`;
+            document.getElementById('tp3-pips').innerText = `+${Math.round(Math.abs(tp3 - refEntry) * 10)} نقطة`;
 
-            const now = new Date();
-            document.getElementById('last-update').innerText = now.toLocaleTimeString('ar-MA');
+            document.getElementById('last-update').innerText = new Date().toLocaleTimeString('ar-MA');
         }
 
-        // 7. اتصال WebSocket حي لتحديث السعر والشمعة الحالية كل ثانية
         function startWebSocket() {
             const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${SYMBOL.toLowerCase()}@kline_${INTERVAL}`);
             ws.onmessage = function(event) {
-                const msg = JSON.parse(event.data);
-                const k = msg.k;
-                currentPrice = parseFloat(k.c);
+                const k = JSON.parse(event.data).k;
+                rawPrice = parseFloat(k.c);
 
-                const updatedCandle = {
+                const updated = {
                     time: k.t,
                     open: parseFloat(k.o),
                     high: parseFloat(k.h),
                     low: parseFloat(k.l),
                     close: parseFloat(k.c),
-                    volume: parseFloat(k.v),
                     closeTime: k.T
                 };
 
-                if (candles.length > 0 && candles[candles.length - 1].time === k.t) {
-                    candles[candles.length - 1] = updatedCandle;
+                if (rawCandles.length > 0 && rawCandles[rawCandles.length - 1].time === k.t) {
+                    rawCandles[rawCandles.length - 1] = updated;
                 } else {
-                    candles.push(updatedCandle);
-                    if (candles.length > 100) candles.shift();
+                    rawCandles.push(updated);
+                    if (rawCandles.length > 100) rawCandles.shift();
                 }
 
-                // عداد إغلاق شمعة الـ 5 دقائق
-                const remainingMs = k.T - Date.now();
-                if (remainingMs > 0) {
-                    const mins = Math.floor(remainingMs / 60000);
-                    const secs = Math.floor((remainingMs % 60000) / 1000);
-                    document.getElementById('candle-timer').innerText = 
-                        `إغلاق 5m: ${mins}:${secs < 10 ? '0' : ''}${secs}`;
+                const rem = k.T - Date.now();
+                if (rem > 0) {
+                    const m = Math.floor(rem / 60000);
+                    const s = Math.floor((rem % 60000) / 1000);
+                    document.getElementById('candle-timer').innerText = `5m Close: ${m}:${s < 10 ? '0' : ''}${s}`;
                 }
 
                 runQuantitativeEngine();
