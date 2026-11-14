@@ -44,7 +44,7 @@
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
         }
 
-        /* رأس التطبيق العلوي */
+        /* الشريط العوي */
         .top-bar {
             display: flex;
             justify-content: space-between;
@@ -59,10 +59,6 @@
             display: flex;
             align-items: center;
             gap: 6px;
-        }
-
-        .app-brand span {
-            color: var(--accent-green);
         }
 
         .top-actions {
@@ -149,7 +145,7 @@
         }
 
         .ai-status-title {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 700;
             color: #fff;
         }
@@ -174,8 +170,8 @@
             top: 0;
             height: 100%;
             background: linear-gradient(90deg, #059669, var(--accent-green));
-            width: 62%; /* 5 of 8 */
-            transition: width 0.4s ease;
+            width: 0%; 
+            transition: width 0.3s ease;
             z-index: 1;
         }
 
@@ -236,12 +232,11 @@
             align-items: flex-end;
         }
 
-        .trend-up {
-            color: var(--accent-green);
-            font-size: 11px;
-        }
+        /* ألوان التنبيهات والاتجاهات */
+        .trend-up { color: var(--accent-green); }
+        .trend-down { color: var(--accent-red); }
 
-        /* تنبيهات البوت (Bot alerts toggle) */
+        /* تفعيل التنبيهات (Bot alerts toggle) */
         .alerts-box {
             background: var(--panel-bg);
             border: 1px solid var(--border-color);
@@ -262,7 +257,6 @@
             font-weight: 600;
         }
 
-        /* زر التبديل (Toggle Switch) */
         .switch {
             position: relative;
             display: inline-block;
@@ -270,11 +264,7 @@
             height: 20px;
         }
 
-        .switch input { 
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
+        .switch input { opacity: 0; width: 0; height: 0; }
 
         .slider {
             position: absolute;
@@ -297,15 +287,10 @@
             border-radius: 50%;
         }
 
-        input:checked + .slider {
-            background-color: var(--accent-green);
-        }
+        input:checked + .slider { background-color: var(--accent-green); }
+        input:checked + .slider:before { transform: translateX(18px); }
 
-        input:checked + .slider:before {
-            transform: translateX(18px);
-        }
-
-        /* شريط التنقل السفلي (Navigation Bar) */
+        /* شريط التنقل السفلي */
         .nav-bar {
             display: flex;
             justify-content: space-around;
@@ -321,16 +306,8 @@
             text-decoration: none;
         }
 
-        .nav-item.active {
-            color: var(--accent-green);
-        }
-
-        .nav-item svg {
-            width: 18px;
-            height: 18px;
-            margin-bottom: 2px;
-            fill: currentColor;
-        }
+        .nav-item.active { color: var(--accent-green); }
+        .nav-item div { font-size: 16px; margin-bottom: 2px; }
 
         .footer-handle {
             text-align: center;
@@ -347,34 +324,34 @@
         <div class="top-bar">
             <div class="app-brand">⚡ GPT trade</div>
             <div class="top-actions">
-                <button class="top-btn">💬 Help</button>
+                <button class="top-btn" onclick="alert('Help: Select a timeframe and tap analyze.')">💬 Help</button>
                 <button class="top-btn">🌐 English ∨</button>
             </div>
         </div>
 
         <!-- أوقات الصلاحية -->
         <div class="timeframes-bar">
-            <div class="tf-chip" onclick="setTF(this, 'S3')">S3</div>
-            <div class="tf-chip active" onclick="setTF(this, 'S5')">S5</div>
-            <div class="tf-chip" onclick="setTF(this, 'S15')">S15</div>
-            <div class="tf-chip" onclick="setTF(this, 'S30')">S30</div>
-            <div class="tf-chip" onclick="setTF(this, 'M1')">M1</div>
-            <div class="tf-chip" onclick="setTF(this, 'M5')">M5</div>
-            <div class="tf-chip" onclick="setTF(this, 'M15')">M15</div>
+            <div class="tf-chip" onclick="selectTF(this, 'S3')">S3</div>
+            <div class="tf-chip active" onclick="selectTF(this, 'S5')">S5</div>
+            <div class="tf-chip" onclick="selectTF(this, 'S15')">S15</div>
+            <div class="tf-chip" onclick="selectTF(this, 'S30')">S30</div>
+            <div class="tf-chip" onclick="selectTF(this, 'M1')">M1</div>
+            <div class="tf-chip" onclick="selectTF(this, 'M5')">M5</div>
+            <div class="tf-chip" onclick="selectTF(this, 'M15')">M15</div>
         </div>
 
         <!-- بانر الذكاء الاصطناعي -->
         <div class="ai-banner">
             <div class="ai-level-text">Decoding at level GPT-6 Astra</div>
             <div class="ai-status-row">
-                <div class="ai-icon-box">📈</div>
-                <div class="ai-status-title" id="status-title">Measuring momentum...</div>
+                <div class="ai-icon-box" id="ai-icon">📈</div>
+                <div class="ai-status-title" id="status-title">Tap bar to analyze market...</div>
             </div>
-            <div class="progress-container" onclick="triggerAnalysis()">
-                <div class="progress-fill" id="prog-fill"></div>
+            <div class="progress-container" onclick="startAnalysis()">
+                <div class="progress-fill" id="prog-fill" style="width: 62%;"></div>
                 <div class="progress-text">
-                    <span id="prog-label">GPT-6 Astra is analyzing</span>
-                    <span id="prog-count">5 of 8 ...</span>
+                    <span id="prog-label">GPT-6 Astra is ready</span>
+                    <span id="prog-count">Click to scan</span>
                 </div>
             </div>
         </div>
@@ -382,58 +359,48 @@
         <!-- شريط قراءات الأسواق -->
         <div class="readings-header">
             <span>Readings - real quotes</span>
-            <span id="steps-indicator">5 of 8</span>
+            <span id="steps-indicator">8 of 8</span>
         </div>
 
-        <!-- بطاقات المؤشرات الـ 8 المطابقة تماماً -->
+        <!-- بطاقات المؤشرات الـ 8 -->
         <div class="readings-grid">
-            <!-- 1. Trend -->
             <div class="reading-card">
                 <div class="rc-top"><span>Trend - 1h</span> 📈</div>
-                <div class="rc-bottom"><span id="val-trend">up ↑</span> <span class="trend-up">📈</span></div>
+                <div class="rc-bottom"><span id="val-trend" class="trend-up">up ↑</span> <span>📈</span></div>
             </div>
-            <!-- 2. EMA -->
             <div class="reading-card">
                 <div class="rc-top"><span>EMA 50/200</span> 📉</div>
-                <div class="rc-bottom"><span id="val-ema">up ↑</span> <span class="trend-up">📈</span></div>
+                <div class="rc-bottom"><span id="val-ema" class="trend-up">up ↑</span> <span>📈</span></div>
             </div>
-            <!-- 3. Momentum -->
             <div class="reading-card">
                 <div class="rc-top"><span>Momentum</span> ⚡</div>
-                <div class="rc-bottom"><span id="val-mom">up ↑</span> <span class="trend-up">📈</span></div>
+                <div class="rc-bottom"><span id="val-mom" class="trend-up">up ↑</span> <span>📈</span></div>
             </div>
-            <!-- 4. RSI -->
             <div class="reading-card">
                 <div class="rc-top"><span>RSI</span> ⏱️</div>
                 <div class="rc-bottom"><span id="val-rsi">66</span> <span style="font-size:10px; color:var(--text-muted)">Neutral</span></div>
             </div>
-            <!-- 5. Move in 1 min -->
             <div class="reading-card">
                 <div class="rc-top"><span>Move in 1 min</span> ↕️</div>
                 <div class="rc-bottom"><span id="val-move">±14 pips</span></div>
             </div>
-            <!-- 6. Level above -->
             <div class="reading-card">
                 <div class="rc-top"><span>Level above</span> 📏</div>
-                <div class="rc-bottom"><span id="val-level" style="color:var(--text-muted)">...</span></div>
+                <div class="rc-bottom"><span id="val-level" class="trend-up">Strong zone</span></div>
             </div>
-            <!-- 7. Session -->
             <div class="reading-card">
                 <div class="rc-top"><span>Session</span> 🟢</div>
-                <div class="rc-bottom"><span id="val-session" style="color:var(--text-muted)">...</span></div>
+                <div class="rc-bottom"><span id="val-session" class="trend-up">Active OTC</span></div>
             </div>
-            <!-- 8. Summary 1m -->
             <div class="reading-card">
                 <div class="rc-top"><span>Summary 1m</span> ✨</div>
-                <div class="rc-bottom"><span id="val-summary" style="color:var(--text-muted)">...</span></div>
+                <div class="rc-bottom"><span id="val-summary" class="trend-up">BUY 🟢</span></div>
             </div>
         </div>
 
         <!-- تفعيل التنبيهات -->
         <div class="alerts-box">
-            <div class="alerts-left">
-                🔔 Bot alerts
-            </div>
+            <div class="alerts-left">🔔 Bot alerts</div>
             <label class="switch">
                 <input type="checkbox" checked>
                 <span class="slider"></span>
@@ -446,11 +413,11 @@
                 <div>📊</div>
                 <span>Signals</span>
             </div>
-            <div class="nav-item">
+            <div class="nav-item" onclick="alert('Learn section: Practice risk management.')">
                 <div>📚</div>
                 <span>Learn</span>
             </div>
-            <div class="nav-item">
+            <div class="nav-item" onclick="alert('Profile: Astra Pro User')">
                 <div>👤</div>
                 <span>Profile</span>
             </div>
@@ -460,40 +427,87 @@
     </div>
 
     <script>
-        function setTF(element, tf) {
+        let currentTF = "S5";
+
+        function selectTF(element, tf) {
             document.querySelectorAll('.tf-chip').forEach(c => c.classList.remove('active'));
             element.classList.add('active');
-            triggerAnalysis();
+            currentTF = tf;
+            startAnalysis();
         }
 
-        function triggerAnalysis() {
+        function startAnalysis() {
             const statuses = [
                 "Measuring momentum...", 
                 "Analyzing order book...", 
                 "Checking volatility...", 
                 "Calculating RSI levels...", 
-                "Finalizing signal..."
+                "Decoding signal direction..."
             ];
             
-            let progress = 0;
             const fill = document.getElementById("prog-fill");
             const countLabel = document.getElementById("prog-count");
             const statusTitle = document.getElementById("status-title");
+            const progLabel = document.getElementById("prog-label");
             
-            statusTitle.innerText = statuses[Math.floor(Math.random() * statuses.length)];
+            fill.style.width = "20%";
+            progLabel.innerText = "Analyzing...";
             
-            // محاكاة تأثير التحديث الحي للأرقام
-            document.getElementById("val-rsi").innerText = Math.floor(Math.random() * (75 - 45 + 1)) + 45;
-            document.getElementById("val-move").innerText = "±" + (Math.floor(Math.random() * 8) + 10) + " pips";
-            
-            if(Math.random() > 0.5) {
-                document.getElementById("val-trend").innerText = "up ↑";
-                document.getElementById("val-ema").innerText = "up ↑";
-            } else {
-                document.getElementById("val-trend").innerText = "down ↓";
-                document.getElementById("val-ema").innerText = "down ↓";
-            }
+            let step = 1;
+            let interval = setInterval(() => {
+                statusTitle.innerText = statuses[Math.floor(Math.random() * statuses.length)];
+                fill.style.width = (step * 20) + "%";
+                countLabel.innerText = step + " of 8 ...";
+                step++;
+                
+                if(step > 5) {
+                    clearInterval(interval);
+                    finalizeAnalysis();
+                }
+            }, 300);
         }
+
+        function finalizeAnalysis() {
+            const fill = document.getElementById("prog-fill");
+            const countLabel = document.getElementById("prog-count");
+            const statusTitle = document.getElementById("status-title");
+            const progLabel = document.getElementById("prog-label");
+            
+            fill.style.width = "100%";
+            progLabel.innerText = "Analysis Complete";
+            countLabel.innerText = "8 of 8 (Ready)";
+            
+            const isUp = Math.random() >= 0.35;
+            statusTitle.innerText = isUp ? "🟢 Strong BUY Signal Detected (" + currentTF + ")" : "🔴 Strong SELL Signal Detected (" + currentTF + ")";
+            
+            // تحديث المؤشرات عشوائياً باتجاه متناسق
+            const trendEl = document.getElementById("val-trend");
+            const emaEl = document.getElementById("val-ema");
+            const momEl = document.getElementById("val-mom");
+            const rsiEl = document.getElementById("val-rsi");
+            const sumEl = document.getElementById("val-summary");
+            
+            if(isUp) {
+                trendEl.className = "trend-up"; trendEl.innerText = "up ↑";
+                emaEl.className = "trend-up"; emaEl.innerText = "up ↑";
+                momEl.className = "trend-up"; momEl.innerText = "strong up";
+                rsiEl.innerText = Math.floor(Math.random() * 15) + 60;
+                sumEl.className = "trend-up"; sumEl.innerText = "BUY 🟢";
+            } else {
+                trendEl.className = "trend-down"; trendEl.innerText = "down ↓";
+                emaEl.className = "trend-down"; emaEl.innerText = "down ↓";
+                momEl.className = "trend-down"; momEl.innerText = "strong down";
+                rsiEl.innerText = Math.floor(Math.random() * 15) + 25;
+                sumEl.className = "trend-down"; sumEl.innerText = "SELL 🔴";
+            }
+            
+            document.getElementById("val-move").innerText = "±" + (Math.floor(Math.random() * 10) + 8) + " pips";
+        }
+
+        // تشغيل تحليل تلقائي عند فتح الصفحة
+        window.onload = function() {
+            startAnalysis();
+        };
     </script>
 </body>
 </html>
