@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GPT Trade - AI Trading Signals</title>
+    <title>GPT trade - AI Signal Bot</title>
     <style>
         :root {
             --bg-color: #0b0f19;
-            --card-bg: #111827;
+            --card-bg: #131b2e;
+            --panel-bg: #1a233a;
             --accent-green: #10b981;
             --accent-red: #ef4444;
-            --primary-color: #3b82f6;
+            --primary-color: #6366f1;
             --text-main: #f3f4f6;
             --text-muted: #9ca3af;
-            --border-color: #1f2937;
+            --border-color: #2a3650;
         }
 
         * {
@@ -30,7 +31,7 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            padding: 15px;
+            padding: 10px;
         }
 
         .container {
@@ -38,133 +39,186 @@
             max-width: 420px;
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
+        /* رأس التطبيق */
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
         }
 
-        .header h1 {
-            font-size: 22px;
-            color: #fff;
-            margin-bottom: 5px;
+        .app-title {
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
         }
 
-        .header p {
-            font-size: 13px;
-            color: var(--text-muted);
+        .level-badge {
+            background: rgba(99, 102, 241, 0.15);
+            color: #818cf8;
+            border: 1px solid #6366f1;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: bold;
         }
 
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        label {
-            display: block;
-            font-size: 13px;
+        /* قسم اختيار الأصل المالي */
+        .section-label {
+            font-size: 12px;
             color: var(--text-muted);
             margin-bottom: 6px;
+            display: block;
         }
 
-        select {
-            width: 100%;
+        .asset-selector {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
             padding: 12px;
-            background: #1f2937;
-            border: 1px solid #374151;
-            color: #fff;
-            border-radius: 10px;
-            font-size: 15px;
-            outline: none;
-            transition: border-color 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            margin-bottom: 16px;
+            transition: border-color 0.2s;
         }
 
-        select:focus {
+        .asset-selector:hover {
             border-color: var(--primary-color);
         }
 
+        .asset-info {
+            font-size: 15px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        /* أزرار الإطار الزمني */
+        .timeframes-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+            margin-bottom: 20px;
+        }
+
+        .tf-btn {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 10px 0;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .tf-btn.active {
+            background: #2563eb;
+            color: #fff;
+            border-color: #3b82f6;
+        }
+
+        /* زر التحليل الرئيسي */
         .btn-analyze {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            background: linear-gradient(135deg, #10b981, #059669);
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            transition: opacity 0.2s, transform 0.1s;
-            margin-top: 5px;
-        }
-
-        .btn-analyze:active {
-            transform: scale(0.98);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            transition: opacity 0.2s;
+            margin-bottom: 16px;
         }
 
         .btn-analyze:hover {
             opacity: 0.9;
         }
 
-        #result-box {
-            margin-top: 20px;
+        /* نافذة النتيجة والتحليل (مطابقة للفيديو) */
+        .result-box {
             display: none;
-            background: #1f2937;
-            border-radius: 12px;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
             padding: 16px;
-            border: 1px solid #374151;
-            animation: fadeIn 0.4s ease;
+            animation: fadeIn 0.3s ease;
         }
 
-        .loading-spinner {
+        .loading-state {
             text-align: center;
-            padding: 15px;
-            color: var(--primary-color);
-            font-size: 14px;
+            padding: 20px;
+            color: #818cf8;
+            font-size: 13px;
             font-weight: bold;
         }
 
-        .signal-header {
-            display: flex;
-            justify-content: space-between;
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-bottom: 10px;
-            border-bottom: 1px solid #374151;
-            padding-bottom: 8px;
+        .signal-display {
+            display: none;
         }
 
-        .signal-body {
+        .signal-main-card {
+            background: #111827;
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            border: 1px solid #374151;
         }
 
         .signal-badge {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
-            padding: 6px 12px;
+            padding: 6px 14px;
             border-radius: 8px;
         }
 
-        .buy { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); border: 1px solid var(--accent-green); }
-        .sell { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); border: 1px solid var(--accent-red); }
+        .buy-signal { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); border: 1px solid var(--accent-green); }
+        .sell-signal { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); border: 1px solid var(--accent-red); }
 
-        .confidence {
-            text-align: left;
-            font-size: 14px;
+        /* شبكة المؤشرات الفرعية المصغرة (مثل الفيديو) */
+        .readings-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 14px;
         }
 
-        .confidence span {
-            color: var(--accent-green);
-            font-weight: bold;
+        .reading-card {
+            background: #111827;
+            border: 1px solid #1f2937;
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .reading-card span {
+            color: var(--text-muted);
+        }
+
+        .reading-card b {
+            color: #fff;
         }
 
         .btn-trade {
@@ -177,20 +231,13 @@
             text-decoration: none;
             border-radius: 10px;
             font-weight: bold;
-            font-size: 15px;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            font-size: 14px;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
             transition: background 0.2s;
         }
 
         .btn-trade:hover {
             background: #059669;
-        }
-
-        .footer-note {
-            text-align: center;
-            font-size: 11px;
-            color: #6b7280;
-            margin-top: 20px;
         }
 
         @keyframes fadeIn {
@@ -202,94 +249,114 @@
 <body>
 
     <div class="container">
-        <div class="header">
-            <h1>🤖 GPT Trade AI</h1>
-            <p>منصة التحليل الفني اللحظي للخيارات الثنائية</p>
-        </div>
-
-        <div class="form-group">
-            <label for="asset">اختر الأصل المالي (Asset):</label>
-            <select id="asset">
-                <option value="EUR/USD (OTC)">EUR/USD (OTC)</option>
-                <option value="GBP/USD (OTC)">GBP/USD (OTC)</option>
-                <option value="AUD/CAD (OTC)">AUD/CAD (OTC)</option>
-                <option value="USD/JPY (OTC)">USD/JPY (OTC)</option>
-                <option value="Bitcoin (Crypto)">Bitcoin (Crypto)</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="timeframe">الإطار الزمني للصفقة:</label>
-            <select id="timeframe">
-                <option value="5 ثوانٍ (S5)">5 ثوانٍ (S5)</option>
-                <option value="15 ثانية (S15)">15 ثانية (S15)</option>
-                <option value="1 دقيقة (M1)">دقيقة واحدة (M1)</option>
-            </select>
-        </div>
-
-        <button class="btn-analyze" onclick="startAnalysis()">الحصول على إشارة ذكية ⚡</button>
-
-        <div id="result-box">
-            <div id="loading" class="loading-spinner">
-                🔄 جاري فحص سيولة السوق ومؤشرات (RSI, EMA, Momentum)...
+        <!-- الرأس -->
+        <div class="app-header">
+            <div class="app-title">
+                🤖 GPT trade
             </div>
-            <div id="signal-content" style="display: none;">
-                <div class="signal-header">
-                    <span id="res-asset">EUR/USD</span>
-                    <span id="res-time">5 ثوانٍ</span>
-                </div>
-                <div class="signal-body">
-                    <div id="res-badge" class="signal-badge">🟢 BUY</div>
-                    <div class="confidence">نسبة الدقة:<br><span id="res-conf">94%</span></div>
-                </div>
-                <!-- استبدل الرابط أدناه برابط الإحالة الخاص بك (Affiliate Link) -->
-                <a id="trade-link" href="https://pocketoption.com" target="_blank" class="btn-trade">🚀 تنفيذ الصفقة على المنصة</a>
-            </div>
+            <div class="level-badge">Level "GPT-8 Astra"</div>
         </div>
 
-        <div class="footer-note">
-            ⚠️ للتداول مخاطر عالية، هذه الإشارات لأغراض توضيحية وتقنية.
+        <!-- اختيار الأصل -->
+        <span class="section-label">Choose currency pair</span>
+        <div class="asset-selector" onclick="changeAsset()">
+            <div class="asset-info" id="selected-asset">EUR/USD OTC</div>
+            <span style="color: var(--text-muted);">⭐</span>
+        </div>
+
+        <!-- أوقات الصلاحية (مطابقة للفيديو: S5, S15, S30, M1, M5) -->
+        <span class="section-label">Expiration time</span>
+        <div class="timeframes-grid">
+            <div class="tf-btn active" onclick="setTF(this, '5s')">S5</div>
+            <div class="tf-btn" onclick="setTF(this, '15s')">S15</div>
+            <div class="tf-btn" onclick="setTF(this, '30s')">S30</div>
+            <div class="tf-btn" onclick="setTF(this, '1m')">M1</div>
+            <div class="tf-btn" onclick="setTF(this, '5m')">M5</div>
+        </div>
+
+        <!-- زر التحليل -->
+        <button class="btn-analyze" onclick="runAnalysis()">Get signal</button>
+
+        <!-- صندوق النتائج والتحليل الفني -->
+        <div id="result-box" class="result-box">
+            <div id="loading-state" class="loading-state">
+                🔄 Confirming the trend... (Analyzing 8 checks)
+            </div>
+            <div id="signal-display" class="signal-display">
+                <div class="signal-main-card">
+                    <div>
+                        <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;" id="signal-desc">Open for 5 sec on PocketOption</div>
+                        <div id="sig-badge" class="signal-badge buy-signal">BUY</div>
+                    </div>
+                    <div style="text-align: left; font-size: 12px;">
+                        Signal strength:<br>
+                        <b style="color: var(--accent-green);" id="sig-strength">strong</b>
+                    </div>
+                </div>
+
+                <!-- شاشات المؤشرات المصغرة كما ظهرت في الفيديو -->
+                <div class="readings-grid">
+                    <div class="reading-card"><span>Trend - 1h</span> <b style="color:var(--accent-green)">up ↑</b></div>
+                    <div class="reading-card"><span>EMA 50/200</span> <b style="color:var(--accent-green)">up ↑</b></div>
+                    <div class="reading-card"><span>Momentum</span> <b style="color:var(--accent-green)">up ↑</b></div>
+                    <div class="reading-card"><span>RSI</span> <b id="rsi-val">64</b></div>
+                    <div class="reading-card"><span>Move in 1 min</span> <b style="color:var(--accent-green)">up ↑</b></div>
+                    <div class="reading-card"><span>Level above</span> <b id="pips-val">8 pips</b></div>
+                </div>
+
+                <!-- زر التوجيه للمنصة (رابط الإحالة الخاص بك) -->
+                <a id="platform-link" href="https://pocketoption.com" target="_blank" class="btn-trade">🚀 Open on PocketOption</a>
+            </div>
         </div>
     </div>
 
     <script>
-        function startAnalysis() {
-            const asset = document.getElementById("asset").value;
-            const timeframe = document.getElementById("timeframe").value;
-            
+        let currentTF = "5s";
+        let currentAsset = "EUR/USD OTC";
+
+        function setTF(element, tf) {
+            document.querySelectorAll('.tf-btn').forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+            currentTF = tf;
+        }
+
+        function changeAsset() {
+            const assets = ["EUR/USD OTC", "GBP/USD OTC", "AUD/CAD OTC", "USD/JPY OTC", "BTC/USD OTC"];
+            let currentIndex = assets.indexOf(currentAsset);
+            currentAsset = assets[(currentIndex + 1) % assets.length];
+            document.getElementById("selected-asset").innerText = currentAsset;
+        }
+
+        function runAnalysis() {
             const resultBox = document.getElementById("result-box");
-            const loading = document.getElementById("loading");
-            const content = document.getElementById("signal-content");
-            
+            const loading = document.getElementById("loading-state");
+            const display = document.getElementById("signal-display");
+
             resultBox.style.display = "block";
             loading.style.display = "block";
-            content.style.display = "none";
-            
-            // محاكاة وقت المعالجة الفنية (ثانيتان)
+            display.style.display = "none";
+
+            // محاكاة وقت التحليل والتدقيق للذكاء الاصطناعي (مثل الفيديو)
             setTimeout(() => {
                 loading.style.display = "none";
-                content.style.display = "block";
-                
-                // توليد إشارة عشوائية (صعود أو هبوط)
-                const isBuy = Math.random() >= 0.4;
-                const badge = document.getElementById("res-badge");
+                display.style.display = "block";
+
+                // اختيار عشوائي بين صعود وهبوط
+                const isBuy = Math.random() >= 0.3;
+                const badge = document.getElementById("sig-badge");
                 
                 if (isBuy) {
-                    badge.className = "signal-badge buy";
-                    badge.innerHTML = "🟢 صعود (BUY)";
+                    badge.className = "signal-badge buy-signal";
+                    badge.innerText = "BUY";
                 } else {
-                    badge.className = "signal-badge sell";
-                    badge.innerHTML = "🔴 هبوط (SELL)";
+                    badge.className = "signal-badge sell-signal";
+                    badge.innerText = "SELL";
                 }
-                
-                document.getElementById("res-asset").innerText = asset;
-                document.getElementById("res-time").innerText = timeframe;
-                document.getElementById("res-conf5s") // للاحتياط
-                
-                // نسبة دقة عشوائية بين 88% و 97%
-                const randomConf = Math.floor(Math.random() * (97 - 88 + 1)) + 88;
-                document.getElementById("res-conf").innerText = randomConf + "%";
-                
+
+                document.getElementById("signal-desc").innerText = `Open for ${currentTF} on PocketOption`;
+                document.getElementById("rsi-val").innerText = Math.floor(Math.random() * (75 - 40 + 1)) + 40;
+                document.getElementById("pips-val").innerText = Math.floor(Math.random() * 12 + 3) + " pips";
+
             }, 2000);
         }
     </script>
