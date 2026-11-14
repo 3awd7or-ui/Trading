@@ -1,27 +1,27 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GPT trade - AI Signal Bot</title>
+    <title>GPT trade</title>
     <style>
         :root {
-            --bg-color: #0b0f19;
+            --bg-color: #0b0f17;
             --card-bg: #131b2e;
-            --panel-bg: #1a233a;
+            --panel-bg: #192238;
             --accent-green: #10b981;
             --accent-red: #ef4444;
-            --primary-color: #6366f1;
+            --primary-glow: #6366f1;
             --text-main: #f3f4f6;
-            --text-muted: #9ca3af;
-            --border-color: #2a3650;
+            --text-muted: #8a99ad;
+            --border-color: #24304d;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
@@ -36,328 +36,463 @@
 
         .container {
             width: 100%;
-            max-width: 420px;
+            max-width: 410px;
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+            border-radius: 24px;
+            padding: 16px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
         }
 
-        /* رأس التطبيق */
-        .app-header {
+        /* رأس التطبيق العلوي */
+        .top-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 12px;
+            margin-bottom: 14px;
         }
 
-        .app-title {
+        .app-brand {
+            font-weight: 700;
+            font-size: 16px;
+            color: #fff;
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 18px;
-            font-weight: bold;
-            color: #fff;
+            gap: 6px;
         }
 
-        .level-badge {
-            background: rgba(99, 102, 241, 0.15);
-            color: #818cf8;
-            border: 1px solid #6366f1;
+        .app-brand span {
+            color: var(--accent-green);
+        }
+
+        .top-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .top-btn {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
             padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            cursor: pointer;
+        }
+
+        /* أوقات الصلاحية (S3 إلى M15) */
+        .timeframes-bar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            margin-bottom: 14px;
+        }
+
+        .tf-chip {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 8px 0;
             border-radius: 8px;
             font-size: 11px;
-            font-weight: bold;
-        }
-
-        /* قسم اختيار الأصل المالي */
-        .section-label {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-            display: block;
-        }
-
-        .asset-selector {
-            background: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            margin-bottom: 16px;
-            transition: border-color 0.2s;
-        }
-
-        .asset-selector:hover {
-            border-color: var(--primary-color);
-        }
-
-        .asset-info {
-            font-size: 15px;
-            font-weight: bold;
-            color: #fff;
-        }
-
-        /* أزرار الإطار الزمني */
-        .timeframes-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 6px;
-            margin-bottom: 20px;
-        }
-
-        .tf-btn {
-            background: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-muted);
-            padding: 10px 0;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: bold;
+            font-weight: 600;
+            text-align: center;
             cursor: pointer;
             transition: all 0.2s;
-            text-align: center;
         }
 
-        .tf-btn.active {
-            background: #2563eb;
-            color: #fff;
-            border-color: #3b82f6;
+        .tf-chip.active {
+            background: var(--accent-green);
+            color: #0b0f17;
+            border-color: var(--accent-green);
+            font-weight: 700;
         }
 
-        /* زر التحليل الرئيسي */
-        .btn-analyze {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
-            transition: opacity 0.2s;
-            margin-bottom: 16px;
-        }
-
-        .btn-analyze:hover {
-            opacity: 0.9;
-        }
-
-        /* نافذة النتيجة والتحليل (مطابقة للفيديو) */
-        .result-box {
-            display: none;
+        /* بطاقة التحليل الكبرى (AI Level & Progress) */
+        .ai-banner {
             background: var(--panel-bg);
             border: 1px solid var(--border-color);
-            border-radius: 14px;
-            padding: 16px;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .loading-state {
-            text-align: center;
-            padding: 20px;
-            color: #818cf8;
-            font-size: 13px;
-            font-weight: bold;
-        }
-
-        .signal-display {
-            display: none;
-        }
-
-        .signal-main-card {
-            background: #111827;
-            border-radius: 10px;
+            border-radius: 16px;
             padding: 14px;
+            margin-bottom: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-level-text {
+            font-size: 10px;
+            color: #f59e0b;
+            font-weight: 700;
+            margin-bottom: 6px;
+            text-align: right;
+        }
+
+        .ai-status-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
             margin-bottom: 12px;
+        }
+
+        .ai-icon-box {
+            width: 36px;
+            height: 36px;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--accent-green);
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .ai-status-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        /* شريط التحميل التدريجي (Progress Bar) */
+        .progress-container {
+            background: #111827;
+            border-radius: 8px;
+            height: 28px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+
+        .progress-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(90deg, #059669, var(--accent-green));
+            width: 62%; /* 5 of 8 */
+            transition: width 0.4s ease;
+            z-index: 1;
+        }
+
+        .progress-text {
+            position: relative;
+            z-index: 2;
+            font-size: 11px;
+            font-weight: 600;
+            color: #fff;
+            width: 100%;
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            border: 1px solid #374151;
         }
 
-        .signal-badge {
-            font-size: 20px;
-            font-weight: bold;
-            padding: 6px 14px;
-            border-radius: 8px;
+        /* قسم المؤشرات الـ 8 (Readings - real quotes) */
+        .readings-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            padding: 0 2px;
         }
 
-        .buy-signal { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); border: 1px solid var(--accent-green); }
-        .sell-signal { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); border: 1px solid var(--accent-red); }
-
-        /* شبكة المؤشرات الفرعية المصغرة (مثل الفيديو) */
         .readings-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
+            gap: 6px;
             margin-bottom: 14px;
         }
 
         .reading-card {
-            background: #111827;
-            border: 1px solid #1f2937;
-            padding: 8px 10px;
-            border-radius: 8px;
-            font-size: 11px;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 55px;
+        }
+
+        .rc-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-
-        .reading-card span {
+            font-size: 11px;
             color: var(--text-muted);
         }
 
-        .reading-card b {
+        .rc-bottom {
+            font-size: 12px;
+            font-weight: 700;
             color: #fff;
+            margin-top: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
         }
 
-        .btn-trade {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            background: var(--accent-green);
+        .trend-up {
+            color: var(--accent-green);
+            font-size: 11px;
+        }
+
+        /* تنبيهات البوت (Bot alerts toggle) */
+        .alerts-box {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .alerts-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
             color: #fff;
+            font-weight: 600;
+        }
+
+        /* زر التبديل (Toggle Switch) */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 38px;
+            height: 20px;
+        }
+
+        .switch input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #374151;
+            transition: .3s;
+            border-radius: 20px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--accent-green);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(18px);
+        }
+
+        /* شريط التنقل السفلي (Navigation Bar) */
+        .nav-bar {
+            display: flex;
+            justify-content: space-around;
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+        }
+
+        .nav-item {
             text-align: center;
+            color: var(--text-muted);
+            font-size: 10px;
+            cursor: pointer;
             text-decoration: none;
-            border-radius: 10px;
-            font-weight: bold;
-            font-size: 14px;
-            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
-            transition: background 0.2s;
         }
 
-        .btn-trade:hover {
-            background: #059669;
+        .nav-item.active {
+            color: var(--accent-green);
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
+        .nav-item svg {
+            width: 18px;
+            height: 18px;
+            margin-bottom: 2px;
+            fill: currentColor;
+        }
+
+        .footer-handle {
+            text-align: center;
+            font-size: 10px;
+            color: #6b7280;
+            margin-top: 8px;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <!-- الرأس -->
-        <div class="app-header">
-            <div class="app-title">
-                🤖 GPT trade
+        <!-- الشريط العوي -->
+        <div class="top-bar">
+            <div class="app-brand">⚡ GPT trade</div>
+            <div class="top-actions">
+                <button class="top-btn">💬 Help</button>
+                <button class="top-btn">🌐 English ∨</button>
             </div>
-            <div class="level-badge">Level "GPT-8 Astra"</div>
         </div>
 
-        <!-- اختيار الأصل -->
-        <span class="section-label">Choose currency pair</span>
-        <div class="asset-selector" onclick="changeAsset()">
-            <div class="asset-info" id="selected-asset">EUR/USD OTC</div>
-            <span style="color: var(--text-muted);">⭐</span>
+        <!-- أوقات الصلاحية -->
+        <div class="timeframes-bar">
+            <div class="tf-chip" onclick="setTF(this, 'S3')">S3</div>
+            <div class="tf-chip active" onclick="setTF(this, 'S5')">S5</div>
+            <div class="tf-chip" onclick="setTF(this, 'S15')">S15</div>
+            <div class="tf-chip" onclick="setTF(this, 'S30')">S30</div>
+            <div class="tf-chip" onclick="setTF(this, 'M1')">M1</div>
+            <div class="tf-chip" onclick="setTF(this, 'M5')">M5</div>
+            <div class="tf-chip" onclick="setTF(this, 'M15')">M15</div>
         </div>
 
-        <!-- أوقات الصلاحية (مطابقة للفيديو: S5, S15, S30, M1, M5) -->
-        <span class="section-label">Expiration time</span>
-        <div class="timeframes-grid">
-            <div class="tf-btn active" onclick="setTF(this, '5s')">S5</div>
-            <div class="tf-btn" onclick="setTF(this, '15s')">S15</div>
-            <div class="tf-btn" onclick="setTF(this, '30s')">S30</div>
-            <div class="tf-btn" onclick="setTF(this, '1m')">M1</div>
-            <div class="tf-btn" onclick="setTF(this, '5m')">M5</div>
-        </div>
-
-        <!-- زر التحليل -->
-        <button class="btn-analyze" onclick="runAnalysis()">Get signal</button>
-
-        <!-- صندوق النتائج والتحليل الفني -->
-        <div id="result-box" class="result-box">
-            <div id="loading-state" class="loading-state">
-                🔄 Confirming the trend... (Analyzing 8 checks)
+        <!-- بانر الذكاء الاصطناعي -->
+        <div class="ai-banner">
+            <div class="ai-level-text">Decoding at level GPT-6 Astra</div>
+            <div class="ai-status-row">
+                <div class="ai-icon-box">📈</div>
+                <div class="ai-status-title" id="status-title">Measuring momentum...</div>
             </div>
-            <div id="signal-display" class="signal-display">
-                <div class="signal-main-card">
-                    <div>
-                        <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;" id="signal-desc">Open for 5 sec on PocketOption</div>
-                        <div id="sig-badge" class="signal-badge buy-signal">BUY</div>
-                    </div>
-                    <div style="text-align: left; font-size: 12px;">
-                        Signal strength:<br>
-                        <b style="color: var(--accent-green);" id="sig-strength">strong</b>
-                    </div>
+            <div class="progress-container" onclick="triggerAnalysis()">
+                <div class="progress-fill" id="prog-fill"></div>
+                <div class="progress-text">
+                    <span id="prog-label">GPT-6 Astra is analyzing</span>
+                    <span id="prog-count">5 of 8 ...</span>
                 </div>
-
-                <!-- شاشات المؤشرات المصغرة كما ظهرت في الفيديو -->
-                <div class="readings-grid">
-                    <div class="reading-card"><span>Trend - 1h</span> <b style="color:var(--accent-green)">up ↑</b></div>
-                    <div class="reading-card"><span>EMA 50/200</span> <b style="color:var(--accent-green)">up ↑</b></div>
-                    <div class="reading-card"><span>Momentum</span> <b style="color:var(--accent-green)">up ↑</b></div>
-                    <div class="reading-card"><span>RSI</span> <b id="rsi-val">64</b></div>
-                    <div class="reading-card"><span>Move in 1 min</span> <b style="color:var(--accent-green)">up ↑</b></div>
-                    <div class="reading-card"><span>Level above</span> <b id="pips-val">8 pips</b></div>
-                </div>
-
-                <!-- زر التوجيه للمنصة (رابط الإحالة الخاص بك) -->
-                <a id="platform-link" href="https://pocketoption.com" target="_blank" class="btn-trade">🚀 Open on PocketOption</a>
             </div>
         </div>
+
+        <!-- شريط قراءات الأسواق -->
+        <div class="readings-header">
+            <span>Readings - real quotes</span>
+            <span id="steps-indicator">5 of 8</span>
+        </div>
+
+        <!-- بطاقات المؤشرات الـ 8 المطابقة تماماً -->
+        <div class="readings-grid">
+            <!-- 1. Trend -->
+            <div class="reading-card">
+                <div class="rc-top"><span>Trend - 1h</span> 📈</div>
+                <div class="rc-bottom"><span id="val-trend">up ↑</span> <span class="trend-up">📈</span></div>
+            </div>
+            <!-- 2. EMA -->
+            <div class="reading-card">
+                <div class="rc-top"><span>EMA 50/200</span> 📉</div>
+                <div class="rc-bottom"><span id="val-ema">up ↑</span> <span class="trend-up">📈</span></div>
+            </div>
+            <!-- 3. Momentum -->
+            <div class="reading-card">
+                <div class="rc-top"><span>Momentum</span> ⚡</div>
+                <div class="rc-bottom"><span id="val-mom">up ↑</span> <span class="trend-up">📈</span></div>
+            </div>
+            <!-- 4. RSI -->
+            <div class="reading-card">
+                <div class="rc-top"><span>RSI</span> ⏱️</div>
+                <div class="rc-bottom"><span id="val-rsi">66</span> <span style="font-size:10px; color:var(--text-muted)">Neutral</span></div>
+            </div>
+            <!-- 5. Move in 1 min -->
+            <div class="reading-card">
+                <div class="rc-top"><span>Move in 1 min</span> ↕️</div>
+                <div class="rc-bottom"><span id="val-move">±14 pips</span></div>
+            </div>
+            <!-- 6. Level above -->
+            <div class="reading-card">
+                <div class="rc-top"><span>Level above</span> 📏</div>
+                <div class="rc-bottom"><span id="val-level" style="color:var(--text-muted)">...</span></div>
+            </div>
+            <!-- 7. Session -->
+            <div class="reading-card">
+                <div class="rc-top"><span>Session</span> 🟢</div>
+                <div class="rc-bottom"><span id="val-session" style="color:var(--text-muted)">...</span></div>
+            </div>
+            <!-- 8. Summary 1m -->
+            <div class="reading-card">
+                <div class="rc-top"><span>Summary 1m</span> ✨</div>
+                <div class="rc-bottom"><span id="val-summary" style="color:var(--text-muted)">...</span></div>
+            </div>
+        </div>
+
+        <!-- تفعيل التنبيهات -->
+        <div class="alerts-box">
+            <div class="alerts-left">
+                🔔 Bot alerts
+            </div>
+            <label class="switch">
+                <input type="checkbox" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <!-- شريط التنقل السفلي -->
+        <div class="nav-bar">
+            <div class="nav-item active">
+                <div>📊</div>
+                <span>Signals</span>
+            </div>
+            <div class="nav-item">
+                <div>📚</div>
+                <span>Learn</span>
+            </div>
+            <div class="nav-item">
+                <div>👤</div>
+                <span>Profile</span>
+            </div>
+        </div>
+
+        <div class="footer-handle">@chatgpt_trade_ai</div>
     </div>
 
     <script>
-        let currentTF = "5s";
-        let currentAsset = "EUR/USD OTC";
-
         function setTF(element, tf) {
-            document.querySelectorAll('.tf-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tf-chip').forEach(c => c.classList.remove('active'));
             element.classList.add('active');
-            currentTF = tf;
+            triggerAnalysis();
         }
 
-        function changeAsset() {
-            const assets = ["EUR/USD OTC", "GBP/USD OTC", "AUD/CAD OTC", "USD/JPY OTC", "BTC/USD OTC"];
-            let currentIndex = assets.indexOf(currentAsset);
-            currentAsset = assets[(currentIndex + 1) % assets.length];
-            document.getElementById("selected-asset").innerText = currentAsset;
-        }
-
-        function runAnalysis() {
-            const resultBox = document.getElementById("result-box");
-            const loading = document.getElementById("loading-state");
-            const display = document.getElementById("signal-display");
-
-            resultBox.style.display = "block";
-            loading.style.display = "block";
-            display.style.display = "none";
-
-            // محاكاة وقت التحليل والتدقيق للذكاء الاصطناعي (مثل الفيديو)
-            setTimeout(() => {
-                loading.style.display = "none";
-                display.style.display = "block";
-
-                // اختيار عشوائي بين صعود وهبوط
-                const isBuy = Math.random() >= 0.3;
-                const badge = document.getElementById("sig-badge");
-                
-                if (isBuy) {
-                    badge.className = "signal-badge buy-signal";
-                    badge.innerText = "BUY";
-                } else {
-                    badge.className = "signal-badge sell-signal";
-                    badge.innerText = "SELL";
-                }
-
-                document.getElementById("signal-desc").innerText = `Open for ${currentTF} on PocketOption`;
-                document.getElementById("rsi-val").innerText = Math.floor(Math.random() * (75 - 40 + 1)) + 40;
-                document.getElementById("pips-val").innerText = Math.floor(Math.random() * 12 + 3) + " pips";
-
-            }, 2000);
+        function triggerAnalysis() {
+            const statuses = [
+                "Measuring momentum...", 
+                "Analyzing order book...", 
+                "Checking volatility...", 
+                "Calculating RSI levels...", 
+                "Finalizing signal..."
+            ];
+            
+            let progress = 0;
+            const fill = document.getElementById("prog-fill");
+            const countLabel = document.getElementById("prog-count");
+            const statusTitle = document.getElementById("status-title");
+            
+            statusTitle.innerText = statuses[Math.floor(Math.random() * statuses.length)];
+            
+            // محاكاة تأثير التحديث الحي للأرقام
+            document.getElementById("val-rsi").innerText = Math.floor(Math.random() * (75 - 45 + 1)) + 45;
+            document.getElementById("val-move").innerText = "±" + (Math.floor(Math.random() * 8) + 10) + " pips";
+            
+            if(Math.random() > 0.5) {
+                document.getElementById("val-trend").innerText = "up ↑";
+                document.getElementById("val-ema").innerText = "up ↑";
+            } else {
+                document.getElementById("val-trend").innerText = "down ↓";
+                document.getElementById("val-ema").innerText = "down ↓";
+            }
         }
     </script>
 </body>
