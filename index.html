@@ -1,322 +1,740 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GPT trade - Real Market Analysis</title>
-    <style>
-        :root {
-            --bg-color: #0b0f17;
-            --card-bg: #131b2e;
-            --panel-bg: #192238;
-            --accent-green: #10b981;
-            --accent-red: #ef4444;
-            --text-main: #f3f4f6;
-            --text-muted: #8a99ad;
-            --border-color: #24304d;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>GPT Trade - AI Signals</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 10px;
-        }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #090b10;
+      color: #ffffff;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
 
-        .container {
-            width: 100%;
-            max-width: 410px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 16px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
-        }
+    /* حاوية الهاتف */
+    .app-container {
+      width: 100%;
+      max-width: 420px;
+      background-color: #111318;
+      min-height: 100vh;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      border-left: 1px solid #1f242d;
+      border-right: 1px solid #1f242d;
+      padding-bottom: 75px;
+    }
 
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 14px;
-        }
+    /* البطاقات */
+    .card-dark {
+      background: #181b22;
+      border: 1px solid #262a34;
+      border-radius: 16px;
+    }
 
-        .app-brand {
-            font-weight: 700;
-            font-size: 16px;
-            color: #fff;
-        }
+    /* تأثير التوهج للإشارات */
+    .signal-buy {
+      background: radial-gradient(circle at 20% 40%, rgba(16, 185, 129, 0.22), rgba(24, 27, 34, 0.95) 70%);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
 
-        .asset-select {
-            background: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            color: #fff;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 12px;
-            outline: none;
-            cursor: pointer;
-        }
+    .signal-sell {
+      background: radial-gradient(circle at 20% 40%, rgba(239, 68, 68, 0.22), rgba(24, 27, 34, 0.95) 70%);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
 
-        .timeframes-bar {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 4px;
-            margin-bottom: 14px;
-        }
+    .signal-ready {
+      background: radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.15), rgba(24, 27, 34, 0.95) 70%);
+      border: 1px solid #262a34;
+    }
 
-        .tf-chip {
-            background: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-muted);
-            padding: 8px 0;
-            border-radius: 8px;
-            font-size: 11px;
-            font-weight: 600;
-            text-align: center;
-            cursor: pointer;
-        }
+    /* الأزرار */
+    .btn-green {
+      background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+      color: #06281e;
+      font-weight: 700;
+      transition: all 0.2s ease;
+    }
+    .btn-green:active {
+      transform: scale(0.98);
+    }
 
-        .tf-chip.active {
-            background: var(--accent-green);
-            color: #0b0f17;
-            border-color: var(--accent-green);
-            font-weight: 700;
-        }
+    /* شريط التقدم */
+    .progress-bar-fill {
+      transition: width 0.35s ease;
+    }
 
-        .ai-banner {
-            background: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 14px;
-            margin-bottom: 14px;
-        }
+    /* إخفاء شريط التمرير */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
 
-        .ai-status-title {
-            font-size: 14px;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 8px;
-        }
-
-        .btn-analyze {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #059669, var(--accent-green));
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            font-weight: bold;
-            font-size: 14px;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-
-        .btn-analyze:hover {
-            opacity: 0.9;
-        }
-
-        .readings-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 6px;
-            margin-top: 14px;
-        }
-
-        .reading-card {
-            background: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            min-height: 55px;
-        }
-
-        .rc-top {
-            font-size: 11px;
-            color: var(--text-muted);
-        }
-
-        .rc-bottom {
-            font-size: 12px;
-            font-weight: 700;
-            color: #fff;
-            margin-top: 4px;
-        }
-
-        .trend-up { color: var(--accent-green); }
-        .trend-down { color: var(--accent-red); }
-        
-        .price-display {
-            font-size: 12px;
-            color: #f59e0b;
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
-    </style>
+    /* دوران أيقونة التحميل */
+    @keyframes spin-slow {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .spin-anim {
+      animation: spin-slow 4s linear infinite;
+    }
+  </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="top-bar">
-            <div class="app-brand">⚡ GPT trade (Live API)</div>
-            <select id="asset-select" class="asset-select" onchange="fetchRealMarketData()">
-                <option value="BTCUSDT">Bitcoin (BTC/USDT)</option>
-                <option value="ETHUSDT">Ethereum (ETH/USDT)</option>
-                <option value="SOLUSDT">Solana (SOL/USDT)</option>
-                <option value="BNBUSDT">Binance Coin (BNB)</option>
-            </select>
+  <div class="app-container">
+    
+    <!-- الشريط العلوي (Top Header) -->
+    <div class="flex items-center justify-between px-4 py-3 border-b border-[#1f242d] bg-[#111318] sticky top-0 z-20">
+      <div class="flex items-center gap-2">
+        <div class="w-7 h-7 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+          <i class="fa-solid fa-bolt text-xs"></i>
         </div>
-
-        <div class="timeframes-bar">
-            <div class="tf-chip active" onclick="setTF(this, '1m')">1m</div>
-            <div class="tf-chip" onclick="setTF(this, '5m')">5m</div>
-            <div class="tf-chip" onclick="setTF(this, '15m')">15m</div>
-            <div class="tf-chip" onclick="setTF(this, '1h')">1h</div>
-            <div class="tf-chip" onclick="setTF(this, '4h')">4h</div>
-        </div>
-
-        <div class="ai-banner">
-            <div class="ai-status-title" id="status-title">Ready for real analysis</div>
-            <div class="price-display" id="live-price">Current Price: Loading...</div>
-            <button class="btn-analyze" onclick="fetchRealMarketData()">Analyze Live Data 🚀</button>
-        </div>
-
-        <div class="readings-grid">
-            <div class="reading-card">
-                <div class="rc-top">Live Trend</div>
-                <div class="rc-bottom" id="val-trend">--</div>
-            </div>
-            <div class="reading-card">
-                <div class="rc-top">RSI (14) - Real</div>
-                <div class="rc-bottom" id="val-rsi">--</div>
-            </div>
-            <div class="reading-card">
-                <div class="rc-top">SMA 20 vs Price</div>
-                <div class="rc-bottom" id="val-sma">--</div>
-            </div>
-            <div class="reading-card">
-                <div class="rc-top">Real Summary</div>
-                <div class="rc-bottom" id="val-summary">--</div>
-            </div>
-        </div>
+        <span class="font-bold text-base tracking-wide text-emerald-400">GPT <span class="text-white font-semibold">trading</span></span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button class="px-2.5 py-1 rounded-full bg-[#1c2029] border border-[#2c313d] text-xs text-gray-300 flex items-center gap-1.5">
+          <i class="fa-brands fa-telegram text-gray-400"></i> Help
+        </button>
+        <button class="px-2.5 py-1 rounded-full bg-[#1c2029] border border-[#2c313d] text-xs text-gray-300 flex items-center gap-1">
+          <i class="fa-solid fa-globe text-gray-400"></i> English <i class="fa-solid fa-chevron-down text-[10px]"></i>
+        </button>
+      </div>
     </div>
 
-    <script>
-        let currentInterval = "1m";
+    <!-- المحتوى الرئيسي -->
+    <div class="p-3.5 space-y-3 flex-1">
 
-        function setTF(element, tf) {
-            document.querySelectorAll('.tf-chip').forEach(c => c.classList.remove('active'));
-            element.classList.add('active');
-            currentInterval = tf;
-            fetchRealMarketData();
+      <!-- بطاقة المستوى (Level Card) -->
+      <div class="card-dark p-3 flex items-center justify-between cursor-pointer hover:border-gray-600 transition">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-full bg-gradient-to-tr from-amber-600 via-orange-400 to-yellow-200 flex items-center justify-center shadow-lg shadow-orange-500/20">
+            <i class="fa-solid fa-globe text-amber-950 text-xl opacity-80"></i>
+          </div>
+          <div>
+            <div class="font-bold text-sm text-white">Level "GPT-6 Astra"</div>
+            <div class="text-xs text-gray-400">8 checks · breakdown · market filter</div>
+          </div>
+        </div>
+        <i class="fa-solid fa-chevron-right text-gray-500 text-xs mr-1"></i>
+      </div>
+
+      <!-- المفضلة السريعة -->
+      <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5" id="favoritesBar">
+        <button onclick="selectPairQuick('EUR/USD OTC', '🇪🇺', '🇺🇸')" class="px-2.5 py-1 rounded-full bg-[#1c2029] border border-[#2e3440] text-xs font-medium text-gray-200 flex items-center gap-1 shrink-0">
+          <i class="fa-solid fa-star text-emerald-400 text-[10px]"></i> EUR/USD OTC
+        </button>
+        <button onclick="selectPairQuick('AUD/NZD OTC', '🇦🇺', '🇳🇿')" class="px-2.5 py-1 rounded-full bg-[#1c2029] border border-[#262a34] text-xs font-medium text-gray-400 flex items-center gap-1 shrink-0">
+          AUD/NZD OTC
+        </button>
+        <button onclick="selectPairQuick('GBP/USD', '🇬🇧', '🇺🇸')" class="px-2.5 py-1 rounded-full bg-[#1c2029] border border-[#262a34] text-xs font-medium text-gray-400 flex items-center gap-1 shrink-0">
+          GBP/USD
+        </button>
+      </div>
+
+      <!-- اختيار زوج العملات (Currency Pair Selector) -->
+      <div onclick="openPairModal()" class="card-dark p-3 flex items-center justify-between cursor-pointer hover:border-gray-600 transition">
+        <div class="flex items-center gap-3">
+          <div class="relative w-10 h-8 flex items-center">
+            <span id="flag1" class="text-2xl z-10">🇪🇺</span>
+            <span id="flag2" class="text-2xl -ml-2.5 mt-2">🇺🇸</span>
+          </div>
+          <div>
+            <div id="selectedPairText" class="font-bold text-sm text-white">EUR/USD OTC</div>
+            <div class="text-xs text-gray-400">Choose currency pair</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="event.stopPropagation(); toggleFavoriteCurrent();" class="w-8 h-8 rounded-lg bg-[#222630] flex items-center justify-center text-emerald-400">
+            <i class="fa-solid fa-star text-xs"></i>
+          </button>
+          <div class="w-8 h-8 rounded-lg bg-[#222630] flex items-center justify-center text-gray-400">
+            <i class="fa-solid fa-chevron-down text-xs"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- وقت انتهاء الصلاحية (Expiration Time) -->
+      <div>
+        <div class="text-xs text-gray-400 mb-1.5 px-1">Expiration time</div>
+        <div class="grid grid-cols-7 gap-1.5" id="timeButtons">
+          <button onclick="selectTime('S3', 3)" class="time-btn py-2 rounded-xl bg-[#181b22] border border-[#262a34] text-xs font-semibold text-gray-300">S3</button>
+          <button onclick="selectTime('S5', 5)" class="time-btn py-2 rounded-xl bg-emerald-500/20 border border-emerald-500 text-xs font-bold text-emerald-400">S5</button>
+          <button onclick="selectTime('S15', 15)" class="time-btn py-2 rounded-xl bg-[#181b22] border border-[#262a34] text-xs font-semibold text-gray-300">S15</button>
+          <button onclick="selectTime('S30', 30)" class="time-btn py-2 rounded-xl bg-[#181b22] border border-[#262a34] text-xs font-semibold text-gray-300">S30</button>
+          <button onclick="selectTime('M1', 60)" class="time-btn py-2 rounded-xl bg-[#181b22] border border-[#262a34] text-xs font-semibold text-gray-300">M1</button>
+          <button onclick="selectTime('M5', 300)" class="time-btn py-2 rounded-xl bg-[#181b22] border border-[#262a34] text-xs font-semibold text-gray-300">M5</button>
+          <button onclick="selectTime('M15', 900)" class="time-btn py-2 rounded-xl bg-[#181b22] border border-[#262a34] text-xs font-semibold text-gray-300">M15</button>
+        </div>
+      </div>
+
+      <!-- الصندوق الرئيسي للإشارة (Main Signal Box) -->
+      <div id="signalCard" class="card-dark signal-ready p-4 relative overflow-hidden transition-all duration-300">
+        
+        <!-- حالة 1: جاهز للتحليل (Ready State) -->
+        <div id="stateReady" class="flex items-center gap-4 py-2">
+          <div class="w-14 h-14 rounded-full bg-emerald-500/20 border-2 border-emerald-400/50 flex items-center justify-center text-emerald-400 shrink-0 shadow-lg shadow-emerald-500/10">
+            <i class="fa-solid fa-arrows-up-down text-xl"></i>
+          </div>
+          <div>
+            <div class="font-bold text-lg text-white">Ready to analyze</div>
+            <div class="text-xs text-gray-400 mt-0.5">Pick a time and tap the button · <span id="readyTimeLabel">5 sec</span></div>
+          </div>
+        </div>
+
+        <!-- حالة 2: جاري التحليل (Analyzing State) -->
+        <div id="stateAnalyzing" class="hidden py-2">
+          <div class="flex items-center justify-between mb-3">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+              <i class="fa-solid fa-microchip text-xl spin-anim"></i>
+            </div>
+            <div class="text-right">
+              <div class="text-[11px] text-gray-400">Decoding at level <span class="text-amber-400 font-semibold">GPT-6 Astra</span></div>
+              <div id="analyzingStepTitle" class="font-bold text-base text-white mt-0.5">Analyzing the market...</div>
+            </div>
+          </div>
+          <div class="w-full h-9 bg-[#111318] rounded-xl overflow-hidden relative border border-[#262a34] flex items-center justify-center">
+            <div id="progressBar" class="progress-bar-fill absolute left-0 top-0 bottom-0 bg-gradient-to-r from-emerald-500 to-teal-400 opacity-85" style="width: 12%;"></div>
+            <span id="progressText" class="relative z-10 text-xs font-bold text-white drop-shadow">GPT-6 Astra is analyzing · 1 of 8 ...</span>
+          </div>
+        </div>
+
+        <!-- حالة 3: النتيجة (Result BUY / SELL) -->
+        <div id="stateResult" class="hidden">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3.5">
+              <div id="resultIconBox" class="w-14 h-14 rounded-full flex items-center justify-center shadow-lg">
+                <i id="resultIcon" class="fa-solid fa-arrow-trend-up text-2xl"></i>
+              </div>
+              <div>
+                <div id="resultDirection" class="text-2xl font-extrabold tracking-wide">BUY</div>
+                <div id="resultTimerText" class="text-xs text-gray-300 mt-0.5">
+                  Enter within <span id="countdownSpan" class="font-bold text-white">00:05</span> · <span id="resultExpLabel">5 sec</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- رسم بياني مصغر SVG -->
+            <div class="w-28 h-12 flex items-center justify-center">
+              <svg id="miniChartSvg" viewBox="0 0 120 50" class="w-full h-full overflow-visible">
+                <path id="miniChartPath" d="M 5 40 L 30 32 L 55 38 L 85 15 L 110 10" fill="none" stroke="#10b981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                <circle id="miniChartDot" cx="110" cy="10" r="4.5" fill="#10b981" />
+              </svg>
+            </div>
+          </div>
+
+          <!-- قوة الإشارة -->
+          <div class="mt-4">
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-gray-400">Signal strength</span>
+              <span id="strengthText" class="font-semibold text-emerald-400">strong</span>
+            </div>
+            <div class="w-full h-1.5 bg-[#111318] rounded-full overflow-hidden">
+              <div id="strengthBar" class="h-full bg-emerald-400 rounded-full transition-all duration-300" style="width: 85%;"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- نص التوجيه أسفل الإشارة -->
+      <div id="actionHint" class="hidden text-center text-xs text-gray-300 py-0.5">
+        Open <span id="hintDir" class="font-bold text-emerald-400">BUY</span> for <span id="hintTime" class="font-bold text-white">5 sec</span> on PocketOption
+      </div>
+
+      <!-- زر الحصول على الإشارة (Get / Refresh Signal) -->
+      <button id="mainActionBtn" onclick="startAnalysis()" class="w-full py-3.5 rounded-xl btn-green text-sm font-bold shadow-lg shadow-emerald-500/10">
+        Get signal
+      </button>
+
+      <!-- قسم القراءات والمؤشرات (Readings - real quotes) -->
+      <div class="pt-1">
+        <div class="flex items-center justify-between text-xs text-gray-400 mb-2 px-1">
+          <span>Readings · real quotes</span>
+          <span id="readingsCounter" class="font-semibold text-gray-300">0 of 8</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2" id="readingsGrid">
+          <!-- 1. Trend -->
+          <div class="card-dark p-2.5 flex items-center justify-between">
+            <div>
+              <div class="text-[11px] text-gray-400">Trend · 1h</div>
+              <div id="val-trend" class="text-xs font-bold text-gray-500 mt-0.5">. . .</div>
+            </div>
+            <i class="fa-solid fa-chart-line text-gray-600 text-sm" id="icon-trend"></i>
+          </div>
+
+          <!-- 2. EMA -->
+          <div class="card-dark p-2.5 flex items-center justify-between">
+            <div>
+              <div class="text-[11px] text-gray-400">EMA 50/200</div>
+              <div id="val-ema" class="text-xs font-bold text-gray-500 mt-0.5">. . .</div>
+            </div>
+            <i class="fa-solid fa-wave-square text-gray-600 text-sm" id="icon-ema"></i>
+          </div>
+
+          <!-- 3. Momentum -->
+          <div class="card-dark p-2.5 flex items-center justify-between">
+            <div>
+              <div class="text-[11px] text-gray-400">Momentum</div>
+              <div id="val-mom" class="text-xs font-bold text-gray-500 mt-0.5">. . .</div>
+            </div>
+            <i class="fa-solid fa-gauge-high text-gray-600 text-sm" id="icon-mom"></i>
+          </div>
+
+          <!-- 4. RSI -->
+          <div class="card-dark p-2.5 flex items-center justify-between">
+            <div>
+              <div class="text-[11px] text-gray-400">RSI</div>
+              <div id="val-rsi" class="text-xs font-bold text-gray-500 mt-0.5">. . .</div>
+            </div>
+            <div class="w-6 h-6 rounded-full border-2 border-gray-700 flex items-center justify-center text-[9px] text-gray-400 font-bold" id="icon-rsi">--</div>
+          </div>
+
+          <!-- 5. Move in 1 min -->
+          <div class="card-dark p-2.5 flex items-center justify-between">
+            <div>
+              <div class="text-[11px] text-gray-400">Move in 1 min</div>
+              <div id="val-move" class="text-xs font-bold text-gray-500 mt-0.5">. . .</div>
+            </div>
+            <i class="fa-solid fa-bolt text-gray-600 text-sm" id="icon-move"></i>
+          </div>
+
+          <!-- 6. Level above/below -->
+          <div class="card-dark p-2.5 flex items-center justify-between">
+            <div>
+              <div id="lbl-level" class="text-[11px] text-gray-400">Level above</div>
+              <div id="val-level" class="text-xs font-bold text-gray-500 mt-0.5">. . .</div>
+            </div>
+            <i class="fa-solid fa-layer-group text-gray-600 text-sm" id="icon-level"></i>
+          </div>
+
+          <!-- 7. Session -->
+          <div class="card-dark p-2.5 flex items-center justify-between">
+            <div>
+              <div class="text-[11px] text-gray-400">Session</div>
+              <div id="val-session" class="text-xs font-bold text-gray-500 mt-0.5">. . .</div>
+            </div>
+            <i class="fa-solid fa-earth-europe text-gray-600 text-sm" id="icon-session"></i>
+          </div>
+
+          <!-- 8. Summary -->
+          <div class="card-dark p-2.5 flex items-center justify-between">
+            <div>
+              <div class="text-[11px] text-gray-400">Summary 1m</div>
+              <div id="val-sum" class="text-xs font-bold text-gray-500 mt-0.5">. . .</div>
+            </div>
+            <i class="fa-solid fa-circle-check text-gray-600 text-sm" id="icon-sum"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- تنبيهات البوت -->
+      <div class="card-dark p-3 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+            <i class="fa-regular fa-bell text-sm"></i>
+          </div>
+          <div>
+            <div class="text-xs font-bold text-white">Bot alerts</div>
+            <div class="text-[11px] text-gray-400">Unlimited</div>
+          </div>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" checked class="sr-only peer">
+          <div class="w-9 h-5 bg-gray-700 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
+        </label>
+      </div>
+
+    </div>
+
+    <!-- القائمة السفلية (Bottom Navigation) -->
+    <div class="fixed bottom-0 w-full max-w-[420px] bg-[#14171f]/95 backdrop-blur border-t border-[#222631] px-6 py-2 flex justify-around items-center z-30">
+      <button class="flex flex-col items-center gap-1 text-emerald-400">
+        <i class="fa-solid fa-chart-simple text-base"></i>
+        <span class="text-[10px] font-semibold">Signals</span>
+      </button>
+      <button onclick="alert('قسم التعليم قريباً!')" class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-300">
+        <i class="fa-solid fa-graduation-cap text-base"></i>
+        <span class="text-[10px] font-medium">Learn</span>
+      </button>
+      <button onclick="alert('الملف الشخصي: المستوى GPT-6 Astra مفعل')" class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-300">
+        <i class="fa-regular fa-user text-base"></i>
+        <span class="text-[10px] font-medium">Profile</span>
+      </button>
+    </div>
+
+    <!-- نافذة اختيار زوج العملات (Choose a Pair Modal) -->
+    <div id="pairModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex-col justify-end max-w-[420px] mx-auto">
+      <div class="bg-[#14171f] rounded-t-3xl border-t border-[#282d3a] p-4 h-[85vh] flex flex-col">
+        
+        <!-- رأس النافذة -->
+        <div class="flex items-center justify-between mb-3">
+          <span class="font-bold text-base text-white">Choose a pair</span>
+          <button onclick="closePairModal()" class="text-emerald-400 text-sm font-semibold">Done</button>
+        </div>
+
+        <!-- شريط البحث -->
+        <div class="relative mb-3">
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-gray-500 text-xs"></i>
+          <input id="searchInput" oninput="renderPairList()" type="text" placeholder="Search: EUR, gold, Apple..." class="w-full bg-[#1c2029] border border-[#2c3240] rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500" />
+        </div>
+
+        <!-- التصنيفات -->
+        <div class="grid grid-cols-3 gap-1.5 mb-3">
+          <button onclick="setCategory('Forex')" id="cat-Forex" class="cat-btn py-2 rounded-xl bg-[#1c2029] border border-[#2c3240] text-xs font-semibold text-gray-300">Forex 🌙</button>
+          <button onclick="setCategory('OTC')" id="cat-OTC" class="cat-btn py-2 rounded-xl bg-emerald-500/20 border border-emerald-500 text-xs font-bold text-emerald-400">OTC</button>
+          <button onclick="setCategory('Crypto')" id="cat-Crypto" class="cat-btn py-2 rounded-xl bg-[#1c2029] border border-[#2c3240] text-xs font-semibold text-gray-300">Crypto</button>
+        </div>
+
+        <!-- قائمة الأزواج -->
+        <div id="pairsListContainer" class="flex-1 overflow-y-auto space-y-1.5 pr-1 no-scrollbar">
+          <!-- يتم ملؤها عبر الجافاسكربت -->
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // بيانات أزواج العملات
+    const pairsData = [
+      { name: 'EUR/USD OTC', cat: 'OTC', f1: '🇪🇺', f2: '🇺🇸' },
+      { name: 'AUD/CAD OTC', cat: 'OTC', f1: '🇦🇺', f2: '🇨🇦' },
+      { name: 'AUD/CHF OTC', cat: 'OTC', f1: '🇦🇺', f2: '🇨🇭' },
+      { name: 'AUD/NZD OTC', cat: 'OTC', f1: '🇦🇺', f2: '🇳🇿' },
+      { name: 'CAD/JPY OTC', cat: 'OTC', f1: '🇨🇦', f2: '🇯🇵' },
+      { name: 'EUR/JPY OTC', cat: 'OTC', f1: '🇪🇺', f2: '🇯🇵' },
+      { name: 'GBP/AUD OTC', cat: 'OTC', f1: '🇬🇧', f2: '🇦🇺' },
+      { name: 'MAD/USD OTC', cat: 'OTC', f1: '🇲🇦', f2: '🇺🇸' },
+      { name: 'NZD/JPY OTC', cat: 'OTC', f1: '🇳🇿', f2: '🇯🇵' },
+      { name: 'EUR/USD', cat: 'Forex', f1: '🇪🇺', f2: '🇺🇸' },
+      { name: 'GBP/USD', cat: 'Forex', f1: '🇬🇧', f2: '🇺🇸' },
+      { name: 'USD/JPY', cat: 'Forex', f1: '🇺🇸', f2: '🇯🇵' },
+      { name: 'AUD/USD', cat: 'Forex', f1: '🇦🇺', f2: '🇺🇸' },
+      { name: 'USD/CAD', cat: 'Forex', f1: '🇺🇸', f2: '🇨🇦' },
+      { name: 'BTC/USD', cat: 'Crypto', f1: '🪙', f2: '🇺🇸' },
+      { name: 'ETH/USD', cat: 'Crypto', f1: '💎', f2: '🇺🇸' },
+    ];
+
+    let currentPair = pairsData[0];
+    let currentCategory = 'OTC';
+    let selectedTimeCode = 'S5';
+    let selectedSeconds = 5;
+    let isAnalyzing = false;
+    let countdownInterval = null;
+
+    // اختيار الوقت
+    function selectTime(code, seconds) {
+      if (isAnalyzing) return;
+      selectedTimeCode = code;
+      selectedSeconds = seconds;
+
+      const label = seconds < 60 ? `${seconds} sec` : `${seconds / 60} min`;
+      document.getElementById('readyTimeLabel').innerText = label;
+
+      // تحديث شكل الأزرار
+      const buttons = document.querySelectorAll('#timeButtons .time-btn');
+      buttons.forEach(btn => {
+        if (btn.innerText === code) {
+          btn.className = 'time-btn py-2 rounded-xl bg-emerald-500/20 border border-emerald-500 text-xs font-bold text-emerald-400';
+        } else {
+          btn.className = 'time-btn py-2 rounded-xl bg-[#181b22] border border-[#262a34] text-xs font-semibold text-gray-300';
         }
+      });
+    }
 
-        // دالة جلب البيانات الحقيقية من Binance API وحساب المؤشرات الفنية فعلياً
-        async function fetchRealMarketData() {
-            const symbol = document.getElementById("asset-select").value;
-            const statusTitle = document.getElementById("status-title");
-            statusTitle.innerText = "Fetching live candle data...";
+    // اختيار سريع للزوج
+    function selectPairQuick(name, f1, f2) {
+      if (isAnalyzing) return;
+      currentPair = { name, f1, f2 };
+      document.getElementById('selectedPairText').innerText = name;
+      document.getElementById('flag1').innerText = f1;
+      document.getElementById('flag2').innerText = f2;
+    }
 
-            try {
-                // جلب آخر 50 شمعة تاريخية للسوق الحقيقي
-                const response = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${currentInterval}&limit=50`);
-                const data = await response.json();
+    // فتح وإغلاق نافذة الأزواج
+    function openPairModal() {
+      if (isAnalyzing) return;
+      document.getElementById('pairModal').classList.remove('hidden');
+      document.getElementById('pairModal').classList.add('flex');
+      renderPairList();
+    }
 
-                // استخراج أسعار الإغلاق (Close Prices) من الشمعات الحقيقية
-                const closes = data.map(candle => parseFloat(candle[4]));
-                const currentPrice = closes[closes.length - 1];
-                
-                document.getElementById("live-price").innerText = `Live Price: $${currentPrice.toLocaleString()}`;
+    function closePairModal() {
+      document.getElementById('pairModal').classList.add('hidden');
+      document.getElementById('pairModal').classList.remove('flex');
+    }
 
-                // 1. حساب المتوسط المتحرك البسيط SMA 20
-                const sma20 = calculateSMA(closes, 20);
-                
-                // 2. حساب مؤشر القوة النسبية RSI 14 الحقيقي
-                const rsi = calculateRSI(closes, 14);
-
-                // تحديد الاتجاه والملخص بناءً على الحسابات الحقيقية
-                const trendEl = document.getElementById("val-trend");
-                const rsiEl = document.getElementById("val-rsi");
-                const smaEl = document.getElementById("val-sma");
-                const sumEl = document.getElementById("val-summary");
-
-                rsiEl.innerText = rsi.toFixed(1);
-
-                if (currentPrice > sma20) {
-                    smaEl.innerHTML = '<span class="trend-up">Above SMA (Bullish)</span>';
-                } else {
-                    smaEl.innerHTML = '<span class="trend-down">Below SMA (Bearish)</span>';
-                }
-
-                if (currentPrice > closes[closes.length - 2]) {
-                    trendEl.innerHTML = '<span class="trend-up">Upward ↑</span>';
-                } else {
-                    trendEl.innerHTML = '<span class="trend-down">Downward ↓</span>';
-                }
-
-                // اتخاذ القرار بناءً على قيمة RSI الحقيقية وموقع السعر من المتوسط
-                if (rsi < 45 && currentPrice > sma20) {
-                    sumEl.innerHTML = '<span class="trend-up">STRONG BUY 🟢</span>';
-                    statusTitle.innerText = "Analysis: Oversold in Uptrend (Buy Signal)";
-                } else if (rsi > 55 && currentPrice < sma20) {
-                    sumEl.innerHTML = '<span class="trend-down">STRONG SELL 🔴</span>';
-                    statusTitle.innerText = "Analysis: Overbought in Downtrend (Sell Signal)";
-                } else {
-                    sumEl.innerHTML = '<span>NEUTRAL ⚪</span>';
-                    statusTitle.innerText = "Analysis: Market Consolidating";
-                }
-
-            } catch (error) {
-                statusTitle.innerText = "Error fetching market data!";
-                console.error(error);
-            }
+    function setCategory(cat) {
+      currentCategory = cat;
+      ['Forex', 'OTC', 'Crypto'].forEach(c => {
+        const btn = document.getElementById('cat-' + c);
+        if (c === cat) {
+          btn.className = 'cat-btn py-2 rounded-xl bg-emerald-500/20 border border-emerald-500 text-xs font-bold text-emerald-400';
+        } else {
+          btn.className = 'cat-btn py-2 rounded-xl bg-[#1c2029] border border-[#2c3240] text-xs font-semibold text-gray-300';
         }
+      });
+      renderPairList();
+    }
 
-        // حساب المتوسط المتحرك البسيط (SMA)
-        function calculateSMA(data, period) {
-            const slice = data.slice(-period);
-            const sum = slice.reduce((a, b) => a + b, 0);
-            return sum / period;
-        }
+    function renderPairList() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const container = document.getElementById('pairsListContainer');
+      container.innerHTML = '';
 
-        // حساب مؤشر القوة النسبية الحقيقي (RSI)
-        function calculateRSI(closes, period) {
-            let gains = 0;
-            let losses = 0;
+      const filtered = pairsData.filter(p => {
+        const matchesCat = query ? true : p.cat === currentCategory;
+        const matchesQuery = p.name.toLowerCase().includes(query);
+        return matchesCat && matchesQuery;
+      });
 
-            for (let i = closes.length - period; i < closes.length; i++) {
-                const diff = closes[i] - closes[i - 1];
-                if (diff >= 0) {
-                    gains += diff;
-                } else {
-                    losses -= diff;
-                }
-            }
-
-            let avgGain = gains / period;
-            let avgLoss = losses / period;
-
-            if (avgLoss === 0) return 100;
-            let rs = avgGain / avgLoss;
-            return 100 - (100 / (1 + rs));
-        }
-
-        // تشغيل الجلب تلقائياً عند تحميل الصفحة
-        window.onload = function() {
-            fetchRealMarketData();
+      filtered.forEach(p => {
+        const isSelected = p.name === currentPair.name;
+        const div = document.createElement('div');
+        div.className = `p-3 rounded-xl flex items-center justify-between cursor-pointer border ${isSelected ? 'bg-[#1f2633] border-emerald-500/50' : 'bg-[#1a1d26] border-[#262a34]'} hover:border-gray-500`;
+        div.onclick = () => {
+          selectPairQuick(p.name, p.f1, p.f2);
+          closePairModal();
         };
-    </script>
+        div.innerHTML = `
+          <div class="flex items-center gap-3">
+            <div class="relative w-9 h-7 flex items-center">
+              <span class="text-xl z-10">${p.f1}</span>
+              <span class="text-xl -ml-2 mt-1.5">${p.f2}</span>
+            </div>
+            <div>
+              <div class="text-xs font-bold text-white">${p.name}</div>
+              <div class="text-[10px] text-gray-400">${p.cat}</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            ${isSelected ? '<i class="fa-solid fa-check text-emerald-400 text-xs"></i>' : ''}
+            <i class="fa-regular fa-star text-gray-500 text-xs"></i>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function toggleFavoriteCurrent() {
+      // تأثير بسيط عند الضغط على النجمة
+      alert(`تمت إضافة ${currentPair.name} إلى المفضلة!`);
+    }
+
+    // إعادة تعيين القراءات
+    function resetReadings() {
+      const ids = ['val-trend', 'val-ema', 'val-mom', 'val-rsi', 'val-move', 'val-level', 'val-session', 'val-sum'];
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        el.innerText = '. . .';
+        el.className = 'text-xs font-bold text-gray-500 mt-0.5';
+      });
+      document.getElementById('icon-rsi').innerText = '--';
+      document.getElementById('readingsCounter').innerText = '0 of 8';
+    }
+
+    // بدء التحليل (محاكاة خطوات الفيديو)
+    function startAnalysis() {
+      if (isAnalyzing) return;
+      isAnalyzing = true;
+      if (countdownInterval) clearInterval(countdownInterval);
+
+      resetReadings();
+
+      const signalCard = document.getElementById('signalCard');
+      signalCard.className = 'card-dark p-4 relative overflow-hidden transition-all duration-300';
+
+      document.getElementById('stateReady').classList.add('hidden');
+      document.getElementById('stateResult').classList.add('hidden');
+      document.getElementById('actionHint').classList.add('hidden');
+      document.getElementById('stateAnalyzing').classList.remove('hidden');
+
+      const btn = document.getElementById('mainActionBtn');
+      btn.disabled = true;
+      btn.classList.add('opacity-50', 'cursor-not-allowed');
+      btn.innerText = 'Analyzing...';
+
+      // تحديد مسبق لنتيجة الإشارة (BUY أو SELL)
+      const isBuy = Math.random() > 0.45;
+      const rsiVal = isBuy ? Math.floor(Math.random() * 15) + 56 : Math.floor(Math.random() * 15) + 30;
+      const pipsVal = (isBuy ? '+' : '-') + (Math.floor(Math.random() * 35) + 12) + ' pips';
+      const levelPips = (Math.floor(Math.random() * 8) + 3) + ' pips';
+
+      const steps = [
+        { step: 1, title: 'Analyzing the market...', fill: () => {
+          setReading('val-trend', isBuy ? 'up ↑' : 'down ↓', isBuy);
+        }},
+        { step: 2, title: 'Checking indicators...', fill: () => {
+          setReading('val-ema', isBuy ? 'up ↑' : 'down ↓', isBuy);
+        }},
+        { step: 3, title: 'Checking indicators...', fill: () => {
+          setReading('val-mom', isBuy ? 'up ↑' : 'down ↓', isBuy);
+        }},
+        { step: 4, title: 'Measuring momentum...', fill: () => {
+          setReading('val-rsi', rsiVal, isBuy);
+          document.getElementById('icon-rsi').innerText = rsiVal;
+        }},
+        { step: 5, title: 'Measuring momentum...', fill: () => {
+          setReading('val-move', pipsVal, isBuy);
+        }},
+        { step: 6, title: 'Checking levels...', fill: () => {
+          document.getElementById('lbl-level').innerText = isBuy ? 'Level above' : 'Level below';
+          setReading('val-level', levelPips, true, true);
+        }},
+        { step: 7, title: 'Calculating the signal...', fill: () => {
+          setReading('val-session', 'London', true, true);
+        }},
+        { step: 8, title: 'Finalizing signal...', fill: () => {
+          setReading('val-sum', isBuy ? 'Buy' : 'Sell', isBuy);
+        }}
+      ];
+
+      let currentIdx = 0;
+
+      const stepTimer = setInterval(() => {
+        if (currentIdx < steps.length) {
+          const s = steps[currentIdx];
+          const pct = Math.round((s.step / 8) * 100);
+          document.getElementById('analyzingStepTitle').innerText = s.title;
+          document.getElementById('progressBar').style.width = pct + '%';
+          document.getElementById('progressText').innerText = `GPT-6 Astra is analyzing · ${s.step} of 8 ...`;
+          document.getElementById('readingsCounter').innerText = `${s.step} of 8`;
+          s.fill();
+          currentIdx++;
+        } else {
+          clearInterval(stepTimer);
+          showSignalResult(isBuy);
+        }
+      }, 380);
+    }
+
+    function setReading(id, text, isPositive, isNeutral = false) {
+      const el = document.getElementById(id);
+      el.innerText = text;
+      if (isNeutral) {
+        el.className = 'text-xs font-bold text-white mt-0.5';
+      } else {
+        el.className = `text-xs font-bold mt-0.5 ${isPositive ? 'text-emerald-400' : 'text-red-400'}`;
+      }
+    }
+
+    // إظهار النتيجة النهائية
+    function showSignalResult(isBuy) {
+      isAnalyzing = false;
+      document.getElementById('stateAnalyzing').classList.add('hidden');
+      document.getElementById('stateResult').classList.remove('hidden');
+      document.getElementById('actionHint').classList.remove('hidden');
+
+      const signalCard = document.getElementById('signalCard');
+      const iconBox = document.getElementById('resultIconBox');
+      const icon = document.getElementById('resultIcon');
+      const dirText = document.getElementById('resultDirection');
+      const chartPath = document.getElementById('miniChartPath');
+      const chartDot = document.getElementById('miniChartDot');
+      const strengthText = document.getElementById('strengthText');
+      const strengthBar = document.getElementById('strengthBar');
+
+      const expLabel = selectedSeconds < 60 ? `${selectedSeconds} sec` : `${selectedSeconds / 60} min`;
+      document.getElementById('resultExpLabel').innerText = expLabel;
+      document.getElementById('hintTime').innerText = expLabel;
+
+      const hintDir = document.getElementById('hintDir');
+
+      if (isBuy) {
+        signalCard.className = 'card-dark signal-buy p-4 relative overflow-hidden transition-all duration-300';
+        iconBox.className = 'w-14 h-14 rounded-full bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center text-emerald-400 shadow-lg shadow-emerald-500/20';
+        icon.className = 'fa-solid fa-arrow-up text-2xl rotate-45';
+        dirText.innerText = 'BUY';
+        dirText.className = 'text-3xl font-extrabold tracking-wide text-emerald-400';
+
+        chartPath.setAttribute('d', 'M 5 42 L 35 34 L 60 38 L 90 16 L 112 8');
+        chartPath.setAttribute('stroke', '#10b981');
+        chartDot.setAttribute('cx', '112');
+        chartDot.setAttribute('cy', '8');
+        chartDot.setAttribute('fill', '#10b981');
+
+        strengthText.innerText = 'strong';
+        strengthText.className = 'font-semibold text-emerald-400';
+        strengthBar.className = 'h-full bg-emerald-400 rounded-full transition-all duration-300';
+        strengthBar.style.width = '86%';
+
+        hintDir.innerText = 'BUY';
+        hintDir.className = 'font-bold text-emerald-400';
+      } else {
+        signalCard.className = 'card-dark signal-sell p-4 relative overflow-hidden transition-all duration-300';
+        iconBox.className = 'w-14 h-14 rounded-full bg-red-500/20 border-2 border-red-400 flex items-center justify-center text-red-400 shadow-lg shadow-red-500/20';
+        icon.className = 'fa-solid fa-arrow-down text-2xl -rotate-45';
+        dirText.innerText = 'SELL';
+        dirText.className = 'text-3xl font-extrabold tracking-wide text-red-400';
+
+        chartPath.setAttribute('d', 'M 5 10 L 35 20 L 60 15 L 90 36 L 112 42');
+        chartPath.setAttribute('stroke', '#ef4444');
+        chartDot.setAttribute('cx', '112');
+        chartDot.setAttribute('cy', '42');
+        chartDot.setAttribute('fill', '#ef4444');
+
+        strengthText.innerText = 'strong';
+        strengthText.className = 'font-semibold text-red-400';
+        strengthBar.className = 'h-full bg-red-500 rounded-full transition-all duration-300';
+        strengthBar.style.width = '88%';
+
+        hintDir.innerText = 'SELL';
+        hintDir.className = 'font-bold text-red-400';
+      }
+
+      // تفعيل زر التحديث
+      const btn = document.getElementById('mainActionBtn');
+      btn.disabled = false;
+      btn.classList.remove('opacity-50', 'cursor-not-allowed');
+      btn.innerText = 'Refresh signal';
+
+      // تشغيل العداد التنازلي للدخول
+      startCountdown(10);
+    }
+
+    function startCountdown(sec) {
+      let remaining = sec;
+      const timerContainer = document.getElementById('resultTimerText');
+      const expLabel = selectedSeconds < 60 ? `${selectedSeconds} sec` : `${selectedSeconds / 60} min`;
+
+      const updateText = () => {
+        if (remaining > 0) {
+          const formatted = remaining < 10 ? `00:0${remaining}` : `00:${remaining}`;
+          timerContainer.innerHTML = `Enter within <span class="font-bold text-white">${formatted}</span> · <span>${expLabel}</span>`;
+        } else {
+          timerContainer.innerHTML = `<span class="text-gray-400">Signal time is up</span>`;
+          clearInterval(countdownInterval);
+        }
+      };
+
+      updateText();
+      countdownInterval = setInterval(() => {
+        remaining--;
+        updateText();
+      }, 1000);
+    }
+  </script>
 </body>
 </html>
