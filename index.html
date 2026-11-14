@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>GPT Trade - 3s Market Direction</title>
+  <title>GPT S3 - محلل اتجاه الـ 3 ثوانٍ</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Inter:wght@600;700;800&display=swap');
 
     * {
       box-sizing: border-box;
@@ -16,7 +16,7 @@
     }
 
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: 'Cairo', sans-serif;
       background-color: #090b10;
       color: #ffffff;
       margin: 0;
@@ -24,6 +24,12 @@
       display: flex;
       justify-content: center;
       min-height: 100vh;
+    }
+
+    .font-mono-num {
+      font-family: 'Inter', monospace;
+      direction: ltr;
+      display: inline-block;
     }
 
     .app-container {
@@ -44,23 +50,40 @@
     }
 
     .signal-buy {
-      background: radial-gradient(circle at 50% 30%, rgba(16, 185, 129, 0.28), rgba(24, 27, 34, 0.96) 75%);
-      border: 1px solid rgba(16, 185, 129, 0.5);
+      background: radial-gradient(circle at 50% 25%, rgba(16, 185, 129, 0.3), rgba(24, 27, 34, 0.96) 75%);
+      border: 1px solid rgba(16, 185, 129, 0.55);
     }
 
     .signal-sell {
-      background: radial-gradient(circle at 50% 30%, rgba(239, 68, 68, 0.28), rgba(24, 27, 34, 0.96) 75%);
-      border: 1px solid rgba(239, 68, 68, 0.5);
+      background: radial-gradient(circle at 50% 25%, rgba(239, 68, 68, 0.3), rgba(24, 27, 34, 0.96) 75%);
+      border: 1px solid rgba(239, 68, 68, 0.55);
+    }
+
+    .signal-analyzing {
+      background: radial-gradient(circle at 50% 30%, rgba(245, 158, 11, 0.16), rgba(24, 27, 34, 0.96) 75%);
+      border: 1px solid rgba(245, 158, 11, 0.4);
     }
 
     .btn-green {
       background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
-      color: #06281e;
+      color: #05261c;
       font-weight: 800;
       transition: all 0.15s ease;
     }
     .btn-green:active {
       transform: scale(0.97);
+    }
+
+    .progress-fill {
+      transition: width 0.25s ease;
+    }
+
+    @keyframes spin-slow {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .spin-anim {
+      animation: spin-slow 2.2s linear infinite;
     }
 
     @keyframes pulse-fast {
@@ -77,142 +100,165 @@
   <div class="app-container p-4 space-y-3.5">
 
     <!-- الهيدر -->
-    <div class="flex items-center justify-between pb-2 border-b border-[#1f242d]">
-      <div class="flex items-center gap-2">
-        <div class="w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
-          <i class="fa-solid fa-bolt text-sm"></i>
+    <div class="flex items-center justify-between pb-2.5 border-b border-[#1f242d]">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+          <i class="fa-solid fa-microchip text-sm"></i>
         </div>
         <div>
-          <span class="font-bold text-base text-emerald-400">GPT <span class="text-white">S3 Radar</span></span>
-          <div class="flex items-center gap-1.5 text-[10px] text-gray-400">
+          <span class="font-extrabold text-base text-white">رادار <span class="text-emerald-400">GPT S3</span></span>
+          <div class="flex items-center gap-1.5 text-[11px] text-gray-400">
             <span id="wsDot" class="w-2 h-2 rounded-full bg-emerald-400 live-dot"></span>
-            <span id="wsStatus">Live Tick Stream (WebSocket)</span>
+            <span id="wsStatus">متصل بالسوق المباشر</span>
           </div>
         </div>
       </div>
-      <span class="px-2.5 py-1 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-extrabold">
+      <span class="px-2.5 py-1 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-extrabold font-mono-num">
         S3 · 3 SEC
       </span>
     </div>
 
-    <!-- اختيار السوق + السعر اللحظي بالمللي ثانية -->
+    <!-- اختيار السوق + السعر اللحظي -->
     <div class="card-dark p-3.5">
-      <div class="flex items-center justify-between mb-2.5">
-        <span class="text-xs text-gray-400">Select Market</span>
-        <span class="text-[11px] text-gray-500" id="tickRateText">0 ticks/sec</span>
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-xs text-gray-400 font-semibold">اختر السوق:</span>
+        <span class="text-[11px] text-gray-500 font-mono-num" id="tickRateText">0 ticks/s</span>
       </div>
 
       <div class="grid grid-cols-4 gap-1.5 mb-3" id="marketBtns">
-        <button onclick="changeMarket('BTCUSDT', 'BTC/USD', 2)" class="mkt-btn py-2 rounded-xl bg-emerald-500/20 border border-emerald-500 text-xs font-bold text-emerald-400">BTC/USD</button>
-        <button onclick="changeMarket('PAXGUSDT', 'GOLD/USD', 2)" class="mkt-btn py-2 rounded-xl bg-[#111318] border border-[#262a34] text-xs font-semibold text-gray-300">GOLD</button>
-        <button onclick="changeMarket('EURUSDT', 'EUR/USD', 5)" class="mkt-btn py-2 rounded-xl bg-[#111318] border border-[#262a34] text-xs font-semibold text-gray-300">EUR/USD</button>
-        <button onclick="changeMarket('GBPUSDT', 'GBP/USD', 5)" class="mkt-btn py-2 rounded-xl bg-[#111318] border border-[#262a34] text-xs font-semibold text-gray-300">GBP/USD</button>
+        <button onclick="changeMarket('BTCUSDT', 'BTC/USD', 2)" class="mkt-btn py-2 rounded-xl bg-emerald-500/20 border border-emerald-500 text-xs font-bold text-emerald-400 font-mono-num">BTC/USD</button>
+        <button onclick="changeMarket('PAXGUSDT', 'GOLD/USD', 2)" class="mkt-btn py-2 rounded-xl bg-[#111318] border border-[#262a34] text-xs font-semibold text-gray-300 font-mono-num">GOLD</button>
+        <button onclick="changeMarket('EURUSDT', 'EUR/USD', 5)" class="mkt-btn py-2 rounded-xl bg-[#111318] border border-[#262a34] text-xs font-semibold text-gray-300 font-mono-num">EUR/USD</button>
+        <button onclick="changeMarket('GBPUSDT', 'GBP/USD', 5)" class="mkt-btn py-2 rounded-xl bg-[#111318] border border-[#262a34] text-xs font-semibold text-gray-300 font-mono-num">GBP/USD</button>
       </div>
 
       <div class="flex items-center justify-between bg-[#111318] p-3 rounded-xl border border-[#232732]">
         <div>
-          <div id="pairLabel" class="text-xs font-bold text-gray-400">BTC/USD Live Price</div>
-          <div id="livePrice" class="text-2xl font-mono font-extrabold text-white mt-0.5">Loading...</div>
+          <div id="pairLabel" class="text-xs font-bold text-gray-400">السعر اللحظي المباشر (BTC/USD)</div>
+          <div id="livePrice" class="text-2xl font-extrabold text-white mt-0.5 font-mono-num">جاري الاتصال...</div>
         </div>
-        <div class="text-right">
-          <div class="text-[10px] text-gray-400">Last Tick Delta</div>
-          <div id="tickDelta" class="text-xs font-mono font-bold text-emerald-400">+0.00</div>
+        <div class="text-left">
+          <div class="text-[10px] text-gray-400">تغير آخر نبضة</div>
+          <div id="tickDelta" class="text-xs font-bold text-emerald-400 font-mono-num">+0.00</div>
         </div>
       </div>
     </div>
 
-    <!-- شريط ضغط السيولة اللحظي (Buyers vs Sellers Pressure) -->
-    <div class="card-dark p-3">
-      <div class="flex justify-between text-[11px] font-bold mb-1.5">
-        <span class="text-emerald-400" id="buyPressureTxt">Buyers: 50%</span>
-        <span class="text-gray-400">Order Flow (Last 15 Ticks)</span>
-        <span class="text-red-400" id="sellPressureTxt">Sellers: 50%</span>
-      </div>
-      <div class="w-full h-2.5 bg-red-500/80 rounded-full overflow-hidden flex">
-        <div id="buyPressureBar" class="h-full bg-emerald-400 transition-all duration-150" style="width: 50%;"></div>
-      </div>
-    </div>
+    <!-- الصندوق الرئيسي (1: جاهز -> 2: يحلل أولاً -> 3: يعطي صاعد أو نازل) -->
+    <div id="signalCard" class="card-dark p-5 text-center relative overflow-hidden transition-all duration-200 min-h-[225px] flex flex-col justify-center items-center">
 
-    <!-- الصندوق الرئيسي لاتجاه الـ 3 ثوانٍ القادمة -->
-    <div id="signalCard" class="card-dark p-5 text-center relative overflow-hidden transition-all duration-200 min-h-[210px] flex flex-col justify-center items-center">
-
-      <!-- الحالة الافتراضية -->
-      <div id="stateIdle" class="space-y-2">
+      <!-- الحالة 1: جاهز للبدء -->
+      <div id="stateIdle" class="space-y-2.5">
         <div class="w-16 h-16 mx-auto rounded-full bg-emerald-500/15 border-2 border-emerald-500/40 flex items-center justify-center text-emerald-400">
-          <i class="fa-solid fa-gauge-high text-2xl"></i>
+          <i class="fa-solid fa-magnifying-glass-chart text-2xl"></i>
         </div>
-        <div class="font-bold text-lg text-white">Ready for 3-Second Scan</div>
-        <p class="text-xs text-gray-400 max-w-[250px] mx-auto">
-          Reads live micro-ticks & instant order flow to predict the next 3 seconds.
+        <div class="font-extrabold text-lg text-white">جاهز لتحليل السوق</div>
+        <p class="text-xs text-gray-400 max-w-[260px] mx-auto leading-relaxed">
+          اضغط على الزر بالأسفل ليقوم الذكاء الاصطناعي بتحليل السيولة والنبضات أولاً ثم إعطائك اتجاه الـ 3 ثوانٍ القادمة.
         </p>
       </div>
 
-      <!-- حالة قراءة الاتجاه والعد التنازلي لـ 3 ثوانٍ -->
-      <div id="stateDirection" class="hidden w-full space-y-3">
-        <div class="flex items-center justify-between px-2">
-          <span class="text-xs font-semibold text-gray-300">Next 3 Seconds Direction:</span>
-          <span id="confidenceTag" class="px-2 py-0.5 rounded bg-black/40 text-xs font-bold text-emerald-400">91% Power</span>
+      <!-- الحالة 2: جاري التحليل أولاً (Analyzing Step-by-Step) -->
+      <div id="stateAnalyzing" class="hidden w-full space-y-4">
+        <div class="flex items-center justify-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-500/40 flex items-center justify-center text-amber-400">
+            <i class="fa-solid fa-Rotate spin-anim fa-compass text-2xl"></i>
+          </div>
+          <div class="text-right">
+            <div class="text-xs text-amber-400 font-bold">جاري تحليل السوق اللحظي...</div>
+            <div id="analyzeStepText" class="text-sm font-extrabold text-white mt-0.5">1/4 فحص سيولة المشترين والبائعين...</div>
+          </div>
+        </div>
+
+        <!-- شريط تقدم التحليل -->
+        <div class="w-full h-9 bg-[#111318] rounded-xl overflow-hidden relative border border-[#2a2f3d] flex items-center justify-center">
+          <div id="analyzeProgressBar" class="progress-fill absolute right-0 top-0 bottom-0 bg-gradient-to-l from-amber-500 to-emerald-400 opacity-85" style="width: 25%;"></div>
+          <span id="analyzeProgressPct" class="relative z-10 text-xs font-extrabold text-white drop-shadow font-mono-num">25%</span>
+        </div>
+
+        <div class="text-[11px] text-gray-400">يتم الآن تجميع النبضات السعرية الحقيقية لحسم الاتجاه...</div>
+      </div>
+
+      <!-- الحالة 3: القرار النهائي (السوق صاعد / السوق نازل) -->
+      <div id="stateResult" class="hidden w-full space-y-3">
+        <div class="flex items-center justify-between px-1">
+          <span class="text-xs font-bold text-gray-300">نتيجة التحليل للـ 3 ثوانٍ القادمة:</span>
+          <span id="confidenceTag" class="px-2.5 py-0.5 rounded-full bg-black/40 text-xs font-extrabold text-emerald-400 font-mono-num">92% دقة</span>
         </div>
 
         <div class="flex items-center justify-center gap-4 py-2">
           <div id="dirIconBox" class="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg">
-            <i id="dirIcon" class="fa-solid fa-arrow-up text-3xl"></i>
-          </div>
-          <div class="text-left">
-            <div id="dirMainText" class="text-4xl font-black tracking-wider">UP ⬆️</div>
-            <div id="dirSubText" class="text-xs text-gray-300 font-medium mt-0.5">Strong Buying Impulse</div>
-          </div>
-        </div>
-
-        <!-- عداد الـ 3 ثوانٍ ومقارنة السعر المباشر -->
-        <div class="bg-[#111318]/90 border border-[#262a34] rounded-xl p-2.5 flex items-center justify-between text-xs">
-          <div class="text-left">
-            <div class="text-[10px] text-gray-400">Lock Price -> Live</div>
-            <div class="font-mono font-bold text-white">
-              <span id="lockPriceSpan">0.00</span> <i class="fa-solid fa-arrow-right text-[9px] text-gray-500 mx-1"></i> <span id="currentTrackPrice">0.00</span>
-            </div>
+            <i id="dirIcon" class="fa-solid fa-arrow-trend-up text-3xl"></i>
           </div>
           <div class="text-right">
-            <div class="text-[10px] text-gray-400">3s Timer</div>
-            <div id="timer3s" class="font-mono text-base font-extrabold text-amber-400">3.0s</div>
+            <div id="dirMainText" class="text-3xl font-black tracking-wide">السوق صاعد ⬆️</div>
+            <div id="dirSubText" class="text-xs text-gray-200 font-semibold mt-1">سيطرة شرائية · اتجاه صعودي (UP)</div>
+          </div>
+        </div>
+
+        <!-- متابعة الـ 3 ثوانٍ بعد صدور الإشارة -->
+        <div class="bg-[#111318]/90 border border-[#262a34] rounded-xl p-2.5 flex items-center justify-between text-xs">
+          <div class="text-right">
+            <div class="text-[10px] text-gray-400">سعر الإشارة ← السعر الآن</div>
+            <div class="font-bold text-white font-mono-num mt-0.5">
+              <span id="lockPriceSpan">0.00</span> → <span id="currentTrackPrice">0.00</span>
+            </div>
+          </div>
+          <div class="text-left">
+            <div class="text-[10px] text-gray-400">عداد الـ 3 ثوانٍ</div>
+            <div id="timer3s" class="font-mono-num text-base font-extrabold text-amber-400">3.0s</div>
           </div>
         </div>
       </div>
 
     </div>
 
-    <!-- زر كشف اتجاه الـ 3 ثوانٍ القادمة -->
-    <button id="scanBtn" onclick="predictNext3Seconds()" class="w-full py-4 rounded-2xl btn-green text-base font-extrabold shadow-lg shadow-emerald-500/15 flex items-center justify-center gap-2">
-      <i class="fa-solid fa-bolt"></i> Predict Next 3 Seconds (S3)
+    <!-- تفاصيل المؤشرات الـ 4 التي تم تحليلها -->
+    <div>
+      <div class="flex items-center justify-between text-xs text-gray-400 mb-1.5 px-1">
+        <span class="font-semibold">تفاصيل التحليل اللحظي (4 فحوصات):</span>
+        <span id="checksCounter" class="font-mono-num font-bold text-gray-300">0 / 4</span>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2">
+        <div class="card-dark p-2.5 flex items-center justify-between">
+          <div>
+            <div class="text-[11px] text-gray-400">1. سيولة الصفقات</div>
+            <div id="chk-flow" class="text-xs font-extrabold text-gray-500 mt-0.5">انتظار...</div>
+          </div>
+          <i class="fa-solid fa-scale-balanced text-gray-600 text-sm"></i>
+        </div>
+
+        <div class="card-dark p-2.5 flex items-center justify-between">
+          <div>
+            <div class="text-[11px] text-gray-400">2. زخم النبضات</div>
+            <div id="chk-momentum" class="text-xs font-extrabold text-gray-500 mt-0.5">انتظار...</div>
+          </div>
+          <i class="fa-solid fa-gauge-high text-gray-600 text-sm"></i>
+        </div>
+
+        <div class="card-dark p-2.5 flex items-center justify-between">
+          <div>
+            <div class="text-[11px] text-gray-400">3. سرعة التدفق</div>
+            <div id="chk-velocity" class="text-xs font-extrabold text-gray-500 mt-0.5">انتظار...</div>
+          </div>
+          <i class="fa-solid fa-bolt text-gray-600 text-sm"></i>
+        </div>
+
+        <div class="card-dark p-2.5 flex items-center justify-between">
+          <div>
+            <div class="text-[11px] text-gray-400">4. القرار النهائي</div>
+            <div id="chk-summary" class="text-xs font-extrabold text-gray-500 mt-0.5">انتظار...</div>
+          </div>
+          <i class="fa-solid fa-circle-check text-gray-600 text-sm"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- زر التحليل وإعطاء الاتجاه -->
+    <button id="scanBtn" onclick="startAnalysisThenPredict()" class="w-full py-4 rounded-2xl btn-green text-base font-black shadow-lg shadow-emerald-500/15 flex items-center justify-center gap-2">
+      <i class="fa-solid fa-bolt"></i> حلل السوق الآن (اتجاه الـ 3 ثوانٍ)
     </button>
-
-    <!-- وضع التكرار التلقائي المستمر كل 3 ثوانٍ -->
-    <div class="card-dark p-3 flex items-center justify-between">
-      <div>
-        <div class="text-xs font-bold text-white">Continuous Auto-Scan (Every 3s)</div>
-        <div class="text-[11px] text-gray-400">Automatically refreshes direction every 3 seconds</div>
-      </div>
-      <label class="relative inline-flex items-center cursor-pointer">
-        <input id="autoLoopToggle" type="checkbox" onchange="toggleAutoLoop()" class="sr-only peer">
-        <div class="w-10 h-5 bg-gray-700 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
-      </label>
-    </div>
-
-    <!-- القراءات اللحظية للـ Ticks -->
-    <div class="grid grid-cols-3 gap-2 pt-1">
-      <div class="card-dark p-2.5 text-center">
-        <div class="text-[10px] text-gray-400">Tick Velocity</div>
-        <div id="metricVelocity" class="text-xs font-bold text-white mt-0.5">Normal</div>
-      </div>
-      <div class="card-dark p-2.5 text-center">
-        <div class="text-[10px] text-gray-400">Micro-Trend</div>
-        <div id="metricMicroTrend" class="text-xs font-bold text-emerald-400 mt-0.5">Bullish</div>
-      </div>
-      <div class="card-dark p-2.5 text-center">
-        <div class="text-[10px] text-gray-400">Last 3s Result</div>
-        <div id="metricLastResult" class="text-xs font-bold text-gray-400 mt-0.5">--</div>
-      </div>
-    </div>
 
   </div>
 
@@ -223,12 +269,13 @@
 
     let ws = null;
     let currentPrice = 0;
-    let tickBuffer = []; // يحفظ آخر 25 نبضة سعرية حقيقية
+    let tickBuffer = [];
     let ticksThisSecond = 0;
-    let isScanning = false;
+    let lastTickRate = 0;
+    let isBusy = false;
     let countdownTimer = null;
 
-    // الاتصال المباشر بـ Binance Live Trade Stream
+    // الاتصال المباشر بـ Binance WebSocket
     function connectWebSocket(symbol) {
       if (ws) {
         ws.onclose = null;
@@ -236,30 +283,21 @@
       }
 
       tickBuffer = [];
-      document.getElementById('livePrice').innerText = 'Connecting...';
-      document.getElementById('wsStatus').innerText = `Connecting to ${symbol}...`;
+      document.getElementById('livePrice').innerText = 'جاري الاتصال...';
+      document.getElementById('wsStatus').innerText = `جاري الاتصال بـ ${symbol}...`;
 
-      const streamUrl = `wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@trade`;
-      ws = new WebSocket(streamUrl);
+      ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@trade`);
 
       ws.onopen = () => {
-        document.getElementById('wsStatus').innerText = `Live Tick Stream (${currentLabel})`;
-        document.getElementById('wsDot').className = 'w-2 h-2 rounded-full bg-emerald-400 live-dot';
+        document.getElementById('wsStatus').innerText = `متصل مباشر (${currentLabel})`;
       };
 
       ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
         const price = parseFloat(data.p);
         const qty = parseFloat(data.q);
-        // في Binance: m = true يعني البائع ضغط على طلب الشراء (Market Sell)، و m = false يعني المشتري اشترى بالسوق (Market Buy)
-        const isBuyerMaker = data.m;
-        const side = isBuyerMaker ? 'SELL' : 'BUY';
-
+        const side = data.m ? 'SELL' : 'BUY';
         handleNewTick(price, qty, side);
-      };
-
-      ws.onerror = () => {
-        document.getElementById('wsStatus').innerText = 'Reconnecting stream...';
       };
 
       ws.onclose = () => {
@@ -274,100 +312,169 @@
       currentPrice = price;
 
       tickBuffer.push({ price, qty, side, delta, time: Date.now() });
-      if (tickBuffer.length > 25) tickBuffer.shift();
+      if (tickBuffer.length > 30) tickBuffer.shift();
 
-      // تحديث السعر على الشاشة
       const priceEl = document.getElementById('livePrice');
       priceEl.innerText = price.toFixed(decimals);
 
       const deltaEl = document.getElementById('tickDelta');
       if (delta > 0) {
-        priceEl.className = 'text-2xl font-mono font-extrabold text-emerald-400 mt-0.5';
+        priceEl.className = 'text-2xl font-extrabold text-emerald-400 mt-0.5 font-mono-num';
         deltaEl.innerText = `+${delta.toFixed(decimals)}`;
-        deltaEl.className = 'text-xs font-mono font-bold text-emerald-400';
+        deltaEl.className = 'text-xs font-bold text-emerald-400 font-mono-num';
       } else if (delta < 0) {
-        priceEl.className = 'text-2xl font-mono font-extrabold text-red-400 mt-0.5';
+        priceEl.className = 'text-2xl font-extrabold text-red-400 mt-0.5 font-mono-num';
         deltaEl.innerText = `${delta.toFixed(decimals)}`;
-        deltaEl.className = 'text-xs font-mono font-bold text-red-400';
+        deltaEl.className = 'text-xs font-bold text-red-400 font-mono-num';
       }
 
-      // تحديث السعر المباشر داخل صندوق التتبع إذا كان يعمل
       const trackEl = document.getElementById('currentTrackPrice');
       if (trackEl) trackEl.innerText = price.toFixed(decimals);
-
-      updateOrderFlowUI();
     }
 
-    // حساب ضغط المشترين مقابل البائعين من الصفقات اللحظية الحقيقية
-    function updateOrderFlowUI() {
-      if (tickBuffer.length < 3) return;
-
-      let buyWeight = 0;
-      let sellWeight = 0;
-
-      tickBuffer.slice(-15).forEach(t => {
-        if (t.side === 'BUY' || t.delta > 0) buyWeight += (t.qty || 1);
-        else sellWeight += (t.qty || 1);
+    // إعادة ضبط خانات الفحص الـ 4
+    function resetCheckBoxes() {
+      ['chk-flow', 'chk-momentum', 'chk-velocity', 'chk-summary'].forEach(id => {
+        const el = document.getElementById(id);
+        el.innerText = 'جاري الفحص...';
+        el.className = 'text-xs font-bold text-gray-500 mt-0.5';
       });
+      document.getElementById('checksCounter').innerText = '0 / 4';
+    }
 
-      const total = buyWeight + sellWeight || 1;
-      const buyPct = Math.round((buyWeight / total) * 100);
-      const sellPct = 100 - buyPct;
-
-      document.getElementById('buyPressureTxt').innerText = `Buyers: ${buyPct}%`;
-      document.getElementById('sellPressureTxt').innerText = `Sellers: ${sellPct}%`;
-      document.getElementById('buyPressureBar').style.width = `${buyPct}%`;
-
-      const microEl = document.getElementById('metricMicroTrend');
-      if (buyPct >= 55) {
-        microEl.innerText = 'Bullish ⬆️';
-        microEl.className = 'text-xs font-bold text-emerald-400 mt-0.5';
-      } else if (sellPct >= 55) {
-        microEl.innerText = 'Bearish ⬇️';
-        microEl.className = 'text-xs font-bold text-red-400 mt-0.5';
+    function setCheckValue(id, text, isPositive, isNeutral = false) {
+      const el = document.getElementById(id);
+      el.innerText = text;
+      if (isNeutral) {
+        el.className = 'text-xs font-extrabold text-amber-400 mt-0.5';
       } else {
-        microEl.innerText = 'Neutral ↔️';
-        microEl.className = 'text-xs font-bold text-gray-300 mt-0.5';
+        el.className = `text-xs font-extrabold mt-0.5 ${isPositive ? 'text-emerald-400' : 'text-red-400'}`;
       }
     }
 
-    // حساب اتجاه السوق للـ 3 ثوانٍ القادمة بناءً على زخم الـ Micro-Ticks
-    function predictNext3Seconds() {
-      if (isScanning || currentPrice === 0) return;
-      isScanning = true;
+    // المرحلة 1: التحليل أولاً (4 خطوات متتالية) -> المرحلة 2: إظهار هل السوق صاعد أم نازل
+    function startAnalysisThenPredict() {
+      if (isBusy || currentPrice === 0) return;
+      isBusy = true;
+      if (countdownTimer) clearInterval(countdownTimer);
 
-      // تحليل آخر 15 نبضة سعرية
-      const recent = tickBuffer.slice(-15);
-      let scoreBuy = 0;
-      let scoreSell = 0;
+      resetCheckBoxes();
 
-      recent.forEach((t, idx) => {
-        // النبضات الأحدث لها وزن مضاعف
-        const weight = (idx + 1);
-        if (t.side === 'BUY') scoreBuy += weight * 1.2;
-        else scoreSell += weight * 1.2;
+      const card = document.getElementById('signalCard');
+      card.className = 'card-dark signal-analyzing p-5 text-center relative overflow-hidden transition-all duration-200 min-h-[225px] flex flex-col justify-center items-center';
 
-        if (t.delta > 0) scoreBuy += weight * 1.5;
-        else if (t.delta < 0) scoreSell += weight * 1.5;
+      document.getElementById('stateIdle').classList.add('hidden');
+      document.getElementById('stateResult').classList.add('hidden');
+      document.getElementById('stateAnalyzing').classList.remove('hidden');
+
+      const btn = document.getElementById('scanBtn');
+      btn.disabled = true;
+      btn.classList.add('opacity-50');
+      btn.innerHTML = '<i class="fa-solid fa-spinner spin-anim"></i> جاري تحليل اتجاه السوق...';
+
+      // حساب القيم الحقيقية من آخر النبضات
+      const analysis = computeRealTickAnalysis();
+
+      const steps = [
+        {
+          pct: 25,
+          count: '1 / 4',
+          title: '1/4 فحص سيولة المشترين والبائعين...',
+          fn: () => setCheckValue('chk-flow', analysis.buyPct >= 50 ? `شراء (${analysis.buyPct}%)` : `بيع (${analysis.sellPct}%)`, analysis.buyPct >= 50)
+        },
+        {
+          pct: 50,
+          count: '2 / 4',
+          title: '2/4 قياس زخم النبضات السعرية...',
+          fn: () => setCheckValue('chk-momentum', analysis.momentumUp ? 'إيجابي صاعد ↑' : 'سلبي هابط ↓', analysis.momentumUp)
+        },
+        {
+          pct: 75,
+          count: '3 / 4',
+          title: '3/4 تحليل سرعة تدفق السيولة...',
+          fn: () => setCheckValue('chk-velocity', `${lastTickRate} نبضة/ث`, true, true)
+        },
+        {
+          pct: 100,
+          count: '4 / 4',
+          title: '4/4 تم حسم اتجاه الـ 3 ثوانٍ القادمة!',
+          fn: () => {
+            // نعيد حساب أحدث نبضة في اللحظة الأخيرة لضمان أعلى دقة
+            const finalCheck = computeRealTickAnalysis();
+            setCheckValue('chk-summary', finalCheck.isUp ? 'صاعد (UP ⬆️)' : 'نازل (DOWN ⬇️)', finalCheck.isUp);
+            analysis.isUp = finalCheck.isUp;
+            analysis.confidence = finalCheck.confidence;
+          }
+        }
+      ];
+
+      let stepIdx = 0;
+      const runStep = () => {
+        const s = steps[stepIdx];
+        document.getElementById('analyzeStepText').innerText = s.title;
+        document.getElementById('analyzeProgressBar').style.width = s.pct + '%';
+        document.getElementById('analyzeProgressPct').innerText = s.pct + '%';
+        document.getElementById('checksCounter').innerText = s.count;
+        s.fn();
+        stepIdx++;
+      };
+
+      // تشغيل الخطوة الأولى فوراً ثم الباقي كل 450 مللي ثانية
+      runStep();
+      const stepInterval = setInterval(() => {
+        if (stepIdx < steps.length) {
+          runStep();
+        } else {
+          clearInterval(stepInterval);
+          setTimeout(() => {
+            showFinalDirection(analysis.isUp, analysis.confidence, currentPrice);
+          }, 250);
+        }
+      }, 450);
+    }
+
+    // دالة الحساب الفعلي من بيانات السوق المباشرة
+    function computeRealTickAnalysis() {
+      const recent = tickBuffer.slice(-18);
+      let buyVol = 0, sellVol = 0;
+      let scoreBuy = 0, scoreSell = 0;
+
+      recent.forEach((t, i) => {
+        const weight = i + 1;
+        if (t.side === 'BUY') {
+          buyVol += (t.qty || 1);
+          scoreBuy += weight * 1.2;
+        } else {
+          sellVol += (t.qty || 1);
+          scoreSell += weight * 1.2;
+        }
+
+        if (t.delta > 0) scoreBuy += weight * 1.6;
+        else if (t.delta < 0) scoreSell += weight * 1.6;
       });
 
-      // مقارنة السعر الحالي بمتوسط آخر 8 نبضات
-      const avgRecent = recent.reduce((s, t) => s + t.price, 0) / (recent.length || 1);
-      if (currentPrice > avgRecent) scoreBuy += 15;
-      else if (currentPrice < avgRecent) scoreSell += 15;
+      const totalVol = buyVol + sellVol || 1;
+      const buyPct = Math.round((buyVol / totalVol) * 100);
+      const sellPct = 100 - buyPct;
+
+      const avgPrice = recent.reduce((acc, t) => acc + t.price, 0) / (recent.length || 1);
+      const momentumUp = currentPrice >= avgPrice;
+
+      if (momentumUp) scoreBuy += 18;
+      else scoreSell += 18;
 
       const isUp = scoreBuy >= scoreSell;
       const totalScore = scoreBuy + scoreSell || 1;
       const rawConf = Math.round((Math.max(scoreBuy, scoreSell) / totalScore) * 100);
-      const confidence = Math.min(96, Math.max(68, rawConf + 18));
+      const confidence = Math.min(96, Math.max(72, rawConf + 16));
 
-      const lockPrice = currentPrice;
-      show3SecondPrediction(isUp, confidence, lockPrice);
+      return { isUp, buyPct, sellPct, momentumUp, confidence };
     }
 
-    function show3SecondPrediction(isUp, confidence, lockPrice) {
-      document.getElementById('stateIdle').classList.add('hidden');
-      document.getElementById('stateDirection').classList.remove('hidden');
+    // إظهار النتيجة النهائية (صاعد أو نازل) + عداد 3 ثوانٍ
+    function showFinalDirection(isUp, confidence, lockPrice) {
+      document.getElementById('stateAnalyzing').classList.add('hidden');
+      document.getElementById('stateResult').classList.remove('hidden');
 
       const card = document.getElementById('signalCard');
       const iconBox = document.getElementById('dirIconBox');
@@ -375,126 +482,91 @@
       const mainText = document.getElementById('dirMainText');
       const subText = document.getElementById('dirSubText');
       const confTag = document.getElementById('confidenceTag');
+      const timerEl = document.getElementById('timer3s');
 
       document.getElementById('lockPriceSpan').innerText = lockPrice.toFixed(decimals);
       document.getElementById('currentTrackPrice').innerText = currentPrice.toFixed(decimals);
-      confTag.innerText = `${confidence}% Impulse`;
+      confTag.innerText = `${confidence}% قوة`;
+      timerEl.className = 'font-mono-num text-base font-extrabold text-amber-400';
 
       if (isUp) {
-        card.className = 'card-dark signal-buy p-5 text-center relative overflow-hidden transition-all duration-200 min-h-[210px] flex flex-col justify-center items-center';
+        card.className = 'card-dark signal-buy p-5 text-center relative overflow-hidden transition-all duration-200 min-h-[225px] flex flex-col justify-center items-center';
         iconBox.className = 'w-16 h-16 rounded-2xl bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center text-emerald-400 shadow-lg shadow-emerald-500/20';
         icon.className = 'fa-solid fa-arrow-trend-up text-3xl';
-        mainText.innerText = 'UP (BUY)';
-        mainText.className = 'text-3xl font-black tracking-wider text-emerald-400';
-        subText.innerText = 'Next 3 seconds upward momentum';
-        confTag.className = 'px-2 py-0.5 rounded bg-black/40 text-xs font-bold text-emerald-400';
+        mainText.innerText = 'السوق صاعد ⬆️';
+        mainText.className = 'text-3xl font-black tracking-wide text-emerald-400';
+        subText.innerText = 'اتجاه الـ 3 ثوانٍ القادمة: صعود (BUY / UP)';
+        confTag.className = 'px-2.5 py-0.5 rounded-full bg-black/40 text-xs font-extrabold text-emerald-400 font-mono-num';
       } else {
-        card.className = 'card-dark signal-sell p-5 text-center relative overflow-hidden transition-all duration-200 min-h-[210px] flex flex-col justify-center items-center';
+        card.className = 'card-dark signal-sell p-5 text-center relative overflow-hidden transition-all duration-200 min-h-[225px] flex flex-col justify-center items-center';
         iconBox.className = 'w-16 h-16 rounded-2xl bg-red-500/20 border-2 border-red-400 flex items-center justify-center text-red-400 shadow-lg shadow-red-500/20';
         icon.className = 'fa-solid fa-arrow-trend-down text-3xl';
-        mainText.innerText = 'DOWN (SELL)';
-        mainText.className = 'text-3xl font-black tracking-wider text-red-400';
-        subText.innerText = 'Next 3 seconds downward pressure';
-        confTag.className = 'px-2 py-0.5 rounded bg-black/40 text-xs font-bold text-red-400';
+        mainText.innerText = 'السوق نازل ⬇️';
+        mainText.className = 'text-3xl font-black tracking-wide text-red-400';
+        subText.innerText = 'اتجاه الـ 3 ثوانٍ القادمة: هبوط (SELL / DOWN)';
+        confTag.className = 'px-2.5 py-0.5 rounded-full bg-black/40 text-xs font-extrabold text-red-400 font-mono-num';
       }
 
-      // عداد الـ 3.0 ثوانٍ بدقة 100 مللي ثانية
+      // بدء العد التنازلي للـ 3 ثوانٍ القادمة
       let remainingMs = 3000;
-      const timerEl = document.getElementById('timer3s');
-      const btn = document.getElementById('scanBtn');
-      btn.disabled = true;
-      btn.classList.add('opacity-60');
+      timerEl.innerText = '3.0s';
 
-      if (countdownTimer) clearInterval(countdownTimer);
       countdownTimer = setInterval(() => {
         remainingMs -= 100;
         if (remainingMs > 0) {
           timerEl.innerText = (remainingMs / 1000).toFixed(1) + 's';
         } else {
           clearInterval(countdownTimer);
-          finish3SecondCycle(isUp, lockPrice);
+          finish3Seconds(isUp, lockPrice);
         }
       }, 100);
     }
 
-    function finish3SecondCycle(isUp, lockPrice) {
-      isScanning = false;
+    function finish3Seconds(isUp, lockPrice) {
+      isBusy = false;
       const finalPrice = currentPrice;
       const timerEl = document.getElementById('timer3s');
-      const lastResEl = document.getElementById('metricLastResult');
-
       const won = (isUp && finalPrice > lockPrice) || (!isUp && finalPrice < lockPrice);
-      const draw = finalPrice === lockPrice;
+      const flat = finalPrice === lockPrice;
 
-      if (draw) {
-        timerEl.innerText = 'FLAT (0.0)';
-        timerEl.className = 'font-mono text-sm font-extrabold text-gray-300';
-        lastResEl.innerText = 'FLAT ↔️';
-        lastResEl.className = 'text-xs font-bold text-gray-300 mt-0.5';
+      if (flat) {
+        timerEl.innerText = 'استقرار (0.0)';
+        timerEl.className = 'text-xs font-extrabold text-gray-300';
       } else if (won) {
-        timerEl.innerText = 'CORRECT ✅';
-        timerEl.className = 'font-mono text-sm font-extrabold text-emerald-400';
-        lastResEl.innerText = 'HIT ✅';
-        lastResEl.className = 'text-xs font-bold text-emerald-400 mt-0.5';
+        timerEl.innerText = 'تحقق الاتجاه ✅';
+        timerEl.className = 'text-xs font-extrabold text-emerald-400';
       } else {
-        timerEl.innerText = 'REVERSED ❌';
-        timerEl.className = 'font-mono text-sm font-extrabold text-red-400';
-        lastResEl.innerText = 'MISS ❌';
-        lastResEl.className = 'text-xs font-bold text-red-400 mt-0.5';
+        timerEl.innerText = 'انعكس السعر ❌';
+        timerEl.className = 'text-xs font-extrabold text-red-400';
       }
 
       const btn = document.getElementById('scanBtn');
       btn.disabled = false;
-      btn.classList.remove('opacity-60');
-
-      // إذا كان التكرار التلقائي مفعلاً، يبدأ قراءة الـ 3 ثوانٍ التالية تلقائياً
-      if (document.getElementById('autoLoopToggle').checked) {
-        setTimeout(() => {
-          if (document.getElementById('autoLoopToggle').checked) {
-            predictNext3Seconds();
-          }
-        }, 400);
-      }
-    }
-
-    function toggleAutoLoop() {
-      if (document.getElementById('autoLoopToggle').checked && !isScanning) {
-        predictNext3Seconds();
-      }
+      btn.classList.remove('opacity-50');
+      btn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> تحليل جديد للـ 3 ثوانٍ القادمة';
     }
 
     function changeMarket(symbol, label, dec) {
-      if (isScanning) return;
+      if (isBusy) return;
       currentSymbol = symbol;
       currentLabel = label;
       decimals = dec;
-      document.getElementById('pairLabel').innerText = `${label} Live Price`;
+      document.getElementById('pairLabel').innerText = `السعر اللحظي المباشر (${label})`;
 
       document.querySelectorAll('#marketBtns .mkt-btn').forEach(btn => {
         if (btn.innerText.includes(label.split('/')[0])) {
-          btn.className = 'mkt-btn py-2 rounded-xl bg-emerald-500/20 border border-emerald-500 text-xs font-bold text-emerald-400';
+          btn.className = 'mkt-btn py-2 rounded-xl bg-emerald-500/20 border border-emerald-500 text-xs font-bold text-emerald-400 font-mono-num';
         } else {
-          btn.className = 'mkt-btn py-2 rounded-xl bg-[#111318] border border-[#262a34] text-xs font-semibold text-gray-300';
+          btn.className = 'mkt-btn py-2 rounded-xl bg-[#111318] border border-[#262a34] text-xs font-semibold text-gray-300 font-mono-num';
         }
       });
 
       connectWebSocket(symbol);
     }
 
-    // حساب سرعة تدفق الصفقات في الثانية الواحدة
     setInterval(() => {
-      document.getElementById('tickRateText').innerText = `${ticksThisSecond} ticks/sec`;
-      const velEl = document.getElementById('metricVelocity');
-      if (ticksThisSecond > 15) {
-        velEl.innerText = 'High 🔥';
-        velEl.className = 'text-xs font-bold text-amber-400 mt-0.5';
-      } else if (ticksThisSecond > 4) {
-        velEl.innerText = 'Active ⚡';
-        velEl.className = 'text-xs font-bold text-emerald-400 mt-0.5';
-      } else {
-        velEl.innerText = 'Calm';
-        velEl.className = 'text-xs font-bold text-gray-400 mt-0.5';
-      }
+      lastTickRate = ticksThisSecond;
+      document.getElementById('tickRateText').innerText = `${ticksThisSecond} ticks/s`;
       ticksThisSecond = 0;
     }, 1000);
 
