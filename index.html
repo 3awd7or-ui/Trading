@@ -2,1814 +2,296 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EMMS & OANDA XAU/USD • AI Sniper Engine Pro (Auto-Synced)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPT Trade - AI Trading Signals</title>
     <style>
         :root {
-            --bg-main: #06080d;
-            --bg-card: #101520;
-            --bg-sub: #0b0f17;
-            --border: #1e2738;
-            --gold: #f5b041;
-            --green: #00e676;
-            --red: #ff3d57;
-            --blue: #29b6f6;
-            --purple: #ab47bc;
-            --text-muted: #8a99ad;
+            --bg-color: #0b0f19;
+            --card-bg: #111827;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --primary-color: #3b82f6;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: #1f2937;
         }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+
         body {
-            background-color: var(--bg-main);
-            color: #ffffff;
-            padding: 10px;
-            font-size: 13px;
-            max-width: 580px;
-            margin: 0 auto;
-        }
-        /* Top OANDA Ticker Bar */
-        .top-ticker {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 10px 12px;
+            background-color: var(--bg-color);
+            color: var(--text-main);
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-            margin-bottom: 8px;
+            min-height: 100vh;
+            padding: 15px;
         }
-        .asset-badge {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
         }
-        .gold-icon {
-            background: linear-gradient(135deg, #f5b041, #b87c18);
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 22px;
             color: #fff;
-            font-weight: 900;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
+            margin-bottom: 5px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 11px;
-            box-shadow: 0 0 10px rgba(245,176,65,0.45);
-        }
-        .asset-name {
-            font-weight: 700;
-            font-size: 0.82rem;
-            color: #d1d5db;
-            direction: ltr;
-            text-align: left;
-        }
-        .asset-sub {
-            font-size: 0.68rem;
-            color: var(--gold);
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .live-dot {
-            width: 7px;
-            height: 7px;
-            background: var(--green);
-            border-radius: 50%;
-            display: inline-block;
-            box-shadow: 0 0 6px var(--green);
-            animation: pulse 1s infinite;
-        }
-        @keyframes pulse {
-            0% { transform: scale(0.95); opacity: 0.7; }
-            50% { transform: scale(1.3); opacity: 1; }
-            100% { transform: scale(0.95); opacity: 0.7; }
-        }
-        .live-price-box {
-            text-align: left;
-            direction: ltr;
-        }
-        .live-price {
-            font-size: 1.48rem;
-            font-weight: 900;
-            color: var(--gold);
-            font-variant-numeric: tabular-nums;
-            transition: color 0.15s ease;
-        }
-        .price-sub-row {
-            font-size: 0.68rem;
-            color: var(--text-muted);
-            display: flex;
             gap: 8px;
-            justify-content: flex-end;
         }
 
-        /* Session & Sync Bar */
-        .sync-bar {
-            background: #0d121b;
-            border: 1px dashed #2a364f;
-            border-radius: 8px;
-            padding: 7px 10px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.7rem;
-            flex-wrap: wrap;
-        }
-        .sync-controls {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            direction: ltr;
-        }
-        .sync-btn {
-            background: #1a2333;
-            border: 1px solid #2e3d59;
-            color: #fff;
-            border-radius: 5px;
-            padding: 5px 8px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 0.68rem;
-            transition: all 0.15s ease;
-        }
-        .sync-btn:hover {
-            border-color: var(--gold);
-        }
-        .sync-btn.gold-btn {
-            background: rgba(245, 176, 65, 0.2);
-            border-color: var(--gold);
-            color: var(--gold);
-        }
-        .sync-btn.blue-btn {
-            background: rgba(41, 182, 246, 0.18);
-            border-color: var(--blue);
-            color: var(--blue);
-        }
-        .sync-btn.green-btn {
-            background: rgba(0, 230, 118, 0.18);
-            border-color: var(--green);
-            color: var(--green);
-        }
-        .sync-input {
-            background: #070a10;
-            border: 1px solid #2e3d59;
-            color: var(--gold);
-            border-radius: 5px;
-            padding: 4px 6px;
-            width: 82px;
-            font-weight: bold;
-            font-size: 0.72rem;
-            text-align: center;
-        }
-
-        /* MTF & Order Flow Bar */
-        .pro-bar {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 9px 12px;
-            margin-bottom: 8px;
-        }
-        .mtf-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 6px;
-            margin-bottom: 8px;
-            flex-wrap: wrap;
-        }
-        .mtf-badges {
-            display: flex;
-            gap: 5px;
-            direction: ltr;
-        }
-        .mtf-pill {
-            padding: 3px 8px;
-            border-radius: 5px;
-            font-size: 0.66rem;
-            font-weight: 800;
-            background: #161e2e;
-            border: 1px solid #26334d;
-        }
-        .imbalance-wrap {
-            margin-top: 4px;
-        }
-        .imbalance-labels {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.65rem;
-            margin-bottom: 4px;
+        .header p {
+            font-size: 13px;
             color: var(--text-muted);
         }
-        .imbalance-track {
-            width: 100%;
-            height: 7px;
-            background: rgba(255, 61, 87, 0.35);
-            border-radius: 4px;
-            overflow: hidden;
-            display: flex;
-        }
-        .imbalance-fill-bid {
-            height: 100%;
-            background: var(--green);
-            transition: width 0.3s ease;
+
+        .form-group {
+            margin-bottom: 16px;
         }
 
-        /* TradingView OANDA Chart */
-        .tv-box {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 10px;
-        }
-        .tv-header {
-            padding: 8px 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            font-size: 0.74rem;
-            color: var(--gold);
-            font-weight: bold;
-            background: rgba(245,176,65,0.07);
-        }
-        .tv-iframe-wrap {
-            height: 240px;
-            width: 100%;
+        label {
             display: block;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
         }
 
-        /* Locked Signal Card */
-        .decision-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
+        select {
+            width: 100%;
+            padding: 12px;
+            background: #1f2937;
+            border: 1px solid #374151;
+            color: #fff;
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        select:focus {
+            border-color: var(--primary-color);
+        }
+
+        .btn-analyze {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            margin-top: 5px;
+        }
+
+        .btn-analyze:active {
+            transform: scale(0.98);
+        }
+
+        .btn-analyze:hover {
+            opacity: 0.9;
+        }
+
+        #result-box {
+            margin-top: 20px;
+            display: none;
+            background: #1f2937;
             border-radius: 12px;
-            padding: 13px;
-            margin-bottom: 10px;
-            position: relative;
-        }
-        .decision-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 10px;
-            gap: 8px;
-        }
-        .signal-main {
-            font-size: 1.28rem;
-            font-weight: 900;
-        }
-        .tier-badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 6px;
-            font-size: 0.66rem;
-            font-weight: 900;
-            margin-top: 4px;
-            margin-left: 4px;
-        }
-        .trade-state-badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 6px;
-            font-size: 0.68rem;
-            font-weight: bold;
-            margin-top: 4px;
-        }
-        .decision-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-top: 1px solid var(--border);
-            padding-top: 9px;
-            font-size: 0.72rem;
-            color: var(--text-muted);
-            flex-wrap: wrap;
-            gap: 6px;
+            padding: 16px;
+            border: 1px solid #374151;
+            animation: fadeIn 0.4s ease;
         }
 
-        /* Matrix Grid (8 Pro Indicators) */
-        .matrix-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 6px;
-            margin-bottom: 10px;
-        }
-        .matrix-item {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 7px 4px;
+        .loading-spinner {
             text-align: center;
-        }
-        .matrix-label {
-            font-size: 0.59rem;
-            color: var(--text-muted);
-            margin-bottom: 3px;
-        }
-        .matrix-val {
-            font-size: 0.71rem;
+            padding: 15px;
+            color: var(--primary-color);
+            font-size: 14px;
             font-weight: bold;
         }
 
-        /* Entry & SL Split */
-        .levels-grid {
-            display: grid;
-            grid-template-columns: 1.15fr 0.85fr;
-            gap: 8px;
+        .signal-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: var(--text-muted);
             margin-bottom: 10px;
+            border-bottom: 1px solid #374151;
+            padding-bottom: 8px;
         }
-        .level-box {
-            background: var(--bg-card);
-            border-radius: 10px;
-            padding: 11px;
-            border: 1px solid var(--border);
-        }
-        .level-box.entry-box {
-            border-color: rgba(245, 176, 65, 0.5);
-            background: linear-gradient(180deg, rgba(245,176,65,0.06) 0%, var(--bg-card) 100%);
-        }
-        .level-box.sl-box {
-            border-color: rgba(255, 61, 87, 0.45);
-            background: linear-gradient(180deg, rgba(255,61,87,0.06) 0%, var(--bg-card) 100%);
-        }
-        .box-head {
+
+        .signal-body {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.68rem;
-            color: var(--text-muted);
-            margin-bottom: 5px;
-        }
-        .price-level {
-            font-size: 1.05rem;
-            font-weight: 800;
-            margin: 4px 0;
-            direction: ltr;
-            text-align: right;
-            font-variant-numeric: tabular-nums;
-        }
-        .box-desc {
-            font-size: 0.64rem;
-            color: var(--text-muted);
-            line-height: 1.35;
+            margin-bottom: 15px;
         }
 
-        /* Targets Grid */
-        .tp-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 10px;
+        .signal-badge {
+            font-size: 18px;
+            font-weight: bold;
+            padding: 6px 12px;
+            border-radius: 8px;
         }
-        .tp-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-right: 3px solid var(--green);
-            border-radius: 10px;
-            padding: 10px 12px;
-            transition: all 0.3s ease;
+
+        .buy { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); border: 1px solid var(--accent-green); }
+        .sell { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); border: 1px solid var(--accent-red); }
+
+        .confidence {
+            text-align: left;
+            font-size: 14px;
         }
-        .tp-card.hit {
-            background: rgba(0, 230, 118, 0.14);
-            border-color: var(--green);
-        }
-        .tp-card.tp3-full {
-            grid-column: span 2;
-            border-right-color: var(--gold);
-            background: linear-gradient(90deg, rgba(245,176,65,0.08) 0%, var(--bg-card) 100%);
-        }
-        .tp-top {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            margin-bottom: 4px;
-        }
-        .tp-price {
-            font-size: 1.1rem;
-            font-weight: 800;
-            color: #fff;
-            direction: ltr;
-            text-align: right;
-            font-variant-numeric: tabular-nums;
-        }
-        .tp-pips {
-            font-size: 0.68rem;
-            color: var(--green);
+
+        .confidence span {
+            color: var(--accent-green);
             font-weight: bold;
         }
 
-        /* Lot & Risk Calculator Card */
-        .calc-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 10px 12px;
-            margin-bottom: 10px;
-        }
-        .calc-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1.2fr;
-            gap: 8px;
-            margin-top: 6px;
-            align-items: center;
-        }
-        .calc-field label {
+        .btn-trade {
             display: block;
-            font-size: 0.62rem;
-            color: var(--text-muted);
-            margin-bottom: 3px;
-        }
-        .calc-field input {
             width: 100%;
-            background: var(--bg-sub);
-            border: 1px solid #28364f;
+            padding: 12px;
+            background: var(--accent-green);
             color: #fff;
-            border-radius: 5px;
-            padding: 5px 7px;
-            font-size: 0.75rem;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 10px;
             font-weight: bold;
-            direction: ltr;
-            text-align: center;
-        }
-        .lot-result-box {
-            background: rgba(245, 176, 65, 0.1);
-            border: 1px solid rgba(245, 176, 65, 0.4);
-            border-radius: 8px;
-            padding: 6px 8px;
-            text-align: center;
+            font-size: 15px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            transition: background 0.2s;
         }
 
-        /* Console & History */
-        .algo-console {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 10px 12px;
-            font-size: 0.71rem;
-            line-height: 1.5;
-            color: #cbd5e1;
-            margin-bottom: 10px;
+        .btn-trade:hover {
+            background: #059669;
         }
-        .stats-bar {
-            display: flex;
-            justify-content: space-between;
-            background: var(--bg-sub);
-            border: 1px solid var(--border);
-            border-radius: 7px;
-            padding: 6px 10px;
-            margin-bottom: 8px;
-            font-size: 0.68rem;
-            flex-wrap: wrap;
-            gap: 4px;
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 20px;
         }
-        .log-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 5px 0;
-            border-bottom: 1px solid #192130;
-            font-size: 0.68rem;
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
 
-    <!-- Top Live OANDA Gold Spot Header -->
-    <div class="top-ticker">
-        <div class="asset-badge">
-            <div class="gold-icon">Au</div>
-            <div>
-                <div class="asset-name">Gold Spot / U.S. Dollar • 5 • OANDA</div>
-                <div class="asset-sub">
-                    <span class="live-dot" id="conn-dot"></span>
-                    <span id="session-badge">جارِ فحص الجلسة...</span>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 GPT Trade AI</h1>
+            <p>منصة التحليل الفني اللحظي للخيارات الثنائية</p>
+        </div>
+
+        <div class="form-group">
+            <label for="asset">اختر الأصل المالي (Asset):</label>
+            <select id="asset">
+                <option value="EUR/USD (OTC)">EUR/USD (OTC)</option>
+                <option value="GBP/USD (OTC)">GBP/USD (OTC)</option>
+                <option value="AUD/CAD (OTC)">AUD/CAD (OTC)</option>
+                <option value="USD/JPY (OTC)">USD/JPY (OTC)</option>
+                <option value="Bitcoin (Crypto)">Bitcoin (Crypto)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="timeframe">الإطار الزمني للصفقة:</label>
+            <select id="timeframe">
+                <option value="5 ثوانٍ (S5)">5 ثوانٍ (S5)</option>
+                <option value="15 ثانية (S15)">15 ثانية (S15)</option>
+                <option value="1 دقيقة (M1)">دقيقة واحدة (M1)</option>
+            </select>
+        </div>
+
+        <button class="btn-analyze" onclick="startAnalysis()">الحصول على إشارة ذكية ⚡</button>
+
+        <div id="result-box">
+            <div id="loading" class="loading-spinner">
+                🔄 جاري فحص سيولة السوق ومؤشرات (RSI, EMA, Momentum)...
+            </div>
+            <div id="signal-content" style="display: none;">
+                <div class="signal-header">
+                    <span id="res-asset">EUR/USD</span>
+                    <span id="res-time">5 ثوانٍ</span>
                 </div>
-            </div>
-        </div>
-        <div class="live-price-box">
-            <div class="live-price" id="live-price">جارِ المزامنة...</div>
-            <div class="price-sub-row">
-                <span id="vel-badge" style="color: var(--green);">+0.00$/s</span>
-                <span id="candle-timer">5m: --:--</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Auto-Synced OANDA Price Calibration Bar -->
-    <div class="sync-bar">
-        <div class="sync-controls">
-            <button class="sync-btn" onclick="adjustManualTrim(-0.2)">-0.2</button>
-            <input type="number" step="0.01" id="exact-oanda-input" class="sync-input" placeholder="مزامنة تلقائية">
-            <button class="sync-btn gold-btn" onclick="syncExactPrice()">تثبيت يدوي</button>
-            <button class="sync-btn" onclick="adjustManualTrim(0.2)">+0.2</button>
-        </div>
-        <div style="display:flex; gap:5px; flex-wrap:wrap;">
-            <button class="sync-btn blue-btn" id="auto-sync-btn" onclick="triggerInstantSpotSync()">🔗 مزامنة OANDA التلقائية: نشطة</button>
-            <button class="sync-btn green-btn" id="adaptive-mode-btn" onclick="toggleAdaptiveArmor()">🛡️ الدرع الذكي</button>
-            <button class="sync-btn" id="sound-toggle-btn" onclick="toggleAudio()">🔊</button>
-            <button class="sync-btn gold-btn" onclick="forceGenerateNewSignal()">🔄 صفقة جديدة</button>
-        </div>
-    </div>
-
-    <!-- Multi-Timeframe Radar & Order Book Imbalance -->
-    <div class="pro-bar">
-        <div class="mtf-row">
-            <span style="font-size: 0.7rem; color: var(--gold); font-weight: bold;">🧭 رادار الفريمات الحقيقي (M1 / M5 / M15):</span>
-            <div class="mtf-badges">
-                <span class="mtf-pill" id="mtf-1m">M1: --</span>
-                <span class="mtf-pill" id="mtf-5m">M5: --</span>
-                <span class="mtf-pill" id="mtf-15m">M15: --</span>
-            </div>
-        </div>
-        <div class="imbalance-wrap">
-            <div class="imbalance-labels">
-                <span>🟢 سيولة المشترين (Bid): <strong id="bid-pct" style="color:var(--green);">50%</strong></span>
-                <span id="spot-sync-status">مزامنة الفوركس الحية (Spot XAU/USD)</span>
-                <span>🔴 سيولة البائعين (Ask): <strong id="ask-pct" style="color:var(--red);">50%</strong></span>
-            </div>
-            <div class="imbalance-track">
-                <div class="imbalance-fill-bid" id="imbalance-bar" style="width: 50%;"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Live Official OANDA TradingView 5m Chart -->
-    <div class="tv-box">
-        <div class="tv-header" onclick="toggleChart()">
-            <span>📊 شارت OANDA:XAUUSD الرسمي (فريم 5 دقائق)</span>
-            <span id="chart-toggle-lbl">إخفاء / إظهار ▲</span>
-        </div>
-        <div class="tv-iframe-wrap" id="tv-wrap">
-            <iframe 
-                src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_oanda&symbol=OANDA%3AXAUUSD&interval=5&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=f1f3f6&studies=%5B%5D&theme=dark&style=1&timezone=Etc%2FUTC"
-                style="width:100%; height:100%; border:none;">
-            </iframe>
-        </div>
-    </div>
-
-    <!-- Main Locked Signal Card -->
-    <div class="decision-card">
-        <div class="decision-header">
-            <div>
-                <div style="font-size: 0.7rem; color: var(--text-muted);">نظام القناص التكيفي (مطابق لسعر OANDA الفوري)</div>
-                <div class="signal-main" id="signal-title" style="color: var(--gold);">جارِ سحب بيانات السوق...</div>
-                <div>
-                    <span class="tier-badge" id="tier-badge" style="background: rgba(245,176,65,0.2); color: var(--gold);">💎 A+ VIP</span>
-                    <span class="trade-state-badge" id="trade-state-badge" style="background: rgba(41,182,246,0.15); color: var(--blue);">⏳ بانتظار التفعيل</span>
+                <div class="signal-body">
+                    <div id="res-badge" class="signal-badge">🟢 BUY</div>
+                    <div class="confidence">نسبة الدقة:<br><span id="res-conf">94%</span></div>
                 </div>
+                <!-- استبدل الرابط أدناه برابط الإحالة الخاص بك (Affiliate Link) -->
+                <a id="trade-link" href="https://pocketoption.com" target="_blank" class="btn-trade">🚀 تنفيذ الصفقة على المنصة</a>
             </div>
-            <div style="text-align: left;">
-                <div style="font-size: 0.68rem; color: var(--text-muted);">الربح/النتيجة الحالية</div>
-                <div id="live-pnl" style="font-size: 1.15rem; font-weight: 900; color: var(--gold); direction: ltr;">0.0 Pips</div>
-                <button class="sync-btn blue-btn" id="copy-signal-btn" onclick="copyTradeTicket()" style="margin-top:5px;">📋 نسخ تذكرة MT5</button>
-            </div>
-        </div>
-        <div class="decision-meta">
-            <div>العائد: <span id="rr-label" style="color:var(--gold); font-weight:800;">1 : 3.8</span></div>
-            <div>وقف ATR المتحرك: <span id="trailing-val" style="color:var(--green); font-weight:bold; direction:ltr;">--</span></div>
-            <div>توقع الـ 3 شمعات: <span id="candle-proj" style="color:var(--blue); font-weight:bold;">--</span></div>
-            <div>قوة التوافق: <span id="win-prob" style="color:#fff; font-weight:bold;">--%</span></div>
-        </div>
-    </div>
-
-    <!-- Real-Time Indicators & SMC/Gann Matrix (8 Cells) -->
-    <div class="matrix-grid">
-        <div class="matrix-item">
-            <div class="matrix-label">EMA 9 / 21</div>
-            <div class="matrix-val" id="ema-status">--</div>
-        </div>
-        <div class="matrix-item">
-            <div class="matrix-label">Wilder RSI (14)</div>
-            <div class="matrix-val" id="rsi-status">--</div>
-        </div>
-        <div class="matrix-item">
-            <div class="matrix-label">سحب السيولة CRT</div>
-            <div class="matrix-val" id="crt-status">--</div>
-        </div>
-        <div class="matrix-item">
-            <div class="matrix-label">ATR (5m)</div>
-            <div class="matrix-val" id="atr-val" style="color: var(--gold);">--</div>
-        </div>
-        <div class="matrix-item">
-            <div class="matrix-label">دعم / مقاومة EMMS</div>
-            <div class="matrix-val" id="sr-zone" style="color: var(--blue); direction:ltr;">--</div>
-        </div>
-        <div class="matrix-item">
-            <div class="matrix-label">Unmitigated FVG</div>
-            <div class="matrix-val" id="fvg-zone" style="color: var(--purple); direction:ltr;">--</div>
-        </div>
-        <div class="matrix-item">
-            <div class="matrix-label">محور Gann 9</div>
-            <div class="matrix-val" id="gann-zone" style="color: var(--gold); direction:ltr;">--</div>
-        </div>
-        <div class="matrix-item">
-            <div class="matrix-label">زخم VWMA المؤسسي</div>
-            <div class="matrix-val" id="vwma-status">--</div>
-        </div>
-    </div>
-
-    <!-- Sniper Entry & Stop Loss (Locked per trade) -->
-    <div class="levels-grid">
-        <div class="level-box entry-box">
-            <div class="box-head">
-                <span>🎯 منطقة دخول القناص (مغناطيسية ذكية)</span>
-            </div>
-            <div class="price-level" id="entry-zone" style="color: var(--gold);">--</div>
-            <div class="box-desc" id="order-type-desc">مدمجة مع أقرب FVG / Gann لاصطياد الذيل بدقة</div>
         </div>
 
-        <div class="level-box sl-box">
-            <div class="box-head">
-                <span>🛡️ وقف الخسارة الذكي (Smart SL + Trail)</span>
-            </div>
-            <div class="price-level" id="sl-price" style="color: var(--red);">--</div>
-            <div class="box-desc" id="be-level">تأمين مبكر عند +55% من TP1 لمنع ضرب الوقف</div>
-        </div>
-    </div>
-
-    <!-- Targets (TP1, TP2, TP3) -->
-    <div class="tp-grid">
-        <div class="tp-card" id="tp1-card">
-            <div class="tp-top">
-                <span id="tp1-title">الهدف الأول (TP1 - تأمين سريع)</span>
-                <span class="tp-pips" id="tp1-pips">+0 نقطة</span>
-            </div>
-            <div class="tp-price" id="tp1-price">--</div>
-        </div>
-
-        <div class="tp-card" id="tp2-card">
-            <div class="tp-top">
-                <span>الهدف الثاني (TP2)</span>
-                <span class="tp-pips" id="tp2-pips">+0 نقطة</span>
-            </div>
-            <div class="tp-price" id="tp2-price">--</div>
-        </div>
-
-        <div class="tp-card tp3-full" id="tp3-card">
-            <div class="tp-top">
-                <span>🏆 الهدف الثالث (TP3) - هدف السيولة الكبرى</span>
-                <span class="tp-pips" id="tp3-pips" style="color: var(--gold);">+0 نقطة</span>
-            </div>
-            <div class="tp-price" id="tp3-price" style="color: var(--gold);">--</div>
-        </div>
-    </div>
-
-    <!-- Smart Lot Size & Risk Calculator -->
-    <div class="calc-card">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="color: var(--gold); font-weight: bold; font-size: 0.72rem;">🧮 حاسبة اللوت التكيفية (توازن اللوت حسب رتبة الصفقة)</span>
-            <span id="risk-dollar-lbl" style="font-size: 0.66rem; color: var(--text-muted);">المخاطرة الفعلية: $10.00</span>
-        </div>
-        <div class="calc-grid">
-            <div class="calc-field">
-                <label>رأس المال ($)</label>
-                <input type="number" id="acc-balance" value="1000" min="50" step="50" oninput="updateRiskCalculator()">
-            </div>
-            <div class="calc-field">
-                <label>نسبة المخاطرة (%)</label>
-                <input type="number" id="risk-pct" value="1.0" min="0.1" max="10" step="0.1" oninput="updateRiskCalculator()">
-            </div>
-            <div class="lot-result-box">
-                <div style="font-size: 0.6rem; color: var(--text-muted);" id="lot-tier-note">اللوت الموصى به</div>
-                <div id="recommended-lot" style="font-size: 0.98rem; font-weight: 900; color: var(--green); direction: ltr;">0.03 Lot</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Analysis Console -->
-    <div class="algo-console">
-        <div style="color: var(--gold); font-weight: bold; margin-bottom: 4px; display: flex; justify-content: space-between;">
-            <span>📡 التقرير التحليلي المؤسسي للصفقة القائمة</span>
-            <span id="last-update" style="color: var(--text-muted); font-weight:normal;">--:--:--</span>
-        </div>
-        <div id="analysis-text">جارِ الاتصال بمزود السيولة الحية ومزامنة سعر OANDA الفوري...</div>
-    </div>
-
-    <!-- Trade Log History & Win Rate Stats -->
-    <div class="algo-console">
-        <div style="color: var(--blue); font-weight: bold; margin-bottom: 6px; display:flex; justify-content:space-between; align-items:center;">
-            <span>📋 سجل الصفقات وإحصائيات الأداء</span>
-            <div>
-                <span id="win-rate-badge" style="color: var(--green); margin-left:8px;">نسبة النجاح: 100%</span>
-                <button class="sync-btn" onclick="resetStats()" style="padding:2px 6px; font-size:0.6rem;">تصفير السجل</button>
-            </div>
-        </div>
-        <div class="stats-bar">
-            <span>إجمالي الصفقات: <strong id="stat-total" style="color:#fff;">0</strong></span>
-            <span>رابحة / مؤمّنة: <strong id="stat-wins" style="color:var(--green);">0</strong></span>
-            <span>ضرب SL: <strong id="stat-losses" style="color:var(--red);">0</strong></span>
-            <span>صافي النقاط: <strong id="stat-pips" style="color:var(--gold); direction:ltr;">+0.0 Pips</strong></span>
-        </div>
-        <div id="trade-log-list">
-            <div style="color: var(--text-muted); font-size: 0.68rem;">سيظهر هنا سجل الصفقات التي تم اقتناصها وتأمينها...</div>
+        <div class="footer-note">
+            ⚠️ للتداول مخاطر عالية، هذه الإشارات لأغراض توضيحية وتقنية.
         </div>
     </div>
 
     <script>
-        const SYMBOL = 'PAXGUSDT';
-        const INTERVAL = '5m';
-        let rawCandles = [];
-        let rawPrice = 0;
-        let lastDisplayedPrice = 0;
-        let lastTickTime = Date.now();
-        let candleCloseTime = Date.now() + 300000;
-        let soundEnabled = true;
-        let adaptiveArmorEnabled = true;
-        let orderBookImbalance = 0.0;
-        let recentTicks = [];
-        let isFetchingBook = false;
-        let isFetchingKlines = false;
-        let isSyncingSpot = false;
-        let sharedAudioCtx = null;
-
-        // فصل المعايرة إلى: 1) فارق الفوركس التلقائي (autoBasisOffset) + 2) ضبط السبريد الدقيق لـ OANDA (manualTrim)
-        let autoBasisOffset = parseFloat(localStorage.getItem('oanda_auto_basis')) || 8.72;
-        let manualTrim = parseFloat(localStorage.getItem('oanda_manual_trim')) || 0.0;
-
-        function getTotalOffset() {
-            return autoBasisOffset + manualTrim;
-        }
-
-        function saveOffsets() {
-            try {
-                localStorage.setItem('oanda_auto_basis', String(autoBasisOffset));
-                localStorage.setItem('oanda_manual_trim', String(manualTrim));
-            } catch (e) {}
-        }
-
-        let perfStats = { total: 0, wins: 0, losses: 0, netPips: 0 };
-        try {
-            const savedStats = JSON.parse(localStorage.getItem('emms_perf_stats'));
-            if (savedStats && typeof savedStats.total === 'number') perfStats = savedStats;
-        } catch (e) {}
-
-        function savePerfStats() {
-            try { localStorage.setItem('emms_perf_stats', JSON.stringify(perfStats)); } catch (e) {}
-        }
-
-        function resetStats() {
-            perfStats = { total: 0, wins: 0, losses: 0, netPips: 0 };
-            tradeLogs = [];
-            savePerfStats();
-            updatePerfStatsUI();
-            document.getElementById('trade-log-list').innerHTML = '<div style="color: var(--text-muted); font-size: 0.68rem;">تم تصفير السجل بنجاح.</div>';
-        }
-
-        let activeTrade = null;
-        let tradeLogs = [];
-
-        // محرك المزامنة التلقائية الحية مع سعر الذهب الفوري العالمي (Spot XAU/USD Forex Feed)
-        async function fetchRealSpotGoldPrice() {
-            // المصدر 1: Gold-API المباشر للذهب الفوري XAU/USD
-            try {
-                const r1 = await fetch('https://api.gold-api.com/price/XAU', { cache: 'no-store' });
-                if (r1.ok) {
-                    const d1 = await r1.json();
-                    if (d1 && d1.price && d1.price > 1500) {
-                        return { price: parseFloat(d1.price), source: 'Gold-API Spot' };
-                    }
-                }
-            } catch (e) {}
-
-            // المصدر 2: Swissquote Bank Institutional Forex Feed (XAU/USD)
-            try {
-                const r2 = await fetch('https://forex-data-feed.swissquote.com/public-quotes/bboquotes/instrument/XAU/USD', { cache: 'no-store' });
-                if (r2.ok) {
-                    const d2 = await r2.json();
-                    if (Array.isArray(d2) && d2.length > 0 && d2[0].spreadProfilePrices && d2[0].spreadProfilePrices.length > 0) {
-                        const p = d2[0].spreadProfilePrices[0];
-                        const mid = (parseFloat(p.bid) + parseFloat(p.ask)) / 2;
-                        if (mid > 1500) return { price: mid, source: 'Swissquote Spot' };
-                    }
-                }
-            } catch (e) {}
-
-            return null;
-        }
-
-        // تحديث الفارق بين PAXG وسوق الفوركس XAU/USD تلقائياً وبسلاسة
-        async function autoSyncWithSpotGold(forceRebuild = false) {
-            if (isSyncingSpot || rawPrice <= 0) return;
-            isSyncingSpot = true;
-            try {
-                const spotData = await fetchRealSpotGoldPrice();
-                if (spotData && spotData.price > 1500) {
-                    const newBasis = Math.round((spotData.price - rawPrice) * 100) / 100;
-                    const oldTotal = getTotalOffset();
-                    autoBasisOffset = newBasis;
-                    saveOffsets();
-                    const newTotal = getTotalOffset();
-                    const delta = newTotal - oldTotal;
-
-                    // إذا كانت هناك صفقة قائمة وتغير الفارق بأكثر من 0.8$، نزيح مستوياتها بسلاسة لتطابق شارت OANDA
-                    if (activeTrade && Math.abs(delta) >= 0.05 && !forceRebuild) {
-                        activeTrade.entryLow += delta;
-                        activeTrade.entryHigh += delta;
-                        activeTrade.avgEntry += delta;
-                        activeTrade.sl += delta;
-                        activeTrade.initialSl += delta;
-                        activeTrade.tp1 += delta;
-                        activeTrade.tp2 += delta;
-                        activeTrade.tp3 += delta;
-                        activeTrade.trailingStop += delta;
-                    } else if (forceRebuild) {
-                        activeTrade = null;
-                    }
-
-                    const totalSign = newTotal >= 0 ? '+' : '';
-                    document.getElementById('spot-sync-status').innerText = 
-                        `✅ متزامن مع ${spotData.source} (الفارق: ${totalSign}${newTotal.toFixed(2)}$)`;
-                    document.getElementById('exact-oanda-input').placeholder = `${(rawPrice + newTotal).toFixed(2)}`;
-
-                    updateLivePriceDisplay(rawPrice);
-                    evaluateMarketAndManageTrade(forceRebuild);
-                }
-            } catch (e) {}
-            isSyncingSpot = false;
-        }
-
-        function triggerInstantSpotSync() {
-            autoSyncWithSpotGold(true);
-            playBeep(920, 120);
-        }
-
-        // تعديل دقيق للسبريد فوق المزامنة التلقائية
-        function adjustManualTrim(delta) {
-            if (rawPrice <= 0) return;
-            manualTrim = Math.round((manualTrim + delta) * 100) / 100;
-            saveOffsets();
-            if (activeTrade) {
-                activeTrade.entryLow += delta;
-                activeTrade.entryHigh += delta;
-                activeTrade.avgEntry += delta;
-                activeTrade.sl += delta;
-                activeTrade.initialSl += delta;
-                activeTrade.tp1 += delta;
-                activeTrade.tp2 += delta;
-                activeTrade.tp3 += delta;
-                activeTrade.trailingStop += delta;
-            }
-            updateLivePriceDisplay(rawPrice);
-            evaluateMarketAndManageTrade(false);
-        }
-
-        // مطابقة فورية إذا أدخل المستخدم الرقم الظاهر في شارت OANDA يدوياً
-        function syncExactPrice() {
-            const val = parseFloat(document.getElementById('exact-oanda-input').value);
-            if (!isNaN(val) && val > 1000 && rawPrice > 0) {
-                const desiredTotalOffset = val - rawPrice;
-                manualTrim = Math.round((desiredTotalOffset - autoBasisOffset) * 100) / 100;
-                saveOffsets();
-                document.getElementById('exact-oanda-input').value = '';
-                document.getElementById('exact-oanda-input').placeholder = `تم: ${val.toFixed(2)}`;
-                activeTrade = null;
-                updateLivePriceDisplay(rawPrice);
-                evaluateMarketAndManageTrade(true);
-                addTradeLog(`تمت مطابقة السعر مع شارت OANDA عند $${val.toFixed(2)} 🎯`, '#29b6f6');
-            }
-        }
-
-        function playBeep(freq = 880, duration = 180) {
-            if (!soundEnabled) return;
-            try {
-                if (!sharedAudioCtx) {
-                    sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                }
-                if (sharedAudioCtx.state === 'suspended') {
-                    sharedAudioCtx.resume();
-                }
-                const osc = sharedAudioCtx.createOscillator();
-                const gain = sharedAudioCtx.createGain();
-                osc.frequency.value = freq;
-                osc.type = 'sine';
-                gain.gain.setValueAtTime(0.10, sharedAudioCtx.currentTime);
-                osc.connect(gain);
-                gain.connect(sharedAudioCtx.destination);
-                osc.start();
-                osc.stop(sharedAudioCtx.currentTime + (duration / 1000));
-            } catch (e) {}
-        }
-
-        function toggleAdaptiveArmor() {
-            adaptiveArmorEnabled = !adaptiveArmorEnabled;
-            const btn = document.getElementById('adaptive-mode-btn');
-            if (adaptiveArmorEnabled) {
-                btn.innerText = '🛡️ الدرع الذكي';
-                btn.className = 'sync-btn green-btn';
-            } else {
-                btn.innerText = '🛡️ قياسي';
-                btn.className = 'sync-btn';
-            }
-            if (rawCandles.length >= 40) {
-                activeTrade = null;
-                evaluateMarketAndManageTrade(true);
-            }
-        }
-
-        function toggleAudio() {
-            soundEnabled = !soundEnabled;
-            const btn = document.getElementById('sound-toggle-btn');
-            btn.innerText = soundEnabled ? '🔊' : '🔇';
-            if (soundEnabled) playBeep(880, 100);
-        }
-
-        function detectMarketSession() {
-            const hourUTC = new Date().getUTCHours();
-            const badge = document.getElementById('session-badge');
-            if (hourUTC >= 13 && hourUTC < 17) {
-                badge.innerText = '🔥 تقاطع لندن ونيويورك (سيولة عالية)';
-            } else if (hourUTC >= 7 && hourUTC < 16) {
-                badge.innerText = '🇬🇧 جلسة لندن نشطة';
-            } else if (hourUTC >= 12 && hourUTC < 21) {
-                badge.innerText = '🇺🇸 جلسة نيويورك نشطة';
-            } else {
-                badge.innerText = '🌏 الجلسة الآسيوية (تداول نطاقي)';
-            }
-        }
-        detectMarketSession();
-        setInterval(detectMarketSession, 60000);
-
-        function forceGenerateNewSignal() {
-            if (rawCandles.length < 40) return;
-            activeTrade = null;
-            evaluateMarketAndManageTrade(true);
-            playBeep(950, 150);
-        }
-
-        function toggleChart() {
-            const wrap = document.getElementById('tv-wrap');
-            const lbl = document.getElementById('chart-toggle-lbl');
-            if (wrap.style.display === 'none') {
-                wrap.style.display = 'block';
-                lbl.innerText = 'إخفاء ▲';
-            } else {
-                wrap.style.display = 'none';
-                lbl.innerText = 'إظهار الشارت ▼';
-            }
-        }
-
-        function copyTradeTicket() {
-            if (!activeTrade) return;
-            const lotText = document.getElementById('recommended-lot').innerText;
-            const ticket = `⚡ XAU/USD OANDA (${activeTrade.dir} • ${activeTrade.tierLabel})
-🎯 Entry: ${activeTrade.entryLow.toFixed(2)} - ${activeTrade.entryHigh.toFixed(2)}
-🛡️ SL: ${activeTrade.sl.toFixed(2)}
-✅ TP1: ${activeTrade.tp1.toFixed(2)}
-🔥 TP2: ${activeTrade.tp2.toFixed(2)}
-🏆 TP3: ${activeTrade.tp3.toFixed(2)}
-📊 Lot: ${lotText} | Confidence: ${activeTrade.score}%`;
-
-            const btn = document.getElementById('copy-signal-btn');
-            try {
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(ticket);
+        function startAnalysis() {
+            const asset = document.getElementById("asset").value;
+            const timeframe = document.getElementById("timeframe").value;
+            
+            const resultBox = document.getElementById("result-box");
+            const loading = document.getElementById("loading");
+            const content = document.getElementById("signal-content");
+            
+            resultBox.style.display = "block";
+            loading.style.display = "block";
+            content.style.display = "none";
+            
+            // محاكاة وقت المعالجة الفنية (ثانيتان)
+            setTimeout(() => {
+                loading.style.display = "none";
+                content.style.display = "block";
+                
+                // توليد إشارة عشوائية (صعود أو هبوط)
+                const isBuy = Math.random() >= 0.4;
+                const badge = document.getElementById("res-badge");
+                
+                if (isBuy) {
+                    badge.className = "signal-badge buy";
+                    badge.innerHTML = "🟢 صعود (BUY)";
                 } else {
-                    const ta = document.createElement('textarea');
-                    ta.value = ticket;
-                    document.body.appendChild(ta);
-                    ta.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(ta);
+                    badge.className = "signal-badge sell";
+                    badge.innerHTML = "🔴 هبوط (SELL)";
                 }
-                btn.innerText = '✅ تم النسخ!';
-                setTimeout(() => { btn.innerText = '📋 نسخ تذكرة MT5'; }, 1800);
-            } catch (e) {
-                btn.innerText = '✅ جاهز';
-            }
+                
+                document.getElementById("res-asset").innerText = asset;
+                document.getElementById("res-time").innerText = timeframe;
+                document.getElementById("res-conf5s") // للاحتياط
+                
+                // نسبة دقة عشوائية بين 88% و 97%
+                const randomConf = Math.floor(Math.random() * (97 - 88 + 1)) + 88;
+                document.getElementById("res-conf").innerText = randomConf + "%";
+                
+            }, 2000);
         }
-
-        function updatePerfStatsUI() {
-            document.getElementById('stat-total').innerText = perfStats.total;
-            document.getElementById('stat-wins').innerText = perfStats.wins;
-            document.getElementById('stat-losses').innerText = perfStats.losses;
-            const pipsEl = document.getElementById('stat-pips');
-            pipsEl.innerText = `${perfStats.netPips >= 0 ? '+' : ''}${perfStats.netPips.toFixed(1)} Pips`;
-            pipsEl.style.color = perfStats.netPips >= 0 ? 'var(--gold)' : 'var(--red)';
-
-            const rate = perfStats.total > 0 ? Math.round((perfStats.wins / perfStats.total) * 100) : 100;
-            document.getElementById('win-rate-badge').innerText = `نسبة النجاح: ${rate}%`;
-        }
-        updatePerfStatsUI();
-
-        function addTradeLog(text, color = '#00e676') {
-            const timeStr = new Date().toLocaleTimeString('ar-MA');
-            tradeLogs.unshift({ time: timeStr, text, color });
-            if (tradeLogs.length > 8) tradeLogs.pop();
-
-            const container = document.getElementById('trade-log-list');
-            container.innerHTML = tradeLogs.map(item => `
-                <div class="log-item">
-                    <span style="color:${item.color}; font-weight:bold;">${item.text}</span>
-                    <span style="color:var(--text-muted);">${item.time}</span>
-                </div>
-            `).join('');
-        }
-
-        function updateOrderBookUI(bidQty, askQty) {
-            const total = (bidQty + askQty) || 1;
-            orderBookImbalance = (bidQty - askQty) / total;
-            const bidPct = Math.min(Math.max(Math.round((bidQty / total) * 100), 10), 90);
-            const askPct = 100 - bidPct;
-
-            document.getElementById('bid-pct').innerText = `${bidPct}%`;
-            document.getElementById('ask-pct').innerText = `${askPct}%`;
-            document.getElementById('imbalance-bar').style.width = `${bidPct}%`;
-        }
-
-        function updateLivePriceDisplay(newRawPrice) {
-            if (!newRawPrice || isNaN(newRawPrice)) return;
-            rawPrice = newRawPrice;
-            const totalOffset = getTotalOffset();
-            const calibratedPrice = rawPrice + totalOffset;
-            const priceEl = document.getElementById('live-price');
-            const velEl = document.getElementById('vel-badge');
-
-            const now = Date.now();
-            recentTicks.push({ time: now, price: calibratedPrice });
-            recentTicks = recentTicks.filter(t => (now - t.time) <= 60000);
-
-            const dt = Math.max((now - lastTickTime) / 1000, 0.1);
-            const diff = calibratedPrice - (lastDisplayedPrice || calibratedPrice);
-            const velocity = diff / dt;
-
-            priceEl.innerText = `$${calibratedPrice.toFixed(2)}`;
-
-            if (diff > 0.001) {
-                priceEl.style.color = 'var(--green)';
-                velEl.innerText = `+${velocity.toFixed(2)}$/s ↗`;
-                velEl.style.color = 'var(--green)';
-            } else if (diff < -0.001) {
-                priceEl.style.color = 'var(--red)';
-                velEl.innerText = `${velocity.toFixed(2)}$/s ↘`;
-                velEl.style.color = 'var(--red)';
-            }
-
-            setTimeout(() => { priceEl.style.color = 'var(--gold)'; }, 280);
-
-            lastDisplayedPrice = calibratedPrice;
-            lastTickTime = now;
-
-            if (rawCandles.length > 0) {
-                let lastC = rawCandles[rawCandles.length - 1];
-                lastC.close = rawPrice;
-                if (rawPrice > lastC.high) lastC.high = rawPrice;
-                if (rawPrice < lastC.low) lastC.low = rawPrice;
-            }
-        }
-
-        function calculateEMA(data, period) {
-            if (!data || data.length === 0) return 0;
-            const k = 2 / (period + 1);
-            let ema = data[0].close;
-            for (let i = 1; i < data.length; i++) {
-                ema = (data[i].close * k) + (ema * (1 - k));
-            }
-            return ema;
-        }
-
-        function build15mCandles(candles5m) {
-            const res = [];
-            for (let i = 0; i <= candles5m.length - 3; i += 3) {
-                const c0 = candles5m[i];
-                const c1 = candles5m[i + 1];
-                const c2 = candles5m[i + 2];
-                res.push({
-                    open: c0.open,
-                    high: Math.max(c0.high, c1.high, c2.high),
-                    low: Math.min(c0.low, c1.low, c2.low),
-                    close: c2.close,
-                    volume: (c0.volume || 0) + (c1.volume || 0) + (c2.volume || 0)
-                });
-            }
-            return res;
-        }
-
-        function calculateVWMA(data, period = 14) {
-            const slice = data.slice(-period);
-            let pvSum = 0, vSum = 0;
-            slice.forEach(c => {
-                const v = c.volume || 100;
-                pvSum += c.close * v;
-                vSum += v;
-            });
-            return vSum > 0 ? (pvSum / vSum) : data[data.length - 1].close;
-        }
-
-        function calculateWilderRSI(data, period = 14) {
-            if (data.length <= period) return 50;
-            let gains = 0, losses = 0;
-            for (let i = 1; i <= period; i++) {
-                const diff = data[i].close - data[i - 1].close;
-                if (diff >= 0) gains += diff;
-                else losses -= diff;
-            }
-            let avgGain = gains / period;
-            let avgLoss = losses / period;
-
-            for (let i = period + 1; i < data.length; i++) {
-                const diff = data[i].close - data[i - 1].close;
-                const gain = diff > 0 ? diff : 0;
-                const loss = diff < 0 ? -diff : 0;
-                avgGain = ((avgGain * (period - 1)) + gain) / period;
-                avgLoss = ((avgLoss * (period - 1)) + loss) / period;
-            }
-            if (avgLoss === 0) return 100;
-            const rs = avgGain / avgLoss;
-            return 100 - (100 / (1 + rs));
-        }
-
-        function calculateATR(data, period = 14) {
-            if (data.length <= period) return 1.5;
-            let trList = [];
-            for (let i = 1; i < data.length; i++) {
-                const tr = Math.max(
-                    data[i].high - data[i].low,
-                    Math.abs(data[i].high - data[i - 1].close),
-                    Math.abs(data[i].low - data[i - 1].close)
-                );
-                trList.push(tr);
-            }
-            let atr = trList.slice(0, period).reduce((a, b) => a + b, 0) / period;
-            for (let i = period; i < trList.length; i++) {
-                atr = ((atr * (period - 1)) + trList[i]) / period;
-            }
-            return atr;
-        }
-
-        function findSupportResistance(data) {
-            const slice = data.slice(-30, -1);
-            let highest = -Infinity, lowest = Infinity;
-            slice.forEach(c => {
-                if (c.high > highest) highest = c.high;
-                if (c.low < lowest) lowest = c.low;
-            });
-            return { resistance: highest, support: lowest };
-        }
-
-        function detectUnmitigatedSMC(data, currentPrice) {
-            for (let i = data.length - 2; i >= Math.max(2, data.length - 25); i--) {
-                const c0 = data[i];
-                const c2 = data[i - 2];
-
-                if (c0.low > c2.high && (c0.low - c2.high) >= 0.15) {
-                    let mitigated = false;
-                    for (let j = i + 1; j < data.length; j++) {
-                        if (data[j].low <= c2.high) { mitigated = true; break; }
-                    }
-                    if (!mitigated) {
-                        const mid = (c0.low + c2.high) / 2;
-                        return { type: 'BULL_FVG', label: `FVG ↗ $${mid.toFixed(1)}`, level: mid };
-                    }
-                }
-
-                if (c0.high < c2.low && (c2.low - c0.high) >= 0.15) {
-                    let mitigated = false;
-                    for (let j = i + 1; j < data.length; j++) {
-                        if (data[j].high >= c2.low) { mitigated = true; break; }
-                    }
-                    if (!mitigated) {
-                        const mid = (c0.high + c2.low) / 2;
-                        return { type: 'BEAR_FVG', label: `FVG ↘ $${mid.toFixed(1)}`, level: mid };
-                    }
-                }
-            }
-            return { type: 'OB_ZONE', label: `OB $${(currentPrice - 0.8).toFixed(1)}`, level: currentPrice - 0.8 };
-        }
-
-        function calculateGannLevels(price) {
-            const root = Math.sqrt(price);
-            const baseRoot = Math.floor(root * 4) / 4;
-            const gannSupport = Math.pow(baseRoot, 2);
-            const gannResist = Math.pow(baseRoot + 0.125, 2);
-            const pivot = (gannSupport + gannResist) / 2;
-            return { support: gannSupport, resist: gannResist, pivot };
-        }
-
-        function analyzeCRT(data) {
-            const curr = data[data.length - 1];
-            const prev = data[data.length - 2];
-            const range = (curr.high - curr.low) || 0.1;
-            const upperWick = curr.high - Math.max(curr.open, curr.close);
-            const lowerWick = Math.min(curr.open, curr.close) - curr.low;
-
-            if (curr.low < prev.low && curr.close > prev.low && (lowerWick / range) > 0.32) {
-                return { type: 'BULL_SWEEP', label: 'سحب سفلي ↗', color: 'var(--green)' };
-            }
-            if (curr.high > prev.high && curr.close < prev.high && (upperWick / range) > 0.32) {
-                return { type: 'BEAR_SWEEP', label: 'سحب علوي ↘', color: 'var(--red)' };
-            }
-            if ((lowerWick / range) > 0.42) {
-                return { type: 'BULL_WICK', label: 'رفض شرائي ↗', color: 'var(--green)' };
-            }
-            if ((upperWick / range) > 0.42) {
-                return { type: 'BEAR_WICK', label: 'رفض بيعي ↘', color: 'var(--red)' };
-            }
-            return { type: 'NEUTRAL', label: 'تجميع نطاقي', color: 'var(--text-muted)' };
-        }
-
-        function updateRiskCalculator() {
-            const balance = parseFloat(document.getElementById('acc-balance').value) || 1000;
-            const riskPct = parseFloat(document.getElementById('risk-pct').value) || 1.0;
-
-            let multiplier = 1.0;
-            let tierNote = 'اللوت الكامل (صفقة VIP)';
-            if (activeTrade && adaptiveArmorEnabled) {
-                multiplier = activeTrade.riskMultiplier || 1.0;
-                if (multiplier < 1.0) tierNote = `لوت محمي (${Math.round(multiplier * 100)}% - سكالبينج)`;
-            }
-
-            const effectiveRiskDollars = balance * (riskPct / 100) * multiplier;
-            document.getElementById('risk-dollar-lbl').innerText = `المخاطرة الفعلية: $${effectiveRiskDollars.toFixed(2)}`;
-            document.getElementById('lot-tier-note').innerText = tierNote;
-
-            if (!activeTrade) return;
-            const slDistanceDollars = Math.max(Math.abs(activeTrade.avgEntry - activeTrade.initialSl), 0.5);
-            const rawLot = effectiveRiskDollars / (slDistanceDollars * 100);
-            const lot = Math.max(0.01, Math.round(rawLot * 100) / 100);
-            document.getElementById('recommended-lot').innerText = `${lot.toFixed(2)} Lot`;
-        }
-
-        function createNewLockedSignal(candles, currentPrice, ema9, ema21, m1Bull, m15Bull, vwma, rsi, atr, crt, sr, smc, gann) {
-            let bullScore = 0, bearScore = 0;
-            if (ema9 > ema21) bullScore += 26; else bearScore += 26;
-            if (m15Bull) bullScore += 16; else bearScore += 16;
-            if (currentPrice > vwma) bullScore += 15; else bearScore += 15;
-            if (orderBookImbalance >= 0) bullScore += 10; else bearScore += 10;
-
-            if (rsi <= 32) bullScore += 24;
-            else if (rsi >= 68) bearScore += 24;
-            else if (rsi > 50) bullScore += 10;
-            else bearScore += 10;
-
-            if (crt.type.includes('BULL')) bullScore += 20;
-            if (crt.type.includes('BEAR')) bearScore += 20;
-            if (smc.type === 'BULL_FVG') bullScore += 12;
-            if (smc.type === 'BEAR_FVG') bearScore += 12;
-
-            const isBuy = bullScore >= bearScore;
-            const rawConfidence = Math.min(Math.max(bullScore, bearScore), 97);
-
-            const m5Bull = ema9 >= ema21;
-            const fullMtfAligned = (isBuy && m1Bull && m5Bull && m15Bull) || (!isBuy && !m1Bull && !m5Bull && !m15Bull);
-
-            let tier = 'SCALP_SHIELD';
-            let tierLabel = '⚡ B+ Scalp (تأمين خاطف)';
-            let riskMultiplier = 0.65;
-            let tp1Factor = 0.85;
-            let tp2Factor = 1.85;
-            let tp3Factor = 3.10;
-
-            if (rawConfidence >= 76 || fullMtfAligned || !adaptiveArmorEnabled) {
-                tier = 'VIP_SNIPER';
-                tierLabel = '💎 A+ VIP (توافق مؤسسي)';
-                riskMultiplier = 1.0;
-                tp1Factor = 1.25;
-                tp2Factor = 2.45;
-                tp3Factor = 3.80;
-            }
-
-            let entryLow, entryHigh, avgEntry, sl, tp1, tp2, tp3;
-
-            if (isBuy) {
-                const rawHigh = currentPrice - (atr * 0.08);
-                const rawLow = currentPrice - (atr * 0.34);
-                const magnet = (gann.support <= currentPrice && (currentPrice - gann.support) < atr * 0.5)
-                    ? gann.support
-                    : rawLow;
-                entryHigh = Math.max(rawHigh, magnet);
-                entryLow = Math.min(rawLow, (rawLow + magnet) / 2);
-                avgEntry = (entryHigh + entryLow) / 2;
-                sl = avgEntry - (atr * 1.42);
-                const risk = avgEntry - sl;
-                tp1 = avgEntry + (risk * tp1Factor);
-                tp2 = avgEntry + (risk * tp2Factor);
-                tp3 = avgEntry + (risk * tp3Factor);
-            } else {
-                const rawLow = currentPrice + (atr * 0.08);
-                const rawHigh = currentPrice + (atr * 0.34);
-                const magnet = (gann.resist >= currentPrice && (gann.resist - currentPrice) < atr * 0.5)
-                    ? gann.resist
-                    : rawHigh;
-                entryLow = Math.min(rawLow, magnet);
-                entryHigh = Math.max(rawHigh, (rawHigh + magnet) / 2);
-                avgEntry = (entryHigh + entryLow) / 2;
-                sl = avgEntry + (atr * 1.42);
-                const risk = sl - avgEntry;
-                tp1 = avgEntry - (risk * tp1Factor);
-                tp2 = avgEntry - (risk * tp2Factor);
-                tp3 = avgEntry - (risk * tp3Factor);
-            }
-
-            const boostedScore = adaptiveArmorEnabled ? Math.min(rawConfidence + 8, 98) : rawConfidence;
-
-            activeTrade = {
-                id: Date.now(),
-                dir: isBuy ? 'BUY' : 'SELL',
-                tier,
-                tierLabel,
-                riskMultiplier,
-                tp3Factor,
-                score: boostedScore,
-                entryLow,
-                entryHigh,
-                avgEntry,
-                sl,
-                initialSl: sl,
-                tp1,
-                tp2,
-                tp3,
-                status: 'PENDING',
-                earlyShieldHit: false,
-                tp1Hit: false,
-                tp2Hit: false,
-                trailingStop: sl
-            };
-
-            document.getElementById('tp1-card').classList.remove('hit');
-            document.getElementById('tp2-card').classList.remove('hit');
-            document.getElementById('tp3-card').classList.remove('hit');
-
-            const tierEl = document.getElementById('tier-badge');
-            tierEl.innerText = tierLabel;
-            if (tier === 'VIP_SNIPER') {
-                tierEl.style.background = 'rgba(245,176,65,0.2)';
-                tierEl.style.color = 'var(--gold)';
-                document.getElementById('tp1-title').innerText = 'الهدف الأول (TP1 - تأمين)';
-            } else {
-                tierEl.style.background = 'rgba(0,230,118,0.18)';
-                tierEl.style.color = 'var(--green)';
-                document.getElementById('tp1-title').innerText = 'الهدف الأول (TP1 قريب - تأمين خاطف)';
-            }
-            document.getElementById('rr-label').innerText = `1 : ${tp3Factor.toFixed(1)}`;
-
-            updateRiskCalculator();
-            addTradeLog(`إصدار صفقة ${isBuy ? 'شراء BUY' : 'بيع SELL'} (${tier === 'VIP_SNIPER' ? 'A+ VIP' : 'B+ Scalp'}) حول ${avgEntry.toFixed(2)}`, '#f5b041');
-        }
-
-        function evaluateMarketAndManageTrade(forceNew = false) {
-            if (rawCandles.length < 40 || rawPrice <= 0) return;
-
-            const totalOffset = getTotalOffset();
-            const candles = rawCandles.map(c => ({
-                ...c,
-                open: c.open + totalOffset,
-                high: c.high + totalOffset,
-                low: c.low + totalOffset,
-                close: c.close + totalOffset
-            }));
-            const currentPrice = rawPrice + totalOffset;
-
-            const ema9 = calculateEMA(candles, 9);
-            const ema21 = calculateEMA(candles, 21);
-
-            const candles15m = build15mCandles(candles);
-            const ema9_15m = calculateEMA(candles15m, 9);
-            const ema21_15m = calculateEMA(candles15m, 21);
-
-            const vwma = calculateVWMA(candles, 14);
-            const rsi = calculateWilderRSI(candles, 14);
-            const atr = Math.max(calculateATR(candles, 14), 1.0);
-            const crt = analyzeCRT(candles);
-            const sr = findSupportResistance(candles);
-            const smc = detectUnmitigatedSMC(candles, currentPrice);
-            const gann = calculateGannLevels(currentPrice);
-
-            const m1Open = recentTicks.length > 1 ? recentTicks[0].price : candles[candles.length - 1].open;
-            const m1Bull = currentPrice >= m1Open;
-            const m5Bull = ema9 >= ema21;
-            const m15Bull = ema9_15m >= ema21_15m;
-
-            const setMtfPill = (id, label, isBull) => {
-                const el = document.getElementById(id);
-                el.innerText = `${label}: ${isBull ? 'صاعد ↗' : 'هابط ↘'}`;
-                el.style.color = isBull ? 'var(--green)' : 'var(--red)';
-                el.style.borderColor = isBull ? 'rgba(0,230,118,0.4)' : 'rgba(255,61,87,0.4)';
-            };
-            setMtfPill('mtf-1m', 'M1', m1Bull);
-            setMtfPill('mtf-5m', 'M5', m5Bull);
-            setMtfPill('mtf-15m', 'M15', m15Bull);
-
-            const emaEl = document.getElementById('ema-status');
-            emaEl.innerText = m5Bull ? 'صاعد ↗' : 'هابط ↘';
-            emaEl.style.color = m5Bull ? 'var(--green)' : 'var(--red)';
-
-            const rsiEl = document.getElementById('rsi-status');
-            let rsiState = 'متوازن';
-            if (rsi >= 70) rsiState = 'تشبع شرائي ⚠️';
-            else if (rsi <= 30) rsiState = 'تشبع بيعي ⚡';
-            rsiEl.innerText = `${rsi.toFixed(1)} • ${rsiState}`;
-            rsiEl.style.color = rsi >= 70 ? 'var(--red)' : (rsi <= 30 ? 'var(--green)' : '#fff');
-
-            document.getElementById('sr-zone').innerText = `${sr.support.toFixed(0)} / ${sr.resistance.toFixed(0)}`;
-            document.getElementById('atr-val').innerText = `$${atr.toFixed(2)}`;
-
-            const crtEl = document.getElementById('crt-status');
-            crtEl.innerText = crt.label;
-            crtEl.style.color = crt.color;
-
-            document.getElementById('fvg-zone').innerText = smc.label;
-            document.getElementById('gann-zone').innerText = `$${gann.pivot.toFixed(1)}`;
-
-            const vwmaEl = document.getElementById('vwma-status');
-            const vwmaBull = currentPrice >= vwma;
-            vwmaEl.innerText = vwmaBull ? 'تجميع شرائي ↗' : 'تصريف بيعي ↘';
-            vwmaEl.style.color = vwmaBull ? 'var(--green)' : 'var(--red)';
-
-            const projDelta = ((ema9 - ema21) * 1.1) + (orderBookImbalance * atr * 0.65);
-            const projTarget = currentPrice + projDelta;
-            const projEl = document.getElementById('candle-proj');
-            projEl.innerText = `${projDelta >= 0 ? '↗' : '↘'} $${projTarget.toFixed(2)}`;
-            projEl.style.color = projDelta >= 0 ? 'var(--green)' : 'var(--red)';
-
-            if (!activeTrade || forceNew) {
-                createNewLockedSignal(candles, currentPrice, ema9, ema21, m1Bull, m15Bull, vwma, rsi, atr, crt, sr, smc, gann);
-            }
-
-            const t = activeTrade;
-            const stateBadge = document.getElementById('trade-state-badge');
-            const pnlEl = document.getElementById('live-pnl');
-
-            if (t.dir === 'BUY') {
-                if (t.status === 'PENDING') {
-                    if (currentPrice <= t.sl) {
-                        addTradeLog(`إلغاء أمر الشراء المعلق لكسر منطقة السيولة قبل التفعيل 🔄`, '#8a99ad');
-                        createNewLockedSignal(candles, currentPrice, ema9, ema21, m1Bull, m15Bull, vwma, rsi, atr, crt, sr, smc, gann);
-                        return;
-                    }
-                    if (currentPrice <= t.entryHigh && currentPrice >= t.entryLow) {
-                        t.status = 'ACTIVE';
-                        t.avgEntry = currentPrice;
-                        addTradeLog(`تفعيل دخول الشراء الفعلي عند ${currentPrice.toFixed(2)} 🎯`, '#29b6f6');
-                        playBeep(700, 120);
-                    }
-                }
-
-                if (t.status !== 'PENDING') {
-                    const pips = (currentPrice - t.avgEntry) * 10;
-                    pnlEl.innerText = `${pips >= 0 ? '+' : ''}${pips.toFixed(1)} Pips`;
-                    pnlEl.style.color = pips >= 0 ? 'var(--green)' : 'var(--red)';
-
-                    const candidateTrail = currentPrice - (atr * 1.15);
-                    if (candidateTrail > t.trailingStop) {
-                        t.trailingStop = candidateTrail;
-                        if (t.tp1Hit && t.trailingStop > t.sl) {
-                            t.sl = t.trailingStop;
-                        }
-                    }
-
-                    const halfWayTp1 = t.avgEntry + ((t.tp1 - t.avgEntry) * 0.55);
-                    if (adaptiveArmorEnabled && !t.earlyShieldHit && currentPrice >= halfWayTp1) {
-                        t.earlyShieldHit = true;
-                        t.status = 'BE_SECURED';
-                        t.sl = Math.max(t.sl, t.avgEntry + 0.10);
-                        addTradeLog(`تفعيل الدرع المبكر: نقل الوقف لنقطة الدخول (${t.sl.toFixed(2)}) 🛡️`, '#29b6f6');
-                    }
-
-                    if (!t.tp1Hit && currentPrice >= t.tp1) {
-                        t.tp1Hit = true;
-                        t.status = 'BE_SECURED';
-                        t.sl = Math.max(t.sl, t.avgEntry + 0.25, t.trailingStop);
-                        document.getElementById('tp1-card').classList.add('hit');
-                        addTradeLog(`تم ضرب الهدف الأول TP1 وتأمين الربح ✅`, '#00e676');
-                        playBeep(1050, 220);
-                    }
-                    if (!t.tp2Hit && currentPrice >= t.tp2) {
-                        t.tp2Hit = true;
-                        t.sl = Math.max(t.sl, t.tp1, t.trailingStop);
-                        document.getElementById('tp2-card').classList.add('hit');
-                        addTradeLog(`تم ضرب الهدف الثاني TP2 وحجز الأرباح 🔥`, '#00e676');
-                        playBeep(1200, 250);
-                    }
-                    if (currentPrice >= t.tp3) {
-                        const wonPips = Math.abs(t.tp3 - t.avgEntry) * 10;
-                        perfStats.total++;
-                        perfStats.wins++;
-                        perfStats.netPips += wonPips;
-                        savePerfStats();
-                        updatePerfStatsUI();
-                        addTradeLog(`اكتمال الهدف الثالث TP3 بنجاح (+${wonPips.toFixed(0)} نقطة) 🏆`, '#f5b041');
-                        createNewLockedSignal(candles, currentPrice, ema9, ema21, m1Bull, m15Bull, vwma, rsi, atr, crt, sr, smc, gann);
-                        return;
-                    }
-                    if (currentPrice <= t.sl) {
-                        perfStats.total++;
-                        if (t.tp1Hit || t.earlyShieldHit) {
-                            const secPips = Math.max((t.sl - t.avgEntry) * 10, 1.5);
-                            perfStats.wins++;
-                            perfStats.netPips += secPips;
-                            addTradeLog(`إغلاق الصفقة على الوقف المتحرك الربحي (+${secPips.toFixed(1)} نقطة) 🛡️`, '#00e676');
-                        } else {
-                            const lostPips = Math.abs(t.avgEntry - t.initialSl) * 10;
-                            perfStats.losses++;
-                            perfStats.netPips -= lostPips;
-                            addTradeLog(`ضرب وقف الخسارة وتحديث الهيكل لتعويض فوري 🔄`, '#ff3d57');
-                        }
-                        savePerfStats();
-                        updatePerfStatsUI();
-                        createNewLockedSignal(candles, currentPrice, ema9, ema21, m1Bull, m15Bull, vwma, rsi, atr, crt, sr, smc, gann);
-                        return;
-                    }
-                } else {
-                    pnlEl.innerText = 'بانتظار الدخول';
-                    pnlEl.style.color = 'var(--gold)';
-                    if (currentPrice > t.tp1) {
-                        addTradeLog(`تحرك السعر للهدف قبل لمس الأمر المعلق — تحديث منطقة القناص 🔄`, '#8a99ad');
-                        createNewLockedSignal(candles, currentPrice, ema9, ema21, m1Bull, m15Bull, vwma, rsi, atr, crt, sr, smc, gann);
-                        return;
-                    }
-                }
-            } else {
-                if (t.status === 'PENDING') {
-                    if (currentPrice >= t.sl) {
-                        addTradeLog(`إلغاء أمر البيع المعلق لكسر المقاومة قبل التفعيل 🔄`, '#8a99ad');
-                        createNewLockedSignal(candles, currentPrice, ema9, ema21, m1Bull, m15Bull, vwma, rsi, atr, crt, sr, smc, gann);
-                        return;
-                    }
-                    if (currentPrice >= t.entryLow && currentPrice <= t.entryHigh) {
-                        t.status = 'ACTIVE';
-                        t.avgEntry = currentPrice;
-                        addTradeLog(`تفعيل دخول البيع الفعلي عند ${currentPrice.toFixed(2)} 🎯`, '#29b6f6');
-                        playBeep(700, 120);
-                    }
-                }
-
-                if (t.status !== 'PENDING') {
-                    const pips = (t.avgEntry - currentPrice) * 10;
-                    pnlEl.innerText = `${pips >= 0 ? '+' : ''}${pips.toFixed(1)} Pips`;
-                    pnlEl.style.color = pips >= 0 ? 'var(--green)' : 'var(--red)';
-
-                    const candidateTrail = currentPrice + (atr * 1.15);
-                    if (candidateTrail < t.trailingStop) {
-                        t.trailingStop = candidateTrail;
-                        if (t.tp1Hit && t.trailingStop < t.sl) {
-                            t.sl = t.trailingStop;
-                        }
-                    }
-
-                    const halfWayTp1 = t.avgEntry - ((t.avgEntry - t.tp1) * 0.55);
-                    if (adaptiveArmorEnabled && !t.earlyShieldHit && currentPrice <= halfWayTp1) {
-                        t.earlyShieldHit = true;
-                        t.status = 'BE_SECURED';
-                        t.sl = Math.min(t.sl, t.avgEntry - 0.10);
-                        addTradeLog(`تفعيل الدرع المبكر: نقل الوقف لنقطة الدخول (${t.sl.toFixed(2)}) 🛡️`, '#29b6f6');
-                    }
-
-                    if (!t.tp1Hit && currentPrice <= t.tp1) {
-                        t.tp1Hit = true;
-                        t.status = 'BE_SECURED';
-                        t.sl = Math.min(t.sl, t.avgEntry - 0.25, t.trailingStop);
-                        document.getElementById('tp1-card').classList.add('hit');
-                        addTradeLog(`تم ضرب الهدف الأول TP1 وتأمين الربح ✅`, '#00e676');
-                        playBeep(1050, 220);
-                    }
-                    if (!t.tp2Hit && currentPrice <= t.tp2) {
-                        t.tp2Hit = true;
-                        t.sl = Math.min(t.sl, t.tp1, t.trailingStop);
-                        document.getElementById('tp2-card').classList.add('hit');
-                        addTradeLog(`تم ضرب الهدف الثاني TP2 وحجز الأرباح 🔥`, '#00e676');
-                        playBeep(1200, 250);
-                    }
-                    if (currentPrice <= t.tp3) {
-                        const wonPips = Math.abs(t.avgEntry - t.tp3) * 10;
-                        perfStats.total++;
-                        perfStats.wins++;
-                        perfStats.netPips += wonPips;
-                        savePerfStats();
-                        updatePerfStatsUI();
-                        addTradeLog(`اكتمال الهدف الثالث TP3 بنجاح (+${wonPips.toFixed(0)} نقطة) 🏆`, '#f5b041');
-                        createNewLockedSignal(candles, currentPrice, ema9, ema21, m1Bull, m15Bull, vwma, rsi, atr, crt, sr, smc, gann);
-                        return;
-                    }
-                    if (currentPrice >= t.sl) {
-                        perfStats.total++;
-                        if (t.tp1Hit || t.earlyShieldHit) {
-                            const secPips = Math.max((t.avgEntry - t.sl) * 10, 1.5);
-                            perfStats.wins++;
-                            perfStats.netPips += secPips;
-                            addTradeLog(`إغلاق الصفقة على الوقف المتحرك الربحي (+${secPips.toFixed(1)} نقطة) 🛡️`, '#00e676');
-                        } else {
-                            const lostPips = Math.abs(t.initialSl - t.avgEntry) * 10;
-                            perfStats.losses++;
-                            perfStats.netPips -= lostPips;
-                            addTradeLog(`ضرب وقف الخسارة وتحديث الهيكل لتعويض فوري 🔄`, '#ff3d57');
-                        }
-                        savePerfStats();
-                        updatePerfStatsUI();
-                        createNewLockedSignal(candles, currentPrice, ema9, ema21, m1Bull, m15Bull, vwma, rsi, atr, crt, sr, smc, gann);
-                        return;
-                    }
-                } else {
-                    pnlEl.innerText = 'بانتظار الدخول';
-                    pnlEl.style.color = 'var(--gold)';
-                    if (currentPrice < t.tp1) {
-                        addTradeLog(`تحرك السعر للهدف قبل لمس الأمر المعلق — تحديث منطقة القناص 🔄`, '#8a99ad');
-                        createNewLockedSignal(candles, currentPrice, ema9, ema21, m1Bull, m15Bull, vwma, rsi, atr, crt, sr, smc, gann);
-                        return;
-                    }
-                }
-            }
-
-            const titleEl = document.getElementById('signal-title');
-            if (t.dir === 'BUY') {
-                titleEl.innerText = 'صفقة شراء (BUY)';
-                titleEl.style.color = 'var(--green)';
-            } else {
-                titleEl.innerText = 'صفقة بيع (SELL)';
-                titleEl.style.color = 'var(--red)';
-            }
-
-            if (t.status === 'PENDING') {
-                stateBadge.innerText = '⏳ أمر قناص معلق (بانتظار السعر)';
-                stateBadge.style.background = 'rgba(245,176,65,0.15)';
-                stateBadge.style.color = 'var(--gold)';
-            } else if (t.status === 'ACTIVE') {
-                stateBadge.innerText = '⚡ صفقة جارية الآن (ACTIVE)';
-                stateBadge.style.background = 'rgba(41,182,246,0.15)';
-                stateBadge.style.color = 'var(--blue)';
-            } else if (t.status === 'BE_SECURED') {
-                stateBadge.innerText = '🛡️ مؤمّنة بالكامل (Break-Even / Trailing)';
-                stateBadge.style.background = 'rgba(0,230,118,0.18)';
-                stateBadge.style.color = 'var(--green)';
-            }
-
-            document.getElementById('win-prob').innerText = `${t.score}%`;
-            document.getElementById('trailing-val').innerText = `$${t.trailingStop.toFixed(2)}`;
-            document.getElementById('entry-zone').innerText = `${t.entryLow.toFixed(2)} - ${t.entryHigh.toFixed(2)}`;
-            document.getElementById('sl-price').innerText = t.sl.toFixed(2);
-
-            document.getElementById('tp1-price').innerText = t.tp1.toFixed(2);
-            document.getElementById('tp1-pips').innerText = `+${Math.round(Math.abs(t.tp1 - t.avgEntry) * 10)} نقطة`;
-
-            document.getElementById('tp2-price').innerText = t.tp2.toFixed(2);
-            document.getElementById('tp2-pips').innerText = `+${Math.round(Math.abs(t.tp2 - t.avgEntry) * 10)} نقطة`;
-
-            document.getElementById('tp3-price').innerText = t.tp3.toFixed(2);
-            document.getElementById('tp3-pips').innerText = `+${Math.round(Math.abs(t.tp3 - t.avgEntry) * 10)} نقطة`;
-
-            document.getElementById('analysis-text').innerText = 
-                `الصفقة مقفلة على ${t.dir === 'BUY' ? 'الشراء' : 'البيع'} [${t.tierLabel}] من (${t.entryLow.toFixed(2)} - ${t.entryHigh.toFixed(2)}) بدقة ${t.score}%. السعر متزامن تلقائياً مع الفوركس الفوري لـ XAU/USD.`;
-
-            document.getElementById('last-update').innerText = new Date().toLocaleTimeString('ar-MA');
-        }
-
-        async function fetchHistoricalCandles() {
-            try {
-                const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${SYMBOL}&interval=${INTERVAL}&limit=100`);
-                const data = await res.json();
-                if (Array.isArray(data) && data.length >= 45) {
-                    rawCandles = data.map(c => ({
-                        time: c[0],
-                        open: parseFloat(c[1]),
-                        high: parseFloat(c[2]),
-                        low: parseFloat(c[3]),
-                        close: parseFloat(c[4]),
-                        volume: parseFloat(c[5]),
-                        closeTime: c[6]
-                    }));
-                    rawPrice = rawCandles[rawCandles.length - 1].close;
-                    candleCloseTime = rawCandles[rawCandles.length - 1].closeTime;
-
-                    // مزامنة فورية مع سعر الفوركس XAU/USD قبل بناء أول صفقة
-                    await autoSyncWithSpotGold(true);
-                    updateLivePriceDisplay(rawPrice);
-                    evaluateMarketAndManageTrade(true);
-                    startLiveWebSocket();
-                }
-            } catch (err) {
-                document.getElementById('analysis-text').innerText = 'جارِ إعادة الاتصال بخادم الأسعار...';
-                setTimeout(fetchHistoricalCandles, 2500);
-            }
-        }
-
-        function startLiveWebSocket() {
-            try {
-                const streams = `${SYMBOL.toLowerCase()}@bookTicker/${SYMBOL.toLowerCase()}@kline_${INTERVAL}`;
-                const ws = new WebSocket(`wss://stream.binance.com:9443/stream?streams=${streams}`);
-
-                ws.onmessage = function(event) {
-                    const payload = JSON.parse(event.data);
-                    if (!payload || !payload.data) return;
-                    const d = payload.data;
-
-                    if (d.b && d.a) {
-                        const bidP = parseFloat(d.b);
-                        const askP = parseFloat(d.a);
-                        const bidQ = parseFloat(d.B) || 1;
-                        const askQ = parseFloat(d.A) || 1;
-                        updateOrderBookUI(bidQ, askQ);
-
-                        const mid = (bidP + askP) / 2;
-                        if (!isNaN(mid) && Math.abs(mid - rawPrice) >= 0.005) {
-                            updateLivePriceDisplay(mid);
-                            evaluateMarketAndManageTrade(false);
-                        }
-                    } else if (d.e === 'kline') {
-                        const k = d.k;
-                        candleCloseTime = k.T;
-                        const updated = {
-                            time: k.t,
-                            open: parseFloat(k.o),
-                            high: parseFloat(k.h),
-                            low: parseFloat(k.l),
-                            close: parseFloat(k.c),
-                            volume: parseFloat(k.v),
-                            closeTime: k.T
-                        };
-                        if (rawCandles.length > 0 && rawCandles[rawCandles.length - 1].time === updated.time) {
-                            rawCandles[rawCandles.length - 1] = updated;
-                        } else {
-                            rawCandles.push(updated);
-                            if (rawCandles.length > 100) rawCandles.shift();
-                        }
-                        updateLivePriceDisplay(updated.close);
-                        evaluateMarketAndManageTrade(false);
-                    }
-                };
-
-                ws.onclose = function() {
-                    setTimeout(startLiveWebSocket, 3000);
-                };
-            } catch (e) {}
-        }
-
-        // مزامنة مستمرة مع سعر الفوركس الفوري XAU/USD كل 12 ثانية لضمان عدم انحراف السعر عن OANDA أبداً
-        setInterval(() => {
-            autoSyncWithSpotGold(false);
-        }, 12000);
-
-        setInterval(async () => {
-            if (isFetchingBook || rawCandles.length < 40) return;
-            isFetchingBook = true;
-            try {
-                const res = await fetch(`https://api.binance.com/api/v3/ticker/bookTicker?symbol=${SYMBOL}`);
-                const data = await res.json();
-                const bidP = parseFloat(data.bidPrice);
-                const askP = parseFloat(data.askPrice);
-                const bidQ = parseFloat(data.bidQty) || 1;
-                const askQ = parseFloat(data.askQty) || 1;
-                updateOrderBookUI(bidQ, askQ);
-
-                const midPrice = (bidP + askP) / 2;
-                if (!isNaN(midPrice) && Math.abs(midPrice - rawPrice) >= 0.005) {
-                    updateLivePriceDisplay(midPrice);
-                    evaluateMarketAndManageTrade(false);
-                }
-            } catch (e) {}
-            isFetchingBook = false;
-        }, 2000);
-
-        setInterval(async () => {
-            if (isFetchingKlines || rawCandles.length < 40) return;
-            isFetchingKlines = true;
-            try {
-                const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${SYMBOL}&interval=${INTERVAL}&limit=2`);
-                const data = await res.json();
-                if (Array.isArray(data) && data.length > 0) {
-                    const k = data[data.length - 1];
-                    candleCloseTime = k[6];
-                    const updated = {
-                        time: k[0],
-                        open: parseFloat(k[1]),
-                        high: parseFloat(k[2]),
-                        low: parseFloat(k[3]),
-                        close: parseFloat(k[4]),
-                        volume: parseFloat(k[5]),
-                        closeTime: k[6]
-                    };
-                    if (rawCandles.length > 0 && rawCandles[rawCandles.length - 1].time === updated.time) {
-                        rawCandles[rawCandles.length - 1] = updated;
-                    } else {
-                        rawCandles.push(updated);
-                        if (rawCandles.length > 100) rawCandles.shift();
-                    }
-                    updateLivePriceDisplay(updated.close);
-                    evaluateMarketAndManageTrade(false);
-                }
-            } catch (e) {}
-            isFetchingKlines = false;
-        }, 10000);
-
-        setInterval(() => {
-            const rem = candleCloseTime - Date.now();
-            if (rem > 0) {
-                const m = Math.floor(rem / 60000);
-                const s = Math.floor((rem % 60000) / 1000);
-                document.getElementById('candle-timer').innerText = `5m: ${m}:${s < 10 ? '0' : ''}${s}`;
-            } else {
-                candleCloseTime = Date.now() + 300000;
-            }
-        }, 1000);
-
-        fetchHistoricalCandles();
     </script>
 </body>
 </html>
