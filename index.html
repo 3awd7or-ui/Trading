@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Pocket Option V7 - محرك SMC المؤسسي (BOS + OB + FVG)</title>
+  <title>Pocket Option V8 - المحرك المصحح (Non-Repainting M1 & S5)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
   <style>
@@ -17,7 +17,7 @@
 
     body {
       font-family: 'Cairo', sans-serif;
-      background-color: #05070b;
+      background-color: #04060a;
       color: #ffffff;
       margin: 0;
       padding: 0;
@@ -35,41 +35,41 @@
     .app-container {
       width: 100%;
       max-width: 460px;
-      background-color: #0b0f17;
+      background-color: #0a0e17;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      border-left: 1px solid #1a2333;
-      border-right: 1px solid #1a2333;
+      border-left: 1px solid #1a2336;
+      border-right: 1px solid #1a2336;
       padding-bottom: 30px;
     }
 
     .card-po {
-      background: #121826;
-      border: 1px solid #222d42;
+      background: #111726;
+      border: 1px solid #202b42;
       border-radius: 16px;
     }
 
     .signal-buy {
-      background: radial-gradient(circle at 50% 20%, rgba(16, 185, 129, 0.4), rgba(18, 24, 38, 0.98) 75%);
+      background: radial-gradient(circle at 50% 20%, rgba(16, 185, 129, 0.42), rgba(17, 23, 38, 0.98) 75%);
       border: 2px solid #10b981;
-      box-shadow: 0 0 40px rgba(16, 185, 129, 0.25);
+      box-shadow: 0 0 40px rgba(16, 185, 129, 0.28);
     }
 
     .signal-sell {
-      background: radial-gradient(circle at 50% 20%, rgba(239, 68, 68, 0.4), rgba(18, 24, 38, 0.98) 75%);
+      background: radial-gradient(circle at 50% 20%, rgba(239, 68, 68, 0.42), rgba(17, 23, 38, 0.98) 75%);
       border: 2px solid #ef4444;
-      box-shadow: 0 0 40px rgba(239, 68, 68, 0.25);
+      box-shadow: 0 0 40px rgba(239, 68, 68, 0.28);
     }
 
     .signal-wait {
-      background: radial-gradient(circle at 50% 20%, rgba(245, 158, 11, 0.3), rgba(18, 24, 38, 0.98) 75%);
+      background: radial-gradient(circle at 50% 20%, rgba(245, 158, 11, 0.3), rgba(17, 23, 38, 0.98) 75%);
       border: 2px solid #f59e0b;
     }
 
-    .signal-analyzing {
-      background: radial-gradient(circle at 50% 30%, rgba(59, 130, 246, 0.28), rgba(18, 24, 38, 0.98) 75%);
-      border: 1.5px solid rgba(59, 130, 246, 0.65);
+    .signal-syncing {
+      background: radial-gradient(circle at 50% 30%, rgba(56, 189, 248, 0.25), rgba(17, 23, 38, 0.98) 75%);
+      border: 1.5px solid #38bdf8;
     }
 
     .btn-sniper {
@@ -82,7 +82,7 @@
       transform: scale(0.97);
     }
 
-    .progress-fill { transition: width 0.2s ease; }
+    .progress-fill { transition: width 0.25s ease; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -90,7 +90,7 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-    .spin-anim { animation: spin-slow 1.4s linear infinite; }
+    .spin-anim { animation: spin-slow 1.5s linear infinite; }
 
     @keyframes pulse-live {
       0%, 100% { opacity: 1; }
@@ -104,15 +104,15 @@
   <div class="app-container p-3.5 space-y-3">
 
     <!-- الهيدر العلوي -->
-    <div class="flex items-center justify-between pb-2.5 border-b border-[#1a2333]">
+    <div class="flex items-center justify-between pb-2.5 border-b border-[#1a2336]">
       <div class="flex items-center gap-2.5">
         <div class="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-emerald-400 shadow">
-          <i class="fa-solid fa-building-columns text-sm"></i>
+          <i class="fa-solid fa-shield-check text-sm fa-shield-halved"></i>
         </div>
         <div>
           <div class="font-black text-sm text-white flex items-center gap-1.5">
-            <span>SMC Sniper V7</span>
-            <span id="engineModeBadge" class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-extrabold">BOS + OB + FVG</span>
+            <span>Quant Sniper V8</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-extrabold">بدون إعادة رسم</span>
           </div>
           <div class="flex items-center gap-1.5 text-[11px] text-gray-400">
             <span class="w-2 h-2 rounded-full bg-emerald-400 live-dot"></span>
@@ -121,54 +121,60 @@
         </div>
       </div>
 
-      <!-- إحصائيات الصفقات الحقيقية -->
+      <!-- إحصائيات الجلسة الفعلية -->
       <div class="flex items-center gap-2">
-        <div class="bg-[#121826] border border-[#222d42] px-2.5 py-1 rounded-xl text-left">
-          <div class="text-[9px] text-gray-400">سجل القنص</div>
+        <div class="bg-[#111726] border border-[#202b42] px-2.5 py-1 rounded-xl text-left">
+          <div class="text-[9px] text-gray-400">سجل القنص الصافي</div>
           <div class="text-xs font-extrabold en-num">
             <span id="winCountTxt" class="text-emerald-400">0W</span> - <span id="lossCountTxt" class="text-red-400">0L</span>
             <span id="winRateBadge" class="text-amber-400 ml-1">(100%)</span>
           </div>
         </div>
-        <button onclick="toggleSound()" id="soundBtn" class="p-2 rounded-xl bg-[#121826] border border-[#222d42] text-emerald-400">
+        <button onclick="toggleSound()" id="soundBtn" class="p-2 rounded-xl bg-[#111726] border border-[#202b42] text-emerald-400">
           <i id="soundIcon" class="fa-solid fa-volume-high text-xs"></i>
         </button>
       </div>
     </div>
 
-    <!-- شريط مزامنة شمعة الدقيقة (Candle Clock Sync) - مهم جداً لمنع الخسارة -->
-    <div class="card-po p-2.5 flex items-center justify-between bg-[#101624]">
-      <div class="flex items-center gap-2">
-        <div class="w-8 h-8 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
-          <i class="fa-regular fa-clock text-sm"></i>
+    <!-- قفل مزامنة افتتاح الشمعة الجديدة (يمنع الدخول في منتصف الشمعة الخاسر) -->
+    <div class="card-po p-2.5 flex items-center justify-between bg-[#0e1422] border-r-4 border-r-sky-400">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-sky-500/15 border border-sky-500/30 flex items-center justify-center text-sky-400">
+          <i class="fa-solid fa-stopwatch text-sm"></i>
         </div>
         <div>
-          <div class="text-xs font-extrabold text-white">ساعة إغلاق شمعة الدقيقة (M1 Sync)</div>
-          <div id="candleAdviceTxt" class="text-[10px] text-gray-400">أفضل توقيت للقنص: آخر 5 ثوانٍ من الشمعة أو أول 5 ثوانٍ</div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-extrabold text-white">قفل افتتاح الشمعة (00s Sync Lock)</span>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input id="syncLockToggle" type="checkbox" checked class="sr-only peer">
+              <div class="w-7 h-4 bg-gray-700 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-sky-500"></div>
+            </label>
+          </div>
+          <div id="candleAdviceTxt" class="text-[10px] text-gray-400 mt-0.5">يمنع الدخول في منتصف الشمعة ويطلق الإشارة عند الثانية 00</div>
         </div>
       </div>
-      <div class="text-left">
-        <span id="candleCountdownBadge" class="px-2.5 py-1 rounded-lg bg-black/50 border border-amber-500/40 text-amber-400 font-extrabold text-sm en-num">00:00</span>
+      <div class="text-left shrink-0">
+        <span id="candleCountdownBadge" class="px-2.5 py-1 rounded-lg bg-black/60 border border-sky-500/40 text-sky-400 font-extrabold text-sm en-num">00:00</span>
       </div>
     </div>
 
-    <!-- الأزواج السريعة (البيتكوين والذهب على M1 + الفوركس) -->
+    <!-- الأزواج السريعة -->
     <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-      <button onclick="selectPairByName('BTC/USD')" class="px-3 py-1.5 rounded-xl bg-[#121826] border border-amber-500/50 text-[11px] font-extrabold text-amber-400 shrink-0 en-num">
-        ₿ BTC/USD (M1 SMC)
+      <button onclick="selectPairByName('BTC/USD')" class="px-3 py-1.5 rounded-xl bg-[#111726] border border-amber-500/50 text-[11px] font-extrabold text-amber-400 shrink-0 en-num">
+        ₿ BTC/USD (M1)
       </button>
-      <button onclick="selectPairByName('XAU/USD (GOLD)')" class="px-3 py-1.5 rounded-xl bg-[#121826] border border-amber-500/50 text-[11px] font-extrabold text-amber-300 shrink-0 en-num">
-        🪙 GOLD (M1 SMC)
+      <button onclick="selectPairByName('XAU/USD (GOLD)')" class="px-3 py-1.5 rounded-xl bg-[#111726] border border-amber-500/50 text-[11px] font-extrabold text-amber-300 shrink-0 en-num">
+        🪙 GOLD (M1)
       </button>
-      <button onclick="selectPairByName('EUR/USD')" class="px-3 py-1.5 rounded-xl bg-[#121826] border border-emerald-500/40 text-[11px] font-bold text-emerald-400 shrink-0 en-num">
-        🇪🇺 EUR/USD (M1 & S5)
+      <button onclick="selectPairByName('EUR/USD')" class="px-3 py-1.5 rounded-xl bg-[#111726] border border-emerald-500/40 text-[11px] font-bold text-emerald-400 shrink-0 en-num">
+        🇪🇺 EUR/USD (M1 / S5)
       </button>
-      <button onclick="selectPairByName('GBP/USD')" class="px-3 py-1.5 rounded-xl bg-[#121826] border border-emerald-500/40 text-[11px] font-bold text-emerald-400 shrink-0 en-num">
-        🇬🇧 GBP/USD (M1 & S5)
+      <button onclick="selectPairByName('GBP/USD')" class="px-3 py-1.5 rounded-xl bg-[#111726] border border-emerald-500/40 text-[11px] font-bold text-emerald-400 shrink-0 en-num">
+        🇬🇧 GBP/USD (M1 / S5)
       </button>
     </div>
 
-    <!-- بطاقة الزوج المختار + حالة الهيكل السعري المباشر -->
+    <!-- بطاقة الزوج المختار -->
     <div onclick="openPairModal()" class="card-po p-3 flex items-center justify-between cursor-pointer hover:border-emerald-400/50 transition">
       <div class="flex items-center gap-3">
         <div class="relative w-10 h-8 flex items-center">
@@ -181,7 +187,7 @@
             <span id="selectedPairPayout" class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-extrabold en-num">+92%</span>
           </div>
           <div id="structureLiveTxt" class="text-[11px] text-emerald-400 font-bold mt-0.5">
-            هيكل M1: جاري مسح القمم والقيعان الفركتالية...
+            جاري قراءة الشموع المغلقة المؤكدة...
           </div>
         </div>
       </div>
@@ -189,70 +195,70 @@
       <div class="text-left flex items-center gap-2">
         <div>
           <div id="livePriceTxt" class="font-extrabold text-sm text-emerald-400 en-num">Loading...</div>
-          <div id="obDistanceTxt" class="text-[10px] text-gray-400 en-num">OB Zone: Scanning</div>
+          <div id="closedCandlesCountTxt" class="text-[10px] text-gray-400 en-num">Candles: 0</div>
         </div>
-        <div class="w-7 h-7 rounded-lg bg-[#1c2538] flex items-center justify-center text-gray-300">
+        <div class="w-7 h-7 rounded-lg bg-[#1a2336] flex items-center justify-center text-gray-300">
           <i class="fa-solid fa-chevron-down text-xs"></i>
         </div>
       </div>
     </div>
 
-    <!-- اختيار الفريم الزمني (قفل تلقائي للثواني على البيتكوين والذهب) -->
+    <!-- اختيار الفريم الزمني -->
     <div>
       <div class="flex justify-between items-center text-xs text-gray-400 mb-1.5 px-1">
         <span class="font-bold">فريم الصفقة في Pocket Option:</span>
         <span id="selectedTimeLabel" class="text-emerald-400 font-extrabold">دقيقة واحدة (M1 - 60s)</span>
       </div>
       <div class="grid grid-cols-5 gap-1.5" id="timeBtns">
-        <button id="btn-S3" onclick="selectTime('S3', 3)" class="time-btn py-2 rounded-xl bg-[#121826] border border-[#222d42] text-xs font-bold text-gray-300 en-num">S3 (3s)</button>
-        <button id="btn-S5" onclick="selectTime('S5', 5)" class="time-btn py-2 rounded-xl bg-[#121826] border border-[#222d42] text-xs font-bold text-gray-300 en-num">S5 (5s)</button>
-        <button id="btn-S15" onclick="selectTime('S15', 15)" class="time-btn py-2 rounded-xl bg-[#121826] border border-[#222d42] text-xs font-bold text-gray-300 en-num">S15</button>
+        <button id="btn-S3" onclick="selectTime('S3', 3)" class="time-btn py-2 rounded-xl bg-[#111726] border border-[#202b42] text-xs font-bold text-gray-300 en-num">S3 (3s)</button>
+        <button id="btn-S5" onclick="selectTime('S5', 5)" class="time-btn py-2 rounded-xl bg-[#111726] border border-[#202b42] text-xs font-bold text-gray-300 en-num">S5 (5s)</button>
+        <button id="btn-S15" onclick="selectTime('S15', 15)" class="time-btn py-2 rounded-xl bg-[#111726] border border-[#202b42] text-xs font-bold text-gray-300 en-num">S15</button>
         <button id="btn-M1" onclick="selectTime('M1', 60)" class="time-btn py-2 rounded-xl bg-emerald-500/20 border border-emerald-500 text-xs font-extrabold text-emerald-400 en-num">M1 (1m)</button>
-        <button id="btn-M3" onclick="selectTime('M3', 180)" class="time-btn py-2 rounded-xl bg-[#121826] border border-[#222d42] text-xs font-bold text-gray-300 en-num">M3 (3m)</button>
+        <button id="btn-M3" onclick="selectTime('M3', 180)" class="time-btn py-2 rounded-xl bg-[#111726] border border-[#202b42] text-xs font-bold text-gray-300 en-num">M3 (3m)</button>
       </div>
     </div>
 
     <!-- الصندوق الرئيسي للإشارة -->
-    <div id="signalCard" class="card-po p-4 text-center relative overflow-hidden transition-all duration-200 min-h-[250px] flex flex-col justify-center items-center">
+    <div id="signalCard" class="card-po p-4 text-center relative overflow-hidden transition-all duration-200 min-h-[255px] flex flex-col justify-center items-center">
 
       <!-- الحالة 1: جاهز -->
       <div id="stateIdle" class="space-y-2">
         <div class="w-14 h-14 mx-auto rounded-full bg-emerald-500/15 border-2 border-emerald-500/40 flex items-center justify-center text-emerald-400">
-          <i class="fa-solid fa-layer-group text-2xl"></i>
+          <i class="fa-solid fa-lock text-2xl"></i>
         </div>
-        <div id="idleTitleTxt" class="font-extrabold text-base text-white">محرك القنص المؤسسي (Fractal BOS + Order Block)</div>
-        <p id="idleDescTxt" class="text-xs text-gray-400 max-w-[320px] mx-auto leading-relaxed">
-          لا يعطي إشارة في الهواء! يحدد **كسر الهيكل الفركتالي (BOS)**، وينتظر عودة السعر لاختبار **الكتلة السعرية (Order Block)** أو **الفجوة (FVG)** مع تأكيد حجم السيولة (`Volume`) ليضمن لك صفقة دقيقة.
+        <div class="font-extrabold text-base text-white">محرك الإغلاق المؤكد (Non-Repainting V8)</div>
+        <p class="text-xs text-gray-400 max-w-[330px] mx-auto leading-relaxed">
+          تم إصلاح خطأ الدخول في منتصف الشمعة وتضخم الفوليوم. الكود الآن ينتظر **إغلاق الشمعة الحالية رسمياً** ليفحص **ذيل الرفض (Pinbar) + الـ Order Block + الـ BOS** ويطلق لك الإشارة في **الثانية 00** لبداية الشمعة الجديدة.
         </p>
       </div>
 
-      <!-- الحالة 2: جاري المسح المؤسسي والترقب -->
+      <!-- الحالة 2: المزامنة مع إغلاق الشمعة وفحص الشروط -->
       <div id="stateAnalyzing" class="hidden w-full space-y-3.5">
         <div class="flex items-center justify-center gap-3">
-          <div class="w-12 h-12 rounded-2xl bg-blue-500/15 border border-blue-400/40 flex items-center justify-center text-blue-400">
-            <i class="fa-solid fa-crosshairs spin-anim text-2xl"></i>
+          <div class="w-12 h-12 rounded-2xl bg-sky-500/15 border border-sky-400/40 flex items-center justify-center text-sky-400">
+            <i class="fa-solid fa-clock-rotate-left spin-anim text-2xl"></i>
           </div>
           <div class="text-right">
-            <div id="analyzeHeaderBadge" class="text-xs text-blue-400 font-bold">مسح خوارزمية Smart Money (SMC)...</div>
-            <div id="analyzeStepTitle" class="text-sm font-extrabold text-white mt-0.5">تحديد مناطق الـ Order Blocks والـ BOS...</div>
+            <div id="analyzeHeaderBadge" class="text-xs text-sky-400 font-bold">قفل المزامنة نشط (منع الدخول المبكر)...</div>
+            <div id="analyzeStepTitle" class="text-sm font-extrabold text-white mt-0.5">بانتظار إغلاق الشمعة الحالية لتأكيد القرار...</div>
           </div>
         </div>
 
-        <div class="w-full h-9 bg-[#080b11] rounded-xl overflow-hidden relative border border-[#222d42] flex items-center justify-center">
-          <div id="analyzeProgressBar" class="progress-fill absolute right-0 top-0 bottom-0 bg-gradient-to-l from-blue-500 via-teal-400 to-emerald-400 opacity-90" style="width: 20%;"></div>
-          <span id="analyzeProgressTxt" class="relative z-10 text-xs font-extrabold text-white drop-shadow">فحص الشموع والسيولة...</span>
+        <div class="w-full h-9 bg-[#070a10] rounded-xl overflow-hidden relative border border-[#202b42] flex items-center justify-center">
+          <div id="analyzeProgressBar" class="progress-fill absolute right-0 top-0 bottom-0 bg-gradient-to-l from-sky-500 via-teal-400 to-emerald-400 opacity-90" style="width: 30%;"></div>
+          <span id="analyzeProgressTxt" class="relative z-10 text-xs font-extrabold text-white drop-shadow">مزامنة الثانية 00...</span>
         </div>
 
         <div id="sniperWaitNotice" class="text-[11px] text-amber-400 font-bold">
-          ينتظر البوت الآن ارتداد السعر من منطقة الطلب/العرض مع رفض ذيل الشمعة...
+          لا تضغط في المنصة الآن! سيصدر صوت تنبيه مزدوج لحظة افتتاح الشمعة الجديدة...
         </div>
       </div>
 
-      <!-- الحالة 3: إطلاق الإشارة أو حظر الأمان -->
+      <!-- الحالة 3: إطلاق الإشارة المؤكدة أو حظر الشمعة -->
       <div id="stateResult" class="hidden w-full space-y-2.5">
         <div class="flex items-center justify-between px-1">
           <span class="text-xs font-bold text-gray-300 en-num" id="resultPairHeader">BTC/USD · M1</span>
-          <span id="strategyTypeBadge" class="px-2.5 py-0.5 rounded-full bg-black/60 text-[11px] font-extrabold text-emerald-400">BOS + Order Block</span>
+          <span id="strategyTypeBadge" class="px-2.5 py-0.5 rounded-full bg-black/60 text-[11px] font-extrabold text-emerald-400">قنص افتتاح الشمعة</span>
         </div>
 
         <div class="flex items-center justify-center gap-4 py-1">
@@ -262,25 +268,25 @@
           <div class="text-right">
             <div id="dirMainArabic" class="text-3xl font-black tracking-wide">السوق صاعد ⬆️</div>
             <div id="dirPocketBtnTxt" class="text-xs font-extrabold mt-1 px-3 py-1 rounded-lg inline-block bg-emerald-500 text-black">
-              اضغط HIGHER 🟩 الآن فوراً!
+              اضغط HIGHER 🟩 الآن مع بداية الشمعة!
             </div>
           </div>
         </div>
 
         <div id="technicalReasonTxt" class="text-[11px] font-bold text-gray-200 bg-black/40 py-1.5 px-2.5 rounded-lg border border-white/10">
-          السبب: كسر هيكل صاعد (BOS) + ارتداد مباشر من Bullish Order Block + تدفق سيولة شرائية
+          السبب: إغلاق شمعة تأكيد فوق الـ Order Block + كسر BOS صاعد + عدم وجود تشبع
         </div>
 
         <!-- شريط تتبع الصفقة الحية -->
-        <div id="tradeTrackerBar" class="bg-[#080b11]/95 border border-[#222d42] rounded-xl p-2.5 flex items-center justify-between text-xs">
+        <div id="tradeTrackerBar" class="bg-[#070a10]/95 border border-[#202b42] rounded-xl p-2.5 flex items-center justify-between text-xs">
           <div class="text-right">
-            <div class="text-[10px] text-gray-400">سعر الدخول ← السعر الآن</div>
+            <div class="text-[10px] text-gray-400">سعر افتتاح الشمعة ← السعر الآن</div>
             <div class="font-bold text-white en-num mt-0.5">
               <span id="entryPriceSpan">0.00</span> → <span id="liveTrackSpan">0.00</span>
             </div>
           </div>
           <div class="text-left">
-            <div id="timerPhaseLabel" class="text-[10px] text-gray-400">المتبقي لإغلاق الصفقة</div>
+            <div id="timerPhaseLabel" class="text-[10px] text-gray-400">المتبقي لإغلاق الشمعة</div>
             <div id="countdownTimerTxt" class="en-num text-base font-extrabold text-amber-400">60.0s</div>
           </div>
         </div>
@@ -289,21 +295,29 @@
     </div>
 
     <!-- زر التشغيل الرئيسي -->
-    <button id="mainScanBtn" onclick="startInstitutionalSniperV7()" class="w-full py-4 rounded-2xl btn-sniper text-base font-black shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2">
-      <i class="fa-solid fa-crosshairs"></i> <span id="mainBtnLabel">افحص هيكل (BOS + OB) واقتنص الصفقة</span>
+    <button id="mainScanBtn" onclick="startZeroRepaintSniperV8()" class="w-full py-4 rounded-2xl btn-sniper text-base font-black shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2">
+      <i class="fa-solid fa-crosshairs"></i> <span id="mainBtnLabel">تفعيل القناص للشمعة القادمة (M1 Sync)</span>
     </button>
 
-    <!-- القراءات الـ 8 المؤسسية -->
+    <!-- القراءات الـ 8 الحقيقية (بدون إعادة رسم) -->
     <div>
       <div class="flex items-center justify-between text-xs text-gray-400 mb-1.5 px-1">
-        <span class="font-bold">قراءات الخوارزمية المؤسسية (8 فحوصات حقيقية):</span>
+        <span class="font-bold">فحوصات الشموع المغلقة المؤكدة (Non-Repainting):</span>
         <span id="readingsCountTxt" class="en-num font-bold text-emerald-400">جاهز</span>
       </div>
 
       <div class="grid grid-cols-2 gap-2">
         <div class="card-po p-2.5 flex items-center justify-between">
           <div>
-            <div class="text-[11px] text-gray-400 font-semibold">1. كسر الفركتال (Fractal BOS)</div>
+            <div class="text-[11px] text-gray-400 font-semibold">1. الاتجاه الهيكلي (EMA 20/50)</div>
+            <div id="rd-trend" class="text-xs font-extrabold text-gray-500 mt-0.5">. . .</div>
+          </div>
+          <i class="fa-solid fa-chart-line text-gray-500 text-sm"></i>
+        </div>
+
+        <div class="card-po p-2.5 flex items-center justify-between">
+          <div>
+            <div class="text-[11px] text-gray-400 font-semibold">2. كسر الفركتال (Confirmed BOS)</div>
             <div id="rd-bos" class="text-xs font-extrabold text-gray-500 mt-0.5">. . .</div>
           </div>
           <i class="fa-solid fa-diagram-project text-gray-500 text-sm"></i>
@@ -311,7 +325,7 @@
 
         <div class="card-po p-2.5 flex items-center justify-between">
           <div>
-            <div class="text-[11px] text-gray-400 font-semibold">2. الكتلة السعرية (Order Block)</div>
+            <div class="text-[11px] text-gray-400 font-semibold">3. اختبار الـ Order Block</div>
             <div id="rd-ob" class="text-xs font-extrabold text-gray-500 mt-0.5">. . .</div>
           </div>
           <i class="fa-solid fa-cubes-stacked text-gray-500 text-sm"></i>
@@ -319,15 +333,15 @@
 
         <div class="card-po p-2.5 flex items-center justify-between">
           <div>
-            <div class="text-[11px] text-gray-400 font-semibold">3. الفجوة السعرية (FVG Imbalance)</div>
-            <div id="rd-fvg" class="text-xs font-extrabold text-gray-500 mt-0.5">. . .</div>
+            <div class="text-[11px] text-gray-400 font-semibold">4. نموذج الشمعة المغلقة (PA)</div>
+            <div id="rd-candle" class="text-xs font-extrabold text-gray-500 mt-0.5">. . .</div>
           </div>
-          <i class="fa-solid fa-magnet text-gray-500 text-sm"></i>
+          <i class="fa-solid fa-fire-flame-simple text-gray-500 text-sm"></i>
         </div>
 
         <div class="card-po p-2.5 flex items-center justify-between">
           <div>
-            <div class="text-[11px] text-gray-400 font-semibold">4. Wilder RSI + StochRSI</div>
+            <div class="text-[11px] text-gray-400 font-semibold">5. Wilder RSI (14) المؤكد</div>
             <div id="rd-rsi" class="text-xs font-extrabold text-gray-500 mt-0.5">. . .</div>
           </div>
           <i class="fa-solid fa-wave-square text-gray-500 text-sm"></i>
@@ -335,23 +349,15 @@
 
         <div class="card-po p-2.5 flex items-center justify-between">
           <div>
-            <div class="text-[11px] text-gray-400 font-semibold">5. التسارع والانحراف (ARI & Z)</div>
-            <div id="rd-ari" class="text-xs font-extrabold text-gray-500 mt-0.5">. . .</div>
+            <div class="text-[11px] text-gray-400 font-semibold">6. انحراف البولينجر (BB Band)</div>
+            <div id="rd-bb" class="text-xs font-extrabold text-gray-500 mt-0.5">. . .</div>
           </div>
-          <i class="fa-solid fa-rocket text-gray-500 text-sm"></i>
+          <i class="fa-solid fa-arrows-left-right-to-line text-gray-500 text-sm"></i>
         </div>
 
         <div class="card-po p-2.5 flex items-center justify-between">
           <div>
-            <div class="text-[11px] text-gray-400 font-semibold">6. رفض ذيل الشمعة (Wick)</div>
-            <div id="rd-wick" class="text-xs font-extrabold text-gray-500 mt-0.5">. . .</div>
-          </div>
-          <i class="fa-solid fa-arrows-up-to-line text-gray-500 text-sm"></i>
-        </div>
-
-        <div class="card-po p-2.5 flex items-center justify-between">
-          <div>
-            <div class="text-[11px] text-gray-400 font-semibold">7. سيولة الشمعة (VSA Volume)</div>
+            <div class="text-[11px] text-gray-400 font-semibold">7. فوليوم الشمعة الحقيقي (VSA)</div>
             <div id="rd-vol" class="text-xs font-extrabold text-gray-500 mt-0.5">. . .</div>
           </div>
           <i class="fa-solid fa-chart-simple text-gray-500 text-sm"></i>
@@ -359,7 +365,7 @@
 
         <div class="card-po p-2.5 flex items-center justify-between">
           <div>
-            <div class="text-[11px] text-gray-400 font-semibold">8. دلتا العقود اللحظية (Delta)</div>
+            <div class="text-[11px] text-gray-400 font-semibold">8. دلتا عقود الافتتاح (Delta)</div>
             <div id="rd-delta" class="text-xs font-extrabold text-gray-500 mt-0.5">. . .</div>
           </div>
           <i class="fa-solid fa-scale-balanced text-gray-500 text-sm"></i>
@@ -369,9 +375,9 @@
 
     <!-- نافذة اختيار الأزواج -->
     <div id="pairModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex-col justify-end max-w-[460px] mx-auto">
-      <div class="bg-[#101521] rounded-t-3xl border-t border-[#222d42] p-4 h-[78vh] flex flex-col">
+      <div class="bg-[#0e1420] rounded-t-3xl border-t border-[#202b42] p-4 h-[75vh] flex flex-col">
         <div class="flex items-center justify-between mb-3">
-          <span class="font-extrabold text-base text-white">اختر الزوج (مطابق لـ Pocket Option)</span>
+          <span class="font-extrabold text-base text-white">اختر السوق</span>
           <button onclick="closePairModal()" class="text-emerald-400 text-sm font-bold">إغلاق ✕</button>
         </div>
         <div id="pairsListContainer" class="flex-1 overflow-y-auto space-y-2 pr-1 no-scrollbar"></div>
@@ -383,7 +389,7 @@
   <script>
     // ==================== 1. قاعدة بيانات الأزواج ====================
     const pocketPairs = [
-      { name: 'BTC/USD', symbol: 'BTCUSDT', allowSeconds: false, f1: '₿', f2: '🇺🇸', payout: 92, dec: 2, base: 91250.00, desc: 'فريم الدقيقة (M1) فقط · سيولة عالية جداً' },
+      { name: 'BTC/USD', symbol: 'BTCUSDT', allowSeconds: false, f1: '₿', f2: '🇺🇸', payout: 92, dec: 2, base: 91250.00, desc: 'فريم الدقيقة (M1) فقط · دقة عالية عند إغلاق الشمعة' },
       { name: 'XAU/USD (GOLD)', symbol: 'PAXGUSDT', allowSeconds: false, f1: '🪙', f2: '🇺🇸', payout: 92, dec: 2, base: 2685.00, desc: 'الذهب المباشر · فريم الدقيقة (M1) فقط' },
       { name: 'ETH/USD', symbol: 'ETHUSDT', allowSeconds: false, f1: '💎', f2: '🇺🇸', payout: 90, dec: 2, base: 3140.00, desc: 'إيثريوم · فريم الدقيقة (M1) فقط' },
       { name: 'EUR/USD', symbol: 'EURUSDT', allowSeconds: true, f1: '🇪🇺', f2: '🇺🇸', payout: 88, dec: 5, base: 1.08420, desc: 'يدعم الدقيقة (M1) والثواني (S5/S3)' },
@@ -397,63 +403,65 @@
     let soundEnabled = true;
     let isBusy = false;
     let timerInterval = null;
-    let sniperHuntLoop = null;
+    let syncWaitInterval = null;
 
     let sessionWins = 0;
     let sessionLosses = 0;
 
     let livePrices = {};
     let tickSeries = {};
-    let klinesM1 = {}; // آخر 80 شمعة دقيقة حقيقية
+    // مصفوفة للشموع المغلقة فقط (Closed Candles) + كائن منفصل للشمعة الجارية لمنع التلوث وإعادة الرسم
+    let closedCandlesM1 = {};
+    let formingCandleM1 = {};
     let ws = null;
 
     pocketPairs.forEach(p => {
       livePrices[p.name] = p.base;
       tickSeries[p.name] = [];
-      klinesM1[p.name] = [];
+      closedCandlesM1[p.name] = [];
+      formingCandleM1[p.name] = null;
     });
 
-    // ==================== 2. فحص الجلسة وساعة إغلاق شمعة الدقيقة ====================
-    function updateSessionAndCandleClock() {
-      const now = new Date();
-      const utcH = now.getUTCHours();
-      const secRemaining = 60 - now.getSeconds();
+    // ==================== 2. ساعة الشمعة الحقيقية + حالة الجلسة ====================
+    function getSecondsToNextCandle() {
+      const sec = new Date().getSeconds();
+      return 60 - sec;
+    }
 
-      // تحديث ساعة إغلاق شمعة الدقيقة
+    function updateClockAndSession() {
+      const secLeft = getSecondsToNextCandle();
       const badge = document.getElementById('candleCountdownBadge');
       const advice = document.getElementById('candleAdviceTxt');
-      badge.innerText = `00:${secRemaining < 10 ? '0' + secRemaining : secRemaining}`;
+      badge.innerText = `00:${secLeft < 10 ? '0' + secLeft : secLeft}`;
 
-      if (secRemaining <= 6 || secRemaining >= 55) {
+      if (secLeft <= 4 || secLeft === 60) {
         badge.className = 'px-2.5 py-1 rounded-lg bg-emerald-500/20 border border-emerald-400 text-emerald-400 font-extrabold text-sm en-num';
-        advice.innerText = '🔥 توقيت مثالي الآن! (افتتاح/إغلاق شمعة M1 الجديدة)';
-        advice.className = 'text-[10px] text-emerald-400 font-bold';
+        advice.innerText = '🔥 نافذة القنص الذهبية الآن (إغلاق الشمعة وافتتاح الجديدة)';
+        advice.className = 'text-[10px] text-emerald-400 font-bold mt-0.5';
       } else {
-        badge.className = 'px-2.5 py-1 rounded-lg bg-black/50 border border-amber-500/40 text-amber-400 font-extrabold text-sm en-num';
-        advice.innerText = `متبقي ${secRemaining} ثانية لإغلاق شمعة الدقيقة الحالية`;
-        advice.className = 'text-[10px] text-gray-400';
+        badge.className = 'px-2.5 py-1 rounded-lg bg-black/60 border border-sky-500/40 text-sky-400 font-extrabold text-sm en-num';
+        advice.innerText = `متبقي ${secLeft} ثانية لإغلاق الشمعة الحالية وتأكيد الإشارة`;
+        advice.className = 'text-[10px] text-gray-400 mt-0.5';
       }
 
-      // تحديث حالة جلسة التداول (لندن / نيويورك مقابل ركود آسيا)
+      const utcH = new Date().getUTCHours();
       const sessEl = document.getElementById('sessionStatusTxt');
-      if (utcH >= 7 && utcH < 13) {
-        sessEl.innerText = 'جلسة لندن نشطة (سيولة مؤسسية ممتازة ✅)';
-      } else if (utcH >= 13 && utcH < 21) {
-        sessEl.innerText = 'تقاطع لندن ونيويورك (أعلى دقة للـ BOS والـ OB 🔥)';
+      if (utcH >= 7 && utcH < 21) {
+        sessEl.innerText = 'جلسة لندن / نيويورك نشطة (سيولة حقيقية عالية ✅)';
       } else {
-        sessEl.innerText = 'الفترة الآسيوية (فلتر الحماية من الركود مشدد ⚠️)';
+        sessEl.innerText = 'الجلسة الآسيوية (فلتر الحماية من الكسر الكاذب مشدد ⚠️)';
       }
     }
-    setInterval(updateSessionAndCandleClock, 1000);
+    setInterval(updateClockAndSession, 500);
 
-    // ==================== 3. قفل الفريمات غير المدعومة تلقائياً ====================
+    // ==================== 3. قفل الفريمات حسب قوانين Pocket Option ====================
     function applyTimeframeRulesForPair(pair) {
       const secBtns = ['btn-S3', 'btn-S5', 'btn-S15'];
       if (!pair.allowSeconds) {
         secBtns.forEach(id => {
           const b = document.getElementById(id);
           b.disabled = true;
-          b.className = 'time-btn py-2 rounded-xl bg-[#080b11] border border-[#161e2e] text-xs font-bold text-gray-600 line-through cursor-not-allowed en-num';
+          b.className = 'time-btn py-2 rounded-xl bg-[#070a10] border border-[#151d2e] text-xs font-bold text-gray-600 line-through cursor-not-allowed en-num';
         });
         if (selectedSeconds < 60) selectTime('M1', 60);
         else selectTime(selectedTimeCode, selectedSeconds);
@@ -463,7 +471,7 @@
       }
     }
 
-    // ==================== 4. جلب الشموع الحقيقية (80 شمعة دقيقة) + WebSocket المباشر ====================
+    // ==================== 4. جلب البيانات الحقيقية بدون تلويث الفوليوم (Fixed Stream Bug) ====================
     async function initPairData(pair) {
       if (ws) {
         ws.onclose = null;
@@ -473,10 +481,12 @@
       document.getElementById('livePriceTxt').innerText = 'مزامنة...';
 
       try {
-        const kRes = await fetch(`https://api.binance.com/api/v3/klines?symbol=${pair.symbol}&interval=1m&limit=80`);
+        // جلب آخر 100 شمعة دقيقة من Binance
+        const kRes = await fetch(`https://api.binance.com/api/v3/klines?symbol=${pair.symbol}&interval=1m&limit=100`);
         const kData = await kRes.json();
-        if (Array.isArray(kData) && kData.length > 0) {
-          klinesM1[pair.name] = kData.map(k => ({
+        if (Array.isArray(kData) && kData.length > 2) {
+          // نفصل الشموع المغلقة رسمياً عن الشمعة الأخيرة التي ما زالت تتكون
+          const allParsed = kData.map(k => ({
             time: k[0],
             open: parseFloat(k[1]),
             high: parseFloat(k[2]),
@@ -484,6 +494,9 @@
             close: parseFloat(k[4]),
             vol: parseFloat(k[5])
           }));
+          closedCandlesM1[pair.name] = allParsed.slice(0, -1);
+          formingCandleM1[pair.name] = allParsed[allParsed.length - 1];
+          document.getElementById('closedCandlesCountTxt').innerText = `Closed: ${closedCandlesM1[pair.name].length}m`;
         }
 
         const tRes = await fetch(`https://api.binance.com/api/v3/trades?symbol=${pair.symbol}&limit=80`);
@@ -506,7 +519,7 @@
         }
       } catch (e) {}
 
-      // اتصال WebSocket المزدوج (صفقات فورية + تحديث شموع الدقيقة)
+      // WebSocket: نفصل تماماً بين @trade و @kline_1m حتى لا يتضخم الفوليوم
       ws = new WebSocket(`wss://stream.binance.com:9443/stream?streams=${pair.symbol.toLowerCase()}@trade/${pair.symbol.toLowerCase()}@kline_1m`);
       ws.onmessage = (e) => {
         const msg = JSON.parse(e.data);
@@ -523,13 +536,8 @@
           const delta = price - prev;
 
           livePrices[pair.name] = price;
-          if (delta !== 0 || series.length < 25) {
-            series.push({ price, delta, buy: isBuy, vol });
-            if (series.length > 120) series.shift();
-          } else {
-            series[series.length - 1].vol += vol;
-            series[series.length - 1].buy = isBuy;
-          }
+          series.push({ price, delta, buy: isBuy, vol });
+          if (series.length > 100) series.shift();
 
           if (pair.name === currentPair.name) {
             updateLivePriceUI(price, delta >= 0);
@@ -544,12 +552,17 @@
             close: parseFloat(k.c),
             vol: parseFloat(k.v)
           };
-          const arr = klinesM1[pair.name];
-          if (arr.length > 0 && arr[arr.length - 1].time === candle.time) {
-            arr[arr.length - 1] = candle;
-          } else {
-            arr.push(candle);
-            if (arr.length > 85) arr.shift();
+
+          // تحديث الشمعة الجارية
+          formingCandleM1[pair.name] = candle;
+
+          // إذا أغلقت الشمعة رسمياً (k.x === true)، نضيفها لمصفوفة الشموع المغلقة المؤكدة
+          if (k.x === true) {
+            const arr = closedCandlesM1[pair.name];
+            if (arr.length === 0 || arr[arr.length - 1].time !== candle.time) {
+              arr.push(candle);
+              if (arr.length > 100) arr.shift();
+            }
           }
         }
       };
@@ -562,110 +575,17 @@
 
       const trackEl = document.getElementById('liveTrackSpan');
       if (trackEl) trackEl.innerText = price.toFixed(currentPair.dec);
-
-      // تحديث ملخص الهيكل العلوي بشكل حي
-      if (klinesM1[currentPair.name].length >= 30) {
-        const smc = detectSMC(klinesM1[currentPair.name], price);
-        const stEl = document.getElementById('structureLiveTxt');
-        const obEl = document.getElementById('obDistanceTxt');
-        stEl.innerText = `هيكل M1: ${smc.bosLabel}`;
-        stEl.className = `text-[11px] font-bold mt-0.5 ${smc.structureBull ? 'text-emerald-400' : 'text-red-400'}`;
-        obEl.innerText = smc.obShortStatus;
-      }
     }
 
-    // ==================== 5. خوارزمية Smart Money الحقيقية (5-Bar Fractal BOS + Order Block + FVG) ====================
-    function detectSMC(candles, currentPrice) {
-      const n = candles.length;
-      // نعتمد على الشموع المكتملة لتحديد الفركتلات والـ BOS
-      let lastFractalHigh = null;
-      let lastFractalLow = null;
-      let fractalHighIdx = -1;
-      let fractalLowIdx = -1;
-
-      for (let i = 5; i < n - 3; i++) {
-        const c = candles[i];
-        if (c.high > candles[i - 1].high && c.high > candles[i - 2].high &&
-            c.high > candles[i + 1].high && c.high > candles[i + 2].high) {
-          lastFractalHigh = c.high;
-          fractalHighIdx = i;
-        }
-        if (c.low < candles[i - 1].low && c.low < candles[i - 2].low &&
-            c.low < candles[i + 1].low && c.low < candles[i + 2].low) {
-          lastFractalLow = c.low;
-          fractalLowIdx = i;
-        }
-      }
-
-      if (!lastFractalHigh) lastFractalHigh = Math.max(...candles.slice(-20, -2).map(c => c.high));
-      if (!lastFractalLow) lastFractalLow = Math.min(...candles.slice(-20, -2).map(c => c.low));
-
-      // فحص كسر الهيكل الحقيقي (Fractal Break of Structure - BOS)
-      let bullishBOS = false;
-      let bearishBOS = false;
-      const recentClosed = candles.slice(-8, -1);
-      recentClosed.forEach(c => {
-        if (c.close > lastFractalHigh) bullishBOS = true;
-        if (c.close < lastFractalLow) bearishBOS = true;
-      });
-
-      const ema20 = calcEMA(candles.map(c => c.close), 20);
-      const structureBull = bullishBOS || (!bearishBOS && currentPrice >= ema20);
-
-      // تحديد الـ Order Block المؤسسي (آخر شمعة معاكسة قبل موجة الكسر)
-      let bullOB = { top: lastFractalLow * 1.0005, bottom: lastFractalLow };
-      let bearOB = { top: lastFractalHigh, bottom: lastFractalHigh * 0.9995 };
-
-      for (let i = n - 2; i >= Math.max(2, n - 18); i--) {
-        // Bullish OB: شمعة هابطة تلتها شمعتان صاعدتان قويتان
-        if (candles[i].close < candles[i].open && candles[i + 1].close > candles[i].high) {
-          bullOB = { top: candles[i].open, bottom: candles[i].low };
-          break;
-        }
-      }
-      for (let i = n - 2; i >= Math.max(2, n - 18); i--) {
-        // Bearish OB: شمعة صاعدة تلتها شمعة ابتلاعية هابطة كسرت قاعها
-        if (candles[i].close > candles[i].open && candles[i + 1].close < candles[i].low) {
-          bearOB = { top: candles[i].high, bottom: candles[i].open };
-          break;
-        }
-      }
-
-      // فحص الفجوة السعرية (Fair Value Gap - FVG) في آخر 10 شموع
-      let hasBullFVG = false;
-      let hasBearFVG = false;
-      for (let i = n - 10; i < n - 2; i++) {
-        if (i >= 2 && candles[i].low > candles[i - 2].high) hasBullFVG = true;
-        if (i >= 2 && candles[i].high < candles[i - 2].low) hasBearFVG = true;
-      }
-
-      // هل يختبر السعر الحالي منطقة الـ Order Block أو يرتد منها؟
-      const totalRange = (lastFractalHigh - lastFractalLow) || 1;
-      const posInStructure = (currentPrice - lastFractalLow) / totalRange; // 0 عند القاع، 1 عند القمة
-
-      // شروط الـ Order Block المثالية (عدم الشراء في سقف المقاومة وعدم البيع في قاع الدعم)
-      const inDiscountForBuy = posInStructure <= 0.58 || (currentPrice >= bullOB.bottom && currentPrice <= bullOB.top * 1.001);
-      const inPremiumForSell = posInStructure >= 0.42 || (currentPrice <= bearOB.top && currentPrice >= bearOB.bottom * 0.999);
-
-      let bosLabel = bullishBOS ? 'كسر فركتالي صاعد (Bullish BOS ↑)' : bearishBOS ? 'كسر فركتالي هابط (Bearish BOS ↓)' : (structureBull ? 'مسار صاعد ↑' : 'مسار هابط ↓');
-      let obLabel = inDiscountForBuy && structureBull ? 'ارتداد من Bullish OB ↑' : inPremiumForSell && !structureBull ? 'رفض من Bearish OB ↓' : 'في منتصف المسار';
-
-      return {
-        structureBull,
-        bullishBOS,
-        bearishBOS,
-        bosLabel,
-        obLabel,
-        obShortStatus: inDiscountForBuy ? 'Zone: Demand OB 🟩' : inPremiumForSell ? 'Zone: Supply OB 🟥' : 'Zone: Mid-Range',
-        inDiscountForBuy,
-        inPremiumForSell,
-        hasBullFVG,
-        hasBearFVG,
-        posInStructure
-      };
+    // ==================== 5. الدوال الرياضية الخالية من إعادة الرسم (Non-Repainting Math) ====================
+    function calcEMA(arr, period) {
+      if (arr.length === 0) return 0;
+      const k = 2 / (period + 1);
+      let ema = arr[0];
+      for (let i = 1; i < arr.length; i++) ema = arr[i] * k + ema * (1 - k);
+      return ema;
     }
 
-    // ==================== 6. الدوال الرياضية المساعدة (Wilder RSI, Stoch, EMA, Z-Score) ====================
     function calcWilderRSI(closes, period = 14) {
       if (closes.length < period + 2) return 50;
       let avgGain = 0, avgLoss = 0;
@@ -681,193 +601,221 @@
         avgGain = (avgGain * (period - 1) + (chg > 0 ? chg : 0)) / period;
         avgLoss = (avgLoss * (period - 1) + (chg < 0 ? -chg : 0)) / period;
       }
-      if (avgLoss === 0) return 88;
+      if (avgLoss === 0) return 85;
       return +(100 - (100 / (1 + (avgGain / avgLoss)))).toFixed(1);
     }
 
-    function calcEMA(arr, period) {
-      const k = 2 / (period + 1);
-      let ema = arr[0];
-      for (let i = 1; i < arr.length; i++) ema = arr[i] * k + ema * (1 - k);
-      return ema;
+    function calcBollinger(closes, period = 20) {
+      const slice = closes.slice(-period);
+      const mean = slice.reduce((a, b) => a + b, 0) / slice.length;
+      const std = Math.sqrt(slice.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / slice.length) || 1;
+      const last = slice[slice.length - 1];
+      const zScore = +((last - mean) / std).toFixed(2);
+      const pctB = Math.round(((last - (mean - 2 * std)) / (4 * std)) * 100);
+      return { mean, upper: mean + 2 * std, lower: mean - 2 * std, zScore, pctB };
     }
 
-    function calcZScore(arr) {
-      const n = arr.length;
-      if (n < 5) return 0;
-      const mean = arr.reduce((a, b) => a + b, 0) / n;
-      const std = Math.sqrt(arr.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / n);
-      return std === 0 ? 0 : +((arr[n - 1] - mean) / std).toFixed(2);
-    }
-
-    // ==================== 7. التقييم المؤسسي الصارم الشامل (V7 Engine) ====================
-    function evaluateInstitutionalV7(pair) {
-      const candles = klinesM1[pair.name];
+    // ==================== 6. محرك القرار المصحح (V8 Non-Repainting Engine) ====================
+    // يحلل الشموع المغلقة + الشمعة التي توشك على الإغلاق ليقرر اتجاه الشمعة الجديدة
+    function runNonRepaintEngineV8(pair) {
+      const closed = closedCandlesM1[pair.name];
+      const forming = formingCandleM1[pair.name];
       const ticks = tickSeries[pair.name];
-      const last = livePrices[pair.name];
 
-      const closes = candles.length >= 30 ? candles.map(c => c.close) : ticks.map(t => t.price);
-      closes[closes.length - 1] = last;
+      if (closed.length < 35) {
+        return { ready: false, reason: 'جاري استكمال تحميل الشموع...' };
+      }
 
-      // 1 & 2 & 3: فحص SMC (Fractal BOS + Order Block + FVG)
-      const smc = candles.length >= 25
-        ? detectSMC(candles, last)
-        : {
-            structureBull: last >= closes[0],
-            bosLabel: 'مسار لحظي',
-            obLabel: 'منطقة سيولة',
-            inDiscountForBuy: true,
-            inPremiumForSell: true,
-            hasBullFVG: true,
-            hasBearFVG: false
-          };
+      // ندمج الشموع المغلقة مع الشمعة التي تغلق الآن (في الثانية 58-60)
+      const evalCandles = forming ? [...closed, forming] : [...closed];
+      const n = evalCandles.length;
+      const c0 = evalCandles[n - 1]; // الشمعة التي تغلق الآن
+      const c1 = evalCandles[n - 2]; // الشمعة المغلقة قبلها
+      const c2 = evalCandles[n - 3]; // الشمعة قبل السابقة
+      const closes = evalCandles.map(c => c.close);
 
-      // 4: Wilder RSI (14)
+      // 1. الاتجاه الهيكلي (EMA 20 vs EMA 50)
+      const ema20 = calcEMA(closes.slice(-45), 20);
+      const ema50 = calcEMA(closes.slice(-75), 50);
+      const trendBull = ema20 >= ema50;
+
+      // 2. الفركتال الحقيقي وكسر الهيكل (Confirmed 5-Bar Fractal BOS)
+      let swingHigh = -Infinity, swingLow = Infinity;
+      for (let i = n - 25; i < n - 3; i++) {
+        if (evalCandles[i].high > evalCandles[i - 1].high && evalCandles[i].high > evalCandles[i + 1].high) {
+          if (evalCandles[i].high > swingHigh) swingHigh = evalCandles[i].high;
+        }
+        if (evalCandles[i].low < evalCandles[i - 1].low && evalCandles[i].low < evalCandles[i + 1].low) {
+          if (evalCandles[i].low < swingLow) swingLow = evalCandles[i].low;
+        }
+      }
+      if (swingHigh === -Infinity) swingHigh = Math.max(...closes.slice(-20, -2));
+      if (swingLow === Infinity) swingLow = Math.min(...closes.slice(-20, -2));
+
+      const midStructure = (swingHigh + swingLow) / 2;
+      const bosBull = c0.close >= midStructure;
+
+      // 3. تحديد منطقة الـ Order Block واختبارها (OB Mitigation)
+      let bullOB_Top = swingLow + (swingHigh - swingLow) * 0.38;
+      let bearOB_Bot = swingHigh - (swingHigh - swingLow) * 0.38;
+      const testedBullOB = c0.low <= bullOB_Top || c1.low <= bullOB_Top;
+      const testedBearOB = c0.high >= bearOB_Bot || c1.high >= bearOB_Bot;
+
+      // 4. تحليل برايس أكشن الشمعة المغلقة (Price Action: Pinbar / Rejection / Engulfing)
+      const body0 = Math.abs(c0.close - c0.open);
+      const range0 = (c0.high - c0.low) || 0.00001;
+      const lowerWick0 = Math.min(c0.open, c0.close) - c0.low;
+      const upperWick0 = c0.high - Math.max(c0.open, c0.close);
+
+      // شروط شمعة الدفع الشرائي أو رفض الهبوط (Pinbar / Bullish Rejection)
+      const bullPinbar = lowerWick0 > body0 * 1.1 && c0.close >= c0.open;
+      const bullEngulf = c0.close > c0.open && c1.close < c1.open && c0.close > c1.open;
+      const pullBackEndedBuy = trendBull && c1.close < c1.open && c0.close > c0.open; // شمعة حمراء تصحيحية تلتها شمعة خضراء
+
+      // شروط شمعة الدفع البيعي أو رفض الصعود
+      const bearPinbar = upperWick0 > body0 * 1.1 && c0.close <= c0.open;
+      const bearEngulf = c0.close < c0.open && c1.close > c1.open && c0.close < c1.open;
+      const pullBackEndedSell = !trendBull && c1.close > c1.open && c0.close < c0.open; // شمعة خضراء تصحيحية تلتها شمعة حمراء
+
+      // 5. منع الخطأ القاتل: حظر الشراء بعد شمعة انفجارية ضخمة (Exhaustion Climax)
+      let sumRanges = 0;
+      for (let i = n - 15; i < n - 1; i++) sumRanges += (evalCandles[i].high - evalCandles[i].low);
+      const atr14 = (sumRanges / 14) || range0;
+      const isClimaxCandle = range0 > atr14 * 2.3; // شمعة عملاقة منهكة غالباً ما تعكس في الدقيقة التالية!
+
+      // 6. Wilder RSI (14) + Bollinger Z-Score
       const rsi = calcWilderRSI(closes.slice(-35), 14);
-      const rsiBull = (rsi >= 48 && rsi <= 71) || rsi <= 29;
-      const rsiBear = (rsi <= 52 && rsi >= 29) || rsi >= 71;
+      const bb = calcBollinger(closes, 20);
 
-      // 5: ARI Acceleration & Z-Score
-      const zScore = calcZScore(closes.slice(-22));
-      const nTicks = ticks.length;
-      const recentDelta = nTicks >= 5 ? (ticks[nTicks - 1].price - ticks[nTicks - 4].price) : 0;
-      const ariBull = recentDelta > 0;
-      const ariBear = recentDelta < 0;
+      // 7. فوليوم الشمعة الحقيقي (VSA) بدون تضخيم
+      const avgVol = evalCandles.slice(-20, -1).reduce((a, c) => a + c.vol, 0) / 19;
+      const volRatio = Math.round((c0.vol / (avgVol || 1)) * 100);
+      const healthyVol = volRatio >= 55;
 
-      // 6: رفض ذيل الشمعة الحالية والسابقة (Wick Rejection & Candle Body)
-      let wickBull = ariBull;
-      let wickBear = ariBear;
-      let wickDesc = ariBull ? 'دفع شرائي من الذيل ↑' : 'ضغط بيعي من القمة ↓';
-      if (candles.length >= 3) {
-        const curC = candles[candles.length - 1];
-        const prevC = candles[candles.length - 2];
-        const curLowerWick = Math.min(curC.open, curC.close) - curC.low;
-        const curUpperWick = curC.high - Math.max(curC.open, curC.close);
-        const prevBullish = prevC.close > prevC.open;
-        wickBull = (curLowerWick >= curUpperWick && curC.close >= curC.open) || (prevBullish && ariBull);
-        wickBear = (curUpperWick >= curLowerWick && curC.close <= curC.open) || (!prevBullish && ariBear);
-        wickDesc = wickBull ? 'ذيل سفلي رافض للهبوط ↑' : wickBear ? 'ذيل علوي رافض للصعود ↓' : 'شمعة متعادلة ↔';
-      }
-
-      // 7: تحليل حجم التداول للشمعة (VSA Volume Spread Analysis)
-      let volStrong = true;
-      let volDesc = 'سيولة نشطة ✅';
-      if (candles.length >= 20) {
-        const avgVol = candles.slice(-20, -1).reduce((a, c) => a + c.vol, 0) / 19;
-        const lastCompletedVol = candles[candles.length - 2].vol;
-        volStrong = lastCompletedVol >= avgVol * 0.65;
-        volDesc = volStrong ? `سيولة قوية (${Math.round((lastCompletedVol / (avgVol || 1)) * 100)}%) ✅` : 'سيولة ضعيفة ⚠️';
-      }
-
-      // 8: دلتا عقود السيولة اللحظية (Order Flow Delta)
+      // 8. دلتا العقود اللحظية (Order Flow Delta في آخر 12 صفقة)
       let bVol = 0, sVol = 0;
-      ticks.slice(-14).forEach((t, idx) => {
-        const w = (idx + 1) * t.vol;
+      ticks.slice(-12).forEach((t, i) => {
+        const w = (i + 1) * t.vol;
         if (t.buy || t.delta > 0) bVol += w;
         else sVol += w;
       });
-      const buyFlowPct = Math.round((bVol / (bVol + sVol || 1)) * 100);
-      const deltaBull = buyFlowPct >= 54;
-      const deltaBear = buyFlowPct <= 46;
+      const buyDeltaPct = Math.round((bVol / (bVol + sVol || 1)) * 100);
 
-      // ==================== قواعد الحسم الصارمة لمنع الصفقات الخاسرة ====================
-      let bullPoints = 0;
-      if (smc.structureBull) bullPoints += 20;
-      if (smc.inDiscountForBuy) bullPoints += 16;
-      if (rsiBull) bullPoints += 12;
-      if (ariBull) bullPoints += 16;
-      if (wickBull) bullPoints += 14;
-      if (volStrong) bullPoints += 10;
-      if (deltaBull) bullPoints += 12;
-
-      let bearPoints = 0;
-      if (!smc.structureBull) bearPoints += 20;
-      if (smc.inPremiumForSell) bearPoints += 16;
-      if (rsiBear) bearPoints += 12;
-      if (ariBear) bearPoints += 16;
-      if (wickBear) bearPoints += 14;
-      if (volStrong) bearPoints += 10;
-      if (deltaBear) bearPoints += 12;
-
-      // حظر الشراء في قمة متضخمة (zScore > 1.45) وحظر البيع في قاع مستنزف (zScore < -1.45) إلا إذا كان ارتداداً عكسياً مؤكداً
-      const validSMC_Buy = bullPoints >= 72 && zScore < 1.35 && rsi < 73 && ariBull && deltaBull;
-      const validSMC_Sell = bearPoints >= 72 && zScore > -1.35 && rsi > 27 && ariBear && deltaBear;
-
-      // أو قنص انعكاس حاد من Order Block طرفي عند تشبع Z-Score
-      const extremeReversalBuy = zScore <= -1.65 && rsi <= 32 && ariBull && deltaBull;
-      const extremeReversalSell = zScore >= 1.65 && rsi >= 68 && ariBear && deltaBear;
-
-      let signalConfirmed = false;
+      // ==================== قواعد القنص الـ 3 عالية الدقة (V8 Setups) ====================
+      let signalValid = false;
       let isUp = true;
-      let strategyType = '';
+      let setupName = '';
       let reason = '';
+      let confidence = 90;
 
-      if (validSMC_Buy || extremeReversalBuy) {
-        signalConfirmed = true;
+      // Setup 1: استمرار الاتجاه بعد انتهاء التصحيح (Trend Pullback Continuation)
+      if (!isClimaxCandle && (pullBackEndedBuy || bullEngulf || bullPinbar) && rsi >= 44 && rsi <= 68 && bb.zScore < 1.3 && buyDeltaPct >= 52) {
+        signalValid = true;
         isUp = true;
-        strategyType = extremeReversalBuy ? 'ارتداد Order Block سفلي ⬆️' : 'قنص BOS + Bullish OB ⬆️';
-        reason = `تأكيد SMC: ${smc.bosLabel} + ارتداد من منطقة طلب OB + سيولة شراء (${buyFlowPct}%)`;
-      } else if (validSMC_Sell || extremeReversalSell) {
-        signalConfirmed = true;
+        setupName = 'انتهاء التصحيح + ابتلاع شرائي ⬆️';
+        reason = `إغلاق شمعة تأكيد صاعدة بعد تصحيح + RSI (${rsi}) في منطقة آمنة + سيولة شراء (${buyDeltaPct}%)`;
+        confidence = 93;
+      }
+      else if (!isClimaxCandle && (pullBackEndedSell || bearEngulf || bearPinbar) && rsi <= 56 && rsi >= 32 && bb.zScore > -1.3 && buyDeltaPct <= 48) {
+        signalValid = true;
         isUp = false;
-        strategyType = extremeReversalSell ? 'ارتداد Order Block علوي ⬇️' : 'قنص BOS + Bearish OB ⬇️';
-        reason = `تأكيد SMC: ${smc.bosLabel} + رفض من منطقة عرض OB + سيولة بيع (${100 - buyFlowPct}%)`;
+        setupName = 'انتهاء التصحيح + ابتلاع بيعي ⬇️';
+        reason = `إغلاق شمعة تأكيد هابطة بعد تصحيح + RSI (${rsi}) داعم للهبوط + سيولة بيع (${100 - buyDeltaPct}%)`;
+        confidence = 93;
       }
 
-      const maxPts = Math.max(bullPoints, bearPoints);
-      const confidence = Math.min(97, Math.max(85, maxPts));
+      // Setup 2: ارتداد مباشر من Order Block + Bollinger Band Extreme (Mean Reversion)
+      if (!signalValid) {
+        if ((bb.zScore <= -1.65 || rsi <= 30 || (testedBullOB && bullPinbar)) && (c0.close > c0.open || lowerWick0 > body0) && buyDeltaPct >= 53) {
+          signalValid = true;
+          isUp = true;
+          setupName = 'ارتداد Order Block + ذيل سفلي ⬆️';
+          reason = `رفض سعري واضح من منطقة الطلب (Z=${bb.zScore}) مع دخول عقود شراء (${buyDeltaPct}%)`;
+          confidence = 95;
+        }
+        else if ((bb.zScore >= 1.65 || rsi >= 70 || (testedBearOB && bearPinbar)) && (c0.close < c0.open || upperWick0 > body0) && buyDeltaPct <= 47) {
+          signalValid = true;
+          isUp = false;
+          setupName = 'رفض Order Block + ذيل علوي ⬇️';
+          reason = `رفض سعري واضح من منطقة العرض (Z=+${bb.zScore}) مع ضغط عقود بيع (${100 - buyDeltaPct}%)`;
+          confidence = 95;
+        }
+      }
+
+      // Setup 3: إذا كانت الشمعة المغلقة شمعة استنزاف عملاقة (Climax Exhaustion) وظهر رفض في الذيل، ندخل عكسها!
+      if (!signalValid && isClimaxCandle) {
+        if (c0.close > c0.open && bb.zScore >= 1.8 && upperWick0 > range0 * 0.25 && buyDeltaPct <= 48) {
+          signalValid = true;
+          isUp = false;
+          setupName = 'قنص انعكاس شمعة الاستنزاف ⬇️';
+          reason = `شمعة صعود متطرفة خارج البولينجر (Z=+${bb.zScore}) بدأت بالتصحيح العكسي`;
+          confidence = 92;
+        } else if (c0.close < c0.open && bb.zScore <= -1.8 && lowerWick0 > range0 * 0.25 && buyDeltaPct >= 52) {
+          signalValid = true;
+          isUp = true;
+          setupName = 'قنص ارتداد شمعة الاستنزاف ⬆️';
+          reason = `شمعة هبوط متطرفة خارج البولينجر (Z=${bb.zScore}) بدأت بالارتداد الشرائي`;
+          confidence = 92;
+        }
+      }
+
+      const paLabel = bullEngulf ? 'ابتلاعية صاعدة 🟩' : bearEngulf ? 'ابتلاعية هابطة 🟥' : bullPinbar ? 'بن بار شرائي ⬆️' : bearPinbar ? 'بن بار بيعي ⬇️' : (c0.close >= c0.open ? 'إغلاق أخضر ↑' : 'إغلاق أحمر ↓');
+
+      document.getElementById('structureLiveTxt').innerText = `هيكل M1: ${trendBull ? 'ترند صاعد (EMA 20>50)' : 'ترند هابط (EMA 20<50)'} | ${paLabel}`;
 
       return {
-        signalConfirmed,
+        ready: true,
+        signalValid,
         isUp,
-        confidence,
-        strategyType,
+        setupName,
         reason,
-        bosTxt: smc.bosLabel,
-        bosBull: smc.structureBull,
-        obTxt: smc.obLabel,
-        obBull: smc.structureBull,
-        fvgTxt: smc.hasBullFVG ? 'فجوة صاعدة (Bull FVG ↑)' : smc.hasBearFVG ? 'فجوة هابطة (Bear FVG ↓)' : 'متوازن',
-        fvgBull: smc.hasBullFVG || smc.structureBull,
-        rsiTxt: `RSI: ${rsi} (${rsiBull ? 'نطاق شرائي ↑' : 'نطاق بيعي ↓'})`,
-        rsiBull,
-        ariTxt: `Z: ${zScore > 0 ? '+' : ''}${zScore} | ${ariBull ? 'تسارع صاعد ↑' : 'تسارع هابط ↓'}`,
-        ariBull,
-        wickTxt: wickDesc,
-        wickBull,
-        volTxt: volDesc,
-        volBull: volStrong,
-        deltaTxt: deltaBull ? `عقود شراء (${buyFlowPct}%) ↑` : deltaBear ? `عقود بيع (${100 - buyFlowPct}%) ↓` : `متعادل (${buyFlowPct}%)`,
-        deltaBull
+        confidence,
+        trendTxt: trendBull ? 'صاعد (EMA 20>50) ↑' : 'هابط (EMA 20<50) ↓',
+        trendBull,
+        bosTxt: bosBull ? 'فوق الدعم الفركتالي ↑' : 'تحت المقاومة الفركتالية ↓',
+        bosBull,
+        obTxt: testedBullOB ? 'اختبار طلب شرائي (OB ↑)' : testedBearOB ? 'اختبار عرض بيعي (OB ↓)' : 'منتصف النطاق',
+        obBull: testedBullOB || trendBull,
+        candleTxt: paLabel,
+        candleBull: c0.close >= c0.open,
+        rsiTxt: `${rsi} (${rsi > 68 ? 'تشبع شراء' : rsi < 32 ? 'تشبع بيع' : 'نطاق سليم ✅'})`,
+        rsiBull: rsi >= 48 && rsi <= 68,
+        bbTxt: `Z: ${bb.zScore > 0 ? '+' : ''}${bb.zScore} (%B: ${bb.pctB}%)`,
+        bbBull: bb.zScore < 1.3,
+        volTxt: `${volRatio}% من المتوسط ${healthyVol ? '✅' : '⚠️'}`,
+        volBull: healthyVol,
+        deltaTxt: buyDeltaPct >= 50 ? `شراء (${buyDeltaPct}%) ↑` : `بيع (${100 - buyDeltaPct}%) ↓`,
+        deltaBull: buyDeltaPct >= 50
       };
     }
 
-    // ==================== 8. تشغيل الفحص المؤسسي ومزامنة نقطة الدخول ====================
-    function setGridItem(id, text, isBull) {
+    // ==================== 7. تشغيل القناص مع قفل الثانية 00 ====================
+    function setGridBox(id, text, isBull) {
       const el = document.getElementById(id);
       el.innerText = text;
       el.className = `text-xs font-extrabold mt-0.5 ${isBull ? 'text-emerald-400' : 'text-red-400'}`;
     }
 
-    function updateAll8Grid(ev) {
-      setGridItem('rd-bos', ev.bosTxt, ev.bosBull);
-      setGridItem('rd-ob', ev.obTxt, ev.obBull);
-      setGridItem('rd-fvg', ev.fvgTxt, ev.fvgBull);
-      setGridItem('rd-rsi', ev.rsiTxt, ev.rsiBull);
-      setGridItem('rd-ari', ev.ariTxt, ev.ariBull);
-      setGridItem('rd-wick', ev.wickTxt, ev.wickBull);
-      setGridItem('rd-vol', ev.volTxt, ev.volBull);
-      setGridItem('rd-delta', ev.deltaTxt, ev.deltaBull);
+    function updateAll8GridV8(ev) {
+      if (!ev || !ev.ready) return;
+      setGridBox('rd-trend', ev.trendTxt, ev.trendBull);
+      setGridBox('rd-bos', ev.bosTxt, ev.bosBull);
+      setGridBox('rd-ob', ev.obTxt, ev.obBull);
+      setGridBox('rd-candle', ev.candleTxt, ev.candleBull);
+      setGridBox('rd-rsi', ev.rsiTxt, ev.rsiBull);
+      setGridBox('rd-bb', ev.bbTxt, ev.bbBull);
+      setGridBox('rd-vol', ev.volTxt, ev.volBull);
+      setGridBox('rd-delta', ev.deltaTxt, ev.deltaBull);
     }
 
-    function startInstitutionalSniperV7() {
+    function startZeroRepaintSniperV8() {
       if (isBusy) return;
       isBusy = true;
       if (timerInterval) clearInterval(timerInterval);
-      if (sniperHuntLoop) clearInterval(sniperHuntLoop);
+      if (syncWaitInterval) clearInterval(syncWaitInterval);
 
       const card = document.getElementById('signalCard');
-      card.className = 'card-po signal-analyzing p-4 text-center relative overflow-hidden transition-all duration-200 min-h-[250px] flex flex-col justify-center items-center';
+      card.className = 'card-po signal-syncing p-4 text-center relative overflow-hidden transition-all duration-200 min-h-[255px] flex flex-col justify-center items-center';
 
       document.getElementById('stateIdle').classList.add('hidden');
       document.getElementById('stateResult').classList.add('hidden');
@@ -876,61 +824,52 @@
       const btn = document.getElementById('mainScanBtn');
       btn.disabled = true;
       btn.classList.add('opacity-50');
-      btn.innerHTML = `<i class="fa-solid fa-spinner spin-anim"></i> جاري مسح هيكل (BOS + Order Block)...`;
+      btn.innerHTML = `<i class="fa-solid fa-spinner spin-anim"></i> قفل المزامنة نشط.. بانتظار إغلاق الشمعة...`;
 
-      let step = 0;
-      const stepsTitles = [
-        '1/4 مسح آخر 80 شمعة لتحديد القمم والقيعان الفركتالية (BOS)...',
-        '2/4 تحديد مناطق الـ Order Blocks والفجوات السعرية (FVG)...',
-        '3/4 فحص سيولة الشمعة (VSA Volume) ومؤشر Wilder RSI...',
-        '4/4 ترقب نبضة الانطلاق من منطقة الـ OB بدون تأخير...'
-      ];
+      const useCandleLock = document.getElementById('syncLockToggle').checked && selectedSeconds >= 60;
 
-      const stepInt = setInterval(() => {
-        const ev = evaluateInstitutionalV7(currentPair);
-        updateAll8Grid(ev);
-        if (step < stepsTitles.length) {
-          const pct = (step + 1) * 23;
-          document.getElementById('analyzeStepTitle').innerText = stepsTitles[step];
-          document.getElementById('analyzeProgressBar').style.width = pct + '%';
-          document.getElementById('analyzeProgressTxt').innerText = `مسح SMC المؤسسي · ${pct}%`;
-          step++;
+      // إذا كان قفل افتتاح الشمعة مفعلاً على فريم الدقيقة، ننتظر حتى تصل الثانية المتبقية إلى <= 2 ثانية
+      syncWaitInterval = setInterval(() => {
+        const secLeft = getSecondsToNextCandle();
+        const ev = runNonRepaintEngineV8(currentPair);
+        updateAll8GridV8(ev);
+
+        if (useCandleLock && secLeft > 2 && secLeft < 59) {
+          const pct = Math.round(((60 - secLeft) / 60) * 100);
+          document.getElementById('analyzeHeaderBadge').innerText = `منع الدخول في منتصف الشمعة (متبقي ${secLeft} ثانية للإغلاق)...`;
+          document.getElementById('analyzeStepTitle').innerText = `يتم الآن مراقبة ذيل الشمعة الحالية (${ev.candleTxt || '...'})...`;
+          document.getElementById('analyzeProgressBar').style.width = `${pct}%`;
+          document.getElementById('analyzeProgressTxt').innerText = `افتتاح الشمعة الجديدة بعد ${secLeft}s`;
+          document.getElementById('readingsCountTxt').innerText = `انتظار ${secLeft}s`;
         } else {
-          clearInterval(stepInt);
-          huntInstitutionalEntry();
-        }
-      }, 240);
-    }
-
-    function huntInstitutionalEntry() {
-      let checks = 0;
-      document.getElementById('analyzeProgressBar').style.width = '96%';
-      document.getElementById('analyzeHeaderBadge').innerText = 'رادار القنص المؤسسي: ترقب ارتداد الـ Order Block...';
-
-      sniperHuntLoop = setInterval(() => {
-        checks++;
-        const ev = evaluateInstitutionalV7(currentPair);
-        updateAll8Grid(ev);
-        document.getElementById('readingsCountTxt').innerText = ev.signalConfirmed ? 'اكتمل الشرط 🎯' : `مراقبة النبضة (${checks})...`;
-
-        if (ev.signalConfirmed) {
-          clearInterval(sniperHuntLoop);
-          fireInstitutionalSignal(ev);
-        } else if (checks >= 20) {
-          clearInterval(sniperHuntLoop);
-          showInstitutionalHoldCard();
-        } else {
-          document.getElementById('analyzeStepTitle').innerText = 'ننتظر توافق تدفق السيولة مع منطقة الـ Order Block لمنع الخسارة...';
+          // وصلنا إلى لحظة إغلاق الشمعة (أو كنا على فريم ثواني S5) -> نحسم القرار النهائي!
+          clearInterval(syncWaitInterval);
+          finalizeCandleOpenDecision(ev);
         }
       }, 300);
     }
 
-    function fireInstitutionalSignal(ev) {
+    function finalizeCandleOpenDecision(ev) {
+      if (!ev || !ev.ready) {
+        showHoldProtectionCard('البيانات قيد المزامنة، أعد المحاولة بعد ثوانٍ.');
+        return;
+      }
+
+      if (ev.signalValid) {
+        fireConfirmedCandleSignal(ev);
+      } else {
+        // إذا أغلقت الشمعة في منطقة متذبذبة أو كانت شمعة خطرة، نمنع الدخول في هذه الدقيقة لحماية الرصيد
+        showHoldProtectionCard('الشمعة المغلقة لم تحقق شروط البرايس أكشن أو الـ Order Block الآمنة. تخطَّ هذه الدقيقة لحماية رصيدك!');
+      }
+    }
+
+    function fireConfirmedCandleSignal(ev) {
       playDoubleBeep(ev.isUp ? 980 : 520);
 
       document.getElementById('stateAnalyzing').classList.add('hidden');
       document.getElementById('stateResult').classList.remove('hidden');
       document.getElementById('tradeTrackerBar').classList.remove('hidden');
+      document.getElementById('readingsCountTxt').innerText = 'إشارة مؤكدة 🎯';
 
       const lockPrice = livePrices[currentPair.name];
       const card = document.getElementById('signalCard');
@@ -941,35 +880,35 @@
       const stratBadge = document.getElementById('strategyTypeBadge');
 
       const timeDesc = selectedSeconds >= 60 ? `${selectedSeconds / 60} دقيقة (${selectedTimeCode})` : `${selectedSeconds} ثوانٍ (${selectedTimeCode})`;
-      document.getElementById('resultPairHeader').innerText = `${currentPair.name} · فريم ${selectedTimeCode}`;
+      document.getElementById('resultPairHeader').innerText = `${currentPair.name} · افتتاح ${selectedTimeCode}`;
       document.getElementById('entryPriceSpan').innerText = lockPrice.toFixed(currentPair.dec);
       document.getElementById('liveTrackSpan').innerText = lockPrice.toFixed(currentPair.dec);
       document.getElementById('technicalReasonTxt').innerText = ev.reason;
-      stratBadge.innerText = `${ev.strategyType} (${ev.confidence}%)`;
+      stratBadge.innerText = `${ev.setupName} (${ev.confidence}%)`;
 
       if (ev.isUp) {
-        card.className = 'card-po signal-buy p-4 text-center relative overflow-hidden transition-all duration-200 min-h-[250px] flex flex-col justify-center items-center';
+        card.className = 'card-po signal-buy p-4 text-center relative overflow-hidden transition-all duration-200 min-h-[255px] flex flex-col justify-center items-center';
         iconBox.className = 'w-16 h-16 rounded-2xl bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center text-emerald-400 shadow-lg';
         icon.className = 'fa-solid fa-arrow-trend-up text-3xl';
         mainArabic.innerText = 'السوق صاعد ⬆️';
         mainArabic.className = 'text-3xl font-black tracking-wide text-emerald-400';
-        poBtnTxt.innerText = `اضغط HIGHER 🟩 الآن لمدة ${timeDesc}`;
+        poBtnTxt.innerText = `اضغط HIGHER 🟩 الآن فوراً (${timeDesc})`;
         poBtnTxt.className = 'text-xs font-extrabold mt-1 px-3 py-1 rounded-lg inline-block bg-emerald-500 text-black shadow';
         stratBadge.className = 'px-2.5 py-0.5 rounded-full bg-black/60 text-[11px] font-extrabold text-emerald-400';
       } else {
-        card.className = 'card-po signal-sell p-4 text-center relative overflow-hidden transition-all duration-200 min-h-[250px] flex flex-col justify-center items-center';
+        card.className = 'card-po signal-sell p-4 text-center relative overflow-hidden transition-all duration-200 min-h-[255px] flex flex-col justify-center items-center';
         iconBox.className = 'w-16 h-16 rounded-2xl bg-red-500/20 border-2 border-red-400 flex items-center justify-center text-red-400 shadow-lg';
         icon.className = 'fa-solid fa-arrow-trend-down text-3xl';
         mainArabic.innerText = 'السوق نازل ⬇️';
         mainArabic.className = 'text-3xl font-black tracking-wide text-red-400';
-        poBtnTxt.innerText = `اضغط LOWER 🟥 الآن لمدة ${timeDesc}`;
+        poBtnTxt.innerText = `اضغط LOWER 🟥 الآن فوراً (${timeDesc})`;
         poBtnTxt.className = 'text-xs font-extrabold mt-1 px-3 py-1 rounded-lg inline-block bg-red-500 text-white shadow';
         stratBadge.className = 'px-2.5 py-0.5 rounded-full bg-black/60 text-[11px] font-extrabold text-red-400';
       }
 
       let remMs = selectedSeconds * 1000;
       const timerTxt = document.getElementById('countdownTimerTxt');
-      document.getElementById('timerPhaseLabel').innerText = `المتبقي لإغلاق صفقة ${selectedTimeCode}`;
+      document.getElementById('timerPhaseLabel').innerText = `المتبقي لإغلاق شمعة ${selectedTimeCode}`;
       timerTxt.className = 'en-num text-base font-extrabold text-amber-400';
 
       timerInterval = setInterval(() => {
@@ -978,34 +917,38 @@
           timerTxt.innerText = (remMs / 1000).toFixed(1) + 's';
         } else {
           clearInterval(timerInterval);
-          settleInstitutionalResult(ev.isUp, lockPrice);
+          settleCandleResultV8(ev.isUp, lockPrice);
         }
       }, 200);
     }
 
-    function showInstitutionalHoldCard() {
+    function showHoldProtectionCard(msg) {
       isBusy = false;
+      playDoubleBeep(340);
       document.getElementById('stateAnalyzing').classList.add('hidden');
       document.getElementById('stateResult').classList.remove('hidden');
       document.getElementById('tradeTrackerBar').classList.add('hidden');
+      document.getElementById('readingsCountTxt').innerText = 'تم الحظر 🛡️';
 
       const card = document.getElementById('signalCard');
-      card.className = 'card-po signal-wait p-4 text-center relative overflow-hidden transition-all duration-200 min-h-[250px] flex flex-col justify-center items-center';
+      card.className = 'card-po signal-wait p-4 text-center relative overflow-hidden transition-all duration-200 min-h-[255px] flex flex-col justify-center items-center';
 
-      document.getElementById('resultPairHeader').innerText = `${currentPair.name} · فلتر حماية الرصيد`;
-      document.getElementById('strategyTypeBadge').innerText = 'منع دخول عشوائي';
+      document.getElementById('resultPairHeader').innerText = `${currentPair.name} · درع حماية الرصيد`;
+      document.getElementById('strategyTypeBadge').innerText = 'تخطي شمعة خطرة';
+      document.getElementById('strategyTypeBadge').className = 'px-2.5 py-0.5 rounded-full bg-black/60 text-[11px] font-extrabold text-amber-400';
+
       document.getElementById('dirIconBox').className = 'w-16 h-16 rounded-2xl bg-amber-500/20 border-2 border-amber-400 flex items-center justify-center text-amber-400';
       document.getElementById('dirIcon').className = 'fa-solid fa-shield-halved text-3xl';
-      document.getElementById('dirMainArabic').innerText = 'لا تدخل هذه الشمعة ✋';
+      document.getElementById('dirMainArabic').innerText = 'تخطَّ هذه الشمعة ✋';
       document.getElementById('dirMainArabic').className = 'text-2xl font-black tracking-wide text-amber-400';
-      document.getElementById('dirPocketBtnTxt').innerText = 'السعر خارج منطقة الـ Order Block أو السيولة متضاربة';
+      document.getElementById('dirPocketBtnTxt').innerText = 'حماية من الخسارة: الشمعة غير واضحة الاتجاه';
       document.getElementById('dirPocketBtnTxt').className = 'text-xs font-extrabold mt-1 px-3 py-1 rounded-lg inline-block bg-amber-500 text-black';
-      document.getElementById('technicalReasonTxt').innerText = 'نصيحة: انتظر حتى يصل العداد العلوي إلى الثانية 58 (بداية شمعة دقيقة جديدة) ثم اضغط فحص.';
+      document.getElementById('technicalReasonTxt').innerText = msg;
 
       resetScanButton();
     }
 
-    function settleInstitutionalResult(isUp, lockPrice) {
+    function settleCandleResultV8(isUp, lockPrice) {
       isBusy = false;
       const closePrice = livePrices[currentPair.name];
       const timerTxt = document.getElementById('countdownTimerTxt');
@@ -1016,7 +959,7 @@
         timerTxt.className = 'text-xs font-black text-gray-300';
       } else if (won) {
         sessionWins++;
-        playDoubleBeep(1120);
+        playDoubleBeep(1140);
         timerTxt.innerText = 'صفقة رابحة ✅';
         timerTxt.className = 'text-xs font-black text-emerald-400';
       } else {
@@ -1038,10 +981,10 @@
       const btn = document.getElementById('mainScanBtn');
       btn.disabled = false;
       btn.classList.remove('opacity-50');
-      btn.innerHTML = `<i class="fa-solid fa-crosshairs"></i> <span id="mainBtnLabel">افحص هيكل (BOS + OB) لـ ${currentPair.name} واقتنص الصفقة</span>`;
+      btn.innerHTML = `<i class="fa-solid fa-crosshairs"></i> <span id="mainBtnLabel">تفعيل القناص للشمعة القادمة (${currentPair.name})</span>`;
     }
 
-    // ==================== 9. دوال الأزرار والصوت ====================
+    // ==================== 8. التحكم في الواجهة والصوت ====================
     function selectTime(code, sec) {
       if (isBusy) return;
       if (!currentPair.allowSeconds && sec < 60) {
@@ -1055,11 +998,11 @@
       ['S3', 'S5', 'S15', 'M1', 'M3'].forEach(c => {
         const b = document.getElementById('btn-' + c);
         if (!currentPair.allowSeconds && (c === 'S3' || c === 'S5' || c === 'S15')) {
-          b.className = 'time-btn py-2 rounded-xl bg-[#080b11] border border-[#161e2e] text-xs font-bold text-gray-600 line-through cursor-not-allowed en-num';
+          b.className = 'time-btn py-2 rounded-xl bg-[#070a10] border border-[#151d2e] text-xs font-bold text-gray-600 line-through cursor-not-allowed en-num';
         } else if (c === code) {
           b.className = 'time-btn py-2 rounded-xl bg-emerald-500/20 border border-emerald-500 text-xs font-extrabold text-emerald-400 en-num';
         } else {
-          b.className = 'time-btn py-2 rounded-xl bg-[#121826] border border-[#222d42] text-xs font-bold text-gray-300 en-num';
+          b.className = 'time-btn py-2 rounded-xl bg-[#111726] border border-[#202b42] text-xs font-bold text-gray-300 en-num';
         }
       });
     }
@@ -1086,7 +1029,7 @@
       container.innerHTML = '';
       pocketPairs.forEach(p => {
         const div = document.createElement('div');
-        div.className = `p-3 rounded-xl flex items-center justify-between cursor-pointer border ${p.name === currentPair.name ? 'bg-[#1c263b] border-emerald-500' : 'bg-[#121826] border-[#222d42]'}`;
+        div.className = `p-3 rounded-xl flex items-center justify-between cursor-pointer border ${p.name === currentPair.name ? 'bg-[#1a2438] border-emerald-500' : 'bg-[#111726] border-[#202b42]'}`;
         div.onclick = () => { selectPairByName(p.name); closePairModal(); };
         div.innerHTML = `
           <div class="flex items-center gap-3">
@@ -1131,7 +1074,7 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      updateSessionAndCandleClock();
+      updateClockAndSession();
       applyTimeframeRulesForPair(currentPair);
       initPairData(currentPair);
     });
