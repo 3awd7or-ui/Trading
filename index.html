@@ -854,4 +854,154 @@
       document.getElementById('tradeTrackerBar').classList.add('hidden');
 
       const card = document.getElementById('signalCard');
-      card.className = 'card-po signal-wait p-4 text-center relative overflow-hidden transition-all duration-200 min
+      card.className = 'card-po signal-wait p-4 text-center relative overflow-hidden transition-all duration-200 min-h-[245px] flex flex-col justify-center items-center';
+
+      document.getElementById('resultPairHeader').innerText = `${currentPair.name} · حظر تذبذب`;
+      document.getElementById('strategyTypeBadge').innerText = 'حماية الرصيد مفعلة';
+      document.getElementById('dirIconBox').className = 'w-16 h-16 rounded-2xl bg-amber-500/20 border-2 border-amber-400 flex items-center justify-center text-amber-400';
+      document.getElementById('dirIcon').className = 'fa-solid fa-shield-halved text-3xl';
+      document.getElementById('dirMainArabic').innerText = 'انتظر! لا تدخل ✋';
+      document.getElementById('dirMainArabic').className = 'text-2xl font-black tracking-wide text-amber-400';
+      document.getElementById('dirPocketBtnTxt').innerText = 'الشمعة الحالية متذبذبة (تم منع الخسارة)';
+      document.getElementById('dirPocketBtnTxt').className = 'text-xs font-extrabold mt-1 px-3 py-1 rounded-lg inline-block bg-amber-500 text-black';
+      document.getElementById('technicalReasonTxt').innerText = 'السبب: تعارض بين السيولة وهيكل الشمعة. انتظر بداية الشمعة الجديدة واضغط فحص.';
+
+      resetScanButton();
+    }
+
+    function finishTradeEvaluation(isUp, lockPrice) {
+      isBusy = false;
+      const closePrice = livePrices[currentPair.name];
+      const timerTxt = document.getElementById('countdownTimerTxt');
+      const won = (isUp && closePrice > lockPrice) || (!isUp && closePrice < lockPrice);
+
+      if (closePrice === lockPrice) {
+        timerTxt.innerText = 'تعادل (0.0)';
+        timerTxt.className = 'text-xs font-black text-gray-300';
+      } else if (won) {
+        sessionWins++;
+        playDoubleBeep(1120);
+        timerTxt.innerText = 'صفقة رابحة ✅';
+        timerTxt.className = 'text-xs font-black text-emerald-400';
+      } else {
+        sessionLosses++;
+        timerTxt.innerText = 'خسارة ❌';
+        timerTxt.className = 'text-xs font-black text-red-400';
+      }
+
+      const total = sessionWins + sessionLosses;
+      const rate = total > 0 ? Math.round((sessionWins / total) * 100) : 100;
+      document.getElementById('winCountTxt').innerText = `${sessionWins}W`;
+      document.getElementById('lossCountTxt').innerText = `${sessionLosses}L`;
+      document.getElementById('winRateBadge').innerText = `(${rate}%)`;
+
+      resetScanButton();
+    }
+
+    function resetScanButton() {
+      const btn = document.getElementById('mainScanBtn');
+      btn.disabled = false;
+      btn.classList.remove('opacity-50');
+      btn.innerHTML = `<i class="fa-solid fa-crosshairs"></i> <span id="mainBtnLabel">حلل (${currentPair.name}) على فريم ${selectedTimeCode} واقتنص الصفقة</span>`;
+    }
+
+    // ==================== 6. التحكم في الأزرار والصوت ====================
+    function selectTime(code, sec) {
+      if (isBusy) return;
+      if (!currentPair.allowSeconds && sec < 60) {
+        alert(`زوج ${currentPair.name} في منصة Pocket Option لا يدعم فريمات الثواني! يعمل فقط من دقيقة (M1) فما فوق.`);
+        return;
+      }
+      selectedTimeCode = code;
+      selectedSeconds = sec;
+      document.getElementById('selectedTimeLabel').innerText = sec < 60 ? `${sec} ثوانٍ (${code})` : `${sec / 60} دقيقة (${code} - ${sec}s)`;
+
+      const allCodes = ['S3', 'S5', 'S15', 'M1', 'M3'];
+      allCodes.forEach(c => {
+        const b = document.getElementById('btn-' + c);
+        if (!currentPair.allowSeconds && (c === 'S3' || c === 'S5' || c === 'S15')) {
+          b.className = 'time-btn py-2 rounded-xl bg-[#0a0d14] border border-[#1a2030] text-xs font-bold text-gray-600 line-through cursor-not-allowed en-num';
+        } else if (c === code) {
+          b.className = 'time-btn py-2 rounded-xl bg-emerald-500/20 border border-emerald-500 text-xs font-extrabold text-emerald-400 en-num';
+        } else {
+          b.className = 'time-btn py-2 rounded-xl bg-[#141a28] border border-[#232d42] text-xs font-bold text-gray-300 en-num';
+        }
+      });
+
+      const mainBtnLbl = document.getElementById('mainBtnLabel');
+      if (mainBtnLbl) mainBtnLbl.innerText = `حلل (${currentPair.name}) على فريم ${selectedTimeCode} واقتنص الصفقة`;
+    }
+
+    function selectPairByName(name) {
+      if (isBusy) return;
+      const found = pocketPairs.find(p => p.name === name);
+      if (!found) return;
+      currentPair = found;
+      document.getElementById('selectedPairName').innerText = found.name;
+      document.getElementById('selectedPairPayout').innerText = `+${found.payout}%`;
+      document.getElementById('flag1').innerText = found.f1;
+      document.getElementById('flag2').innerText = found.f2;
+
+      applyTimeframeRulesForPair(found);
+      initPairData(found);
+    }
+
+    function openPairModal() {
+      if (isBusy) return;
+      document.getElementById('pairModal').classList.remove('hidden');
+      document.getElementById('pairModal').classList.add('flex');
+      const container = document.getElementById('pairsListContainer');
+      container.innerHTML = '';
+      pocketPairs.forEach(p => {
+        const div = document.createElement('div');
+        div.className = `p-3 rounded-xl flex items-center justify-between cursor-pointer border ${p.name === currentPair.name ? 'bg-[#1e273b] border-emerald-500' : 'bg-[#141a28] border-[#232d42]'}`;
+        div.onclick = () => { selectPairByName(p.name); closePairModal(); };
+        div.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="text-xl">${p.f1}${p.f2}</span>
+            <div>
+              <div class="text-xs font-extrabold text-white en-num">${p.name}</div>
+              <div class="text-[10px] ${p.allowSeconds ? 'text-emerald-400' : 'text-amber-400'} font-bold">${p.desc}</div>
+            </div>
+          </div>
+          <div class="en-num text-xs font-bold text-gray-200">${livePrices[p.name].toFixed(p.dec)}</div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function closePairModal() {
+      document.getElementById('pairModal').classList.add('hidden');
+      document.getElementById('pairModal').classList.remove('flex');
+    }
+
+    function playDoubleBeep(freq = 920) {
+      if (!soundEnabled) return;
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        [0, 0.14].forEach(delay => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, ctx.currentTime + delay);
+          gain.gain.setValueAtTime(0.18, ctx.currentTime + delay);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(ctx.currentTime + delay);
+          osc.stop(ctx.currentTime + delay + 0.1);
+        });
+      } catch (e) {}
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      document.getElementById('soundIcon').className = soundEnabled ? 'fa-solid fa-volume-high text-xs' : 'fa-solid fa-volume-xmark text-xs';
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      applyTimeframeRulesForPair(currentPair);
+      initPairData(currentPair);
+    });
+  </script>
+</body>
+</html>
